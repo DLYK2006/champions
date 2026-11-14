@@ -1,2 +1,1 @@
-// Placeholder. Owner: @haojay1126
-export {};
+export { PixelAvatar, PixelAvatar as Avatar, RoomCharacter } from './pixel-avatar';

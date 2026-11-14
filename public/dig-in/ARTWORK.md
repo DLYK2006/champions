@@ -2,6 +2,12 @@
 
 Generated for the approved DIG IN frontend using the built-in imagegen tool on November 14, 2026. These backgrounds are original art, not screenshots or extracted assets from the supplied mood reference. All interface text, controls, characters and state indicators remain separate layers.
 
+## adventurer.png
+
+Final generation prompt:
+
+> Use case: stylized-concept. Asset type: original transparent-background full-body player character sprite for DIG IN cozy pixel-RPG mobile app. One single friendly young adult adventurer, standing facing front in a relaxed happy pose, curly chestnut hair, warm medium skin, soft forest-green hoodie with cream drawstrings and a tiny golden leaf badge, dark brown trousers, cream sneakers. Chunky adorable original 16-bit pixel-art proportions with a large expressive head and small body, simple cheerful face and dark eyes, distinct square pixel clusters, limited warm earthy palette, crisp edges with no painterly smoothing. Entire character visible, centered, tightly framed with clear padding around all sides, character fills most canvas, no other objects. Truly transparent background; no backdrop, no floor, no oval shadow, no text, no logos, no border. Match a premium cozy woodland indie RPG art style. This is a game sprite asset, not a UI mockup.
+
 ## room.png
 
 Final generation prompt:

@@ -1,4 +1,4 @@
-// Placeholder app shell (bottom nav goes here). Owner: @haojay1126
-export default function AppLayout({ children }: LayoutProps<"/">) {
-  return <>{children}</>;
-}
+import type { ReactNode } from 'react';
+import { AppShell } from '@/components/ui/app-shell';
+
+export default function AppLayout({ children }: { children: ReactNode }) { return <AppShell>{children}</AppShell>; }
