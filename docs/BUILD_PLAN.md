@@ -105,6 +105,10 @@ The Groups page subscribes to `postgres_changes` on `group_daily_progress` and `
 
 `profiles`, `meals`, `daily_progress (user_id, date)`, `coin_transactions (reward_event_id unique)`, `shop_items`, `inventory`, `groups`, `group_members`, `group_daily_progress (group_id, date)`. Row-level security means users read and write only their own rows. Group members never read each other's `daily_progress` or `profiles` rows; they see only username, avatar, equipped items and personal_goal_completed through `get_group_status()` (decided Nov 14).
 
+### History (added Nov 14, beyond the PRD)
+
+`/history` (Daren): month calendar of the user's own `daily_progress` (goal met / logged / neutral, never red), tap a day for its `meals` and totals vs targets, current streak (0 once `last_meal_date` is before yesterday). Reads own rows only; no schema change. Home should link to it from the streak.
+
 ### Seed
 
 - Shop items: `sunglasses` 20, `hoodie` 40, `crown` 60.
