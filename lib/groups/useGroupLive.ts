@@ -50,16 +50,34 @@ export function useGroupLive(): UseGroupLive {
   }, [refresh]);
 
   // (Re)subscribe whenever the user's group changes (join, create, leave).
+  // The realtime socket is given the user's token explicitly before subscribing: on the real project the
+  // default hand-off sometimes left the socket unauthenticated, so row-level security hid every event.
   useEffect(() => {
     if (!groupId) return;
     const supabase = createClient();
     const filter = `group_id=eq.${groupId}`;
-    const channel = supabase
-      .channel(`group:${groupId}`)
-      .on("postgres_changes", { event: "*", schema: "public", table: "group_daily_progress", filter }, () => void refresh())
-      .on("postgres_changes", { event: "*", schema: "public", table: "group_members", filter }, () => void refresh())
-      .subscribe();
-    return () => { void supabase.removeChannel(channel); };
+    let cancelled = false;
+    let channel: ReturnType<typeof supabase.channel> | null = null;
+
+    void (async () => {
+      try {
+        const { data } = await supabase.auth.getSession();
+        if (data.session?.access_token) await supabase.realtime.setAuth(data.session.access_token);
+      } catch {
+        // Fall through: polling keeps the page fresh even without realtime.
+      }
+      if (cancelled) return;
+      channel = supabase
+        .channel(`group:${groupId}`)
+        .on("postgres_changes", { event: "*", schema: "public", table: "group_daily_progress", filter }, () => void refresh())
+        .on("postgres_changes", { event: "*", schema: "public", table: "group_members", filter }, () => void refresh())
+        .subscribe();
+    })();
+
+    return () => {
+      cancelled = true;
+      if (channel) void supabase.removeChannel(channel);
+    };
   }, [groupId, refresh]);
 
   return { status, loading, error, refresh };
