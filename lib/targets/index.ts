@@ -1,2 +1,2 @@
-// Placeholder. Owner: @joshuatsou123
-export {};
+// Onboarding targets + validation. Owner: @joshuatsou123
+export * from "./targets";
