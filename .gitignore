@@ -43,3 +43,6 @@ next-env.d.ts
 
 # team board cache
 .board/
+
+# Playwright MCP browser logs
+.playwright-mcp/
