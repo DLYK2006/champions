@@ -37,7 +37,7 @@ Fill this in at kickoff so every agent knows whose files are whose.
 |---|---|---|
 | App shell, bottom nav, Home dashboard, Shop UI, Groups UI + shared world, avatar | @haojay1126 | `app/layout.tsx`, `app/(app)/layout.tsx`, `app/(app)/page.tsx`, `app/(app)/shop/`, `app/(app)/groups/`, `components/ui/`, `components/avatar/`, `components/world/` |
 | Onboarding (4 screens + optional group step), target presets | @joshuatsou123 | `app/onboarding/`, `components/onboarding/`, `lib/targets/` |
-| Food scan: camera page, results card, Gemini route, meal coach tip | @DLYK2006 | `app/(app)/scan/`, `components/scan/`, `lib/scan/`, `app/api/scan/` |
+| Food scan: camera page, results card, OpenAI vision route, meal coach tip | @DLYK2006 | `app/(app)/scan/`, `components/scan/`, `lib/scan/`, `app/api/scan/` |
 | Backend core: schema, log_meal + coins, shop RPCs, seed, shared types, Supabase clients (tentative) | @DLYK2006 | `supabase/migrations/0001_core.sql`, `supabase/seed.sql`, `lib/supabase/`, `lib/api/`, `types/` |
 | Groups logic: invite codes, completion %, group bonus, realtime hook (P0) | @joshuatsou123 | `supabase/migrations/0002_groups.sql`, `lib/groups/` |
 

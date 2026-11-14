@@ -6,10 +6,10 @@ Decided by Daren (lead), Nov 14. The PRD is the product. This file pins the deci
 
 - **Next.js** (App Router) + TypeScript + Tailwind, mobile-first PWA, deployed on **Vercel**. Demo on phones by opening the Vercel URL.
 - **Supabase:** Auth (email/password, plus anonymous for demo users), Postgres, Realtime, Storage.
-- **Vision:** Gemini, called **only** from the server route `app/api/scan/route.ts`. Env vars are `GEMINI_API_KEY` and `GEMINI_MODEL` (default `gemini-flash-latest`). The key never reaches the browser.
+- **Vision:** OpenAI (Responses API, image input + `json_schema` structured output), called **only** from the server route `app/api/scan/route.ts`. Env vars are `OPENAI_API_KEY` and `OPENAI_MODEL` (default `gpt-5.6-luna`). Switched from Gemini on Nov 14. The key never reaches the browser.
 - **Camera:** `<input type="file" accept="image/*" capture="environment">`. Resize to max 1024 px JPEG (quality about 0.7) in the browser before upload, to stay fast and under Vercel's request size limit.
 - **Avatar:** our own pixel-art renderer in `components/avatar/` (Jay), decided Nov 14; it replaces DiceBear `avataaars`. The contract is unchanged: `AvatarConfig` plus the equipped shop item ids `sunglasses`, `hoodie`, `crown`.
-- **Env:** `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` (browser), `SUPABASE_SERVICE_ROLE_KEY`, `GEMINI_API_KEY`, `GEMINI_MODEL` (server only). Set them in `.env.local` and in Vercel.
+- **Env:** `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` (browser), `SUPABASE_SERVICE_ROLE_KEY`, `OPENAI_API_KEY`, `OPENAI_MODEL` (server only). Set them in `.env.local` and in Vercel.
 
 ## Rules the PRD leaves open (decided)
 
@@ -36,7 +36,7 @@ Decided by Daren (lead), Nov 14. The PRD is the product. This file pins the deci
 |---|---|---|
 | App shell, bottom nav, Home dashboard, Shop UI, Groups UI + shared world (P1), avatar | @haojay1126 (Jay) | `app/layout.tsx`, `app/(app)/layout.tsx`, `app/(app)/page.tsx`, `app/(app)/shop/`, `app/(app)/groups/`, `components/ui/`, `components/avatar/`, `components/world/` |
 | Onboarding (4 screens + optional group step), target presets | @joshuatsou123 (Joshua) | `app/onboarding/`, `components/onboarding/`, `lib/targets/` |
-| Food scan: camera page, results card, Gemini route, meal coach tip | @DLYK2006 (Daren) | `app/(app)/scan/`, `components/scan/`, `lib/scan/`, `app/api/scan/` |
+| Food scan: camera page, results card, OpenAI vision route, meal coach tip | @DLYK2006 (Daren) | `app/(app)/scan/`, `components/scan/`, `lib/scan/`, `app/api/scan/` |
 | Backend core: schema, `log_meal` + coins, shop RPCs, seed, shared types, Supabase clients (**tentative**) | @DLYK2006 (Daren) | `supabase/migrations/0001_core.sql`, `supabase/seed.sql`, `lib/supabase/`, `lib/api/`, `types/` |
 | **Groups logic: create/join by invite code, completion %, group bonus, realtime hook (P0, UNOWNED: claim it on the board)** | unowned | `supabase/migrations/0002_groups.sql`, `lib/groups/` |
 
@@ -115,7 +115,7 @@ The Groups page subscribes to `postgres_changes` on `group_daily_progress` (filt
 | By | Done means |
 |---|---|
 | H+1 | Scaffold on `main`: Next.js app deployed to Vercel, Supabase linked, `types/` and `0001_core.sql` in. Everyone pulls. |
-| H+4 | Each area runs on mock data. `/api/scan` returns real Gemini JSON from a phone photo. |
+| H+4 | Each area runs on mock data. `/api/scan` returns real OpenAI JSON from a phone photo. |
 | H+8 | Solo loop end to end: onboarding, scan, `log_meal`, Home bars, mood, coins. (PRD P0 items 1 to 7) |
 | H+12 | Groups end to end on two phones: join by code, live completion %, bonus coins. (P0 items 8 to 11) |
 | H+16 | **Feature freeze** after P1 (shop, world, mood animations, coach tip). Only bugs and polish after this. |
