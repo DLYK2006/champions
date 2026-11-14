@@ -4,12 +4,14 @@ import { useRef, useState } from "react";
 import { CommunityScreen } from "../community-screen";
 import { ShopScreen, demoShopItems } from "../shop-screen";
 import { ResultsView } from "@/components/scan/results-view";
+import { AchievementDialog } from "../achievement";
 import type { ScanItem } from "@/types";
 
 // Test-only fixture: imported solely by a temporary route created by pending.browser-check.cjs.
 export default function InteractionFixture() {
   const rejectRequest = useRef<((reason: Error) => void) | null>(null);
   const [calls, setCalls] = useState(0);
+  const [celebrating, setCelebrating] = useState(false);
   const [mode, setMode] = useState<"group" | "results" | "shop">("group");
   const [item, setItem] = useState<ScanItem>({
     name: "Test meal",
@@ -29,6 +31,23 @@ export default function InteractionFixture() {
   }
   return (
     <>
+      <button className="button" onClick={() => setCelebrating(true)}>
+        Celebration fixture
+      </button>
+      <AchievementDialog
+        achievement={
+          celebrating
+            ? {
+                id: "fixture",
+                title: "Goal complete!",
+                description: "Personal goal reached.",
+                coins: 10,
+                preview: true,
+              }
+            : null
+        }
+        onClose={() => setCelebrating(false)}
+      />
       <button
         className="button"
         onClick={() =>

@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Pixelify_Sans } from "next/font/google";
 import type { ReactNode } from "react";
 import "./globals.css";
 import "@/components/ui/dig-in.css";
+import "@/components/ui/compact.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

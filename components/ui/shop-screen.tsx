@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import type { AvatarConfig } from "@/types";
 import { RoomCharacter } from "@/components/avatar/pixel-avatar";
 import { Icon, type IconName } from "./icons";
-import { PageIntro } from "./primitives";
+import { CosmeticArt } from "@/components/avatar/cosmetic-art";
 import { demoProfile, useDemo } from "./demo-context";
 
 export interface ShopItem {
@@ -98,46 +98,27 @@ export function ShopScreen({
     }
   }
   return (
-    <main>
-      <PageIntro
-        eyebrow="THE LITTLE TREASURE SHOP"
-        title="A little more you."
-        description="Turn small wins into something you can wear. Every treasure is cosmetic."
-        trailing={
-          <span className="streak-badge">
-            <Icon name="coin" size={24} />
-            <span>
-              <b>{balance} coins to spend</b>
-              <small>Earned, one little win at a time.</small>
-            </span>
-          </span>
-        }
-      />
+    <main className="shop-page">
+      <div className="screen-title-row">
+        <h1 className="screen-title">Shop</h1>
+        <span className="coin-wallet" aria-label="Shop coin balance">
+          <Icon name="coin" size={21} />
+          {balance}
+        </span>
+      </div>
       <div className="shop-grid">
-        <aside className="panel wardrobe-panel">
-          <h2>Your adventurer</h2>
-          <p className="section-copy">A familiar face. A fresh little look.</p>
+        <aside className="panel wardrobe-panel" aria-label="Character preview">
           <div className="wardrobe-stage">
             <RoomCharacter config={avatar} equipped={previewEquipment} />
           </div>
-          <p className="preview-label">
-            {preview
-              ? `Trying on: ${items.find((item) => item.id === preview)?.name}`
-              : "Choose a treasure to try it on."}
-          </p>
-          <div className="equipped-chips">
-            {equipped.map((id) => (
-              <span key={id}>
-                <Icon name="check" size={11} /> {id}
-              </span>
-            ))}
-          </div>
           {preview && (
-            <button className="text-button" onClick={() => setPreview(null)}>
-              Back to equipped look
-            </button>
+            <div className="shop-preview-selection">
+              <span>{items.find((item) => item.id === preview)?.name}</span>
+              <button className="text-button" onClick={() => setPreview(null)}>
+                Reset preview
+              </button>
+            </div>
           )}
-          <p className="fine-print">Previewing is always free.</p>
         </aside>
         <section>
           <div className="shop-tabs" role="group" aria-label="Filter treasures">
@@ -147,15 +128,9 @@ export function ShopScreen({
                 aria-pressed={category === tab}
                 onClick={() => setCategory(tab)}
               >
-                {tab}
+                {tab === "All treasures" ? "All" : tab}
               </button>
             ))}
-          </div>
-          <div className="shop-collection-header">
-            <strong>Small treasures. Big personality.</strong>
-            <span>
-              {visible.length} {visible.length === 1 ? "treasure" : "treasures"}
-            </span>
           </div>
           <div className="shop-item-grid">
             {visible.map((item) => (
@@ -169,17 +144,16 @@ export function ShopScreen({
                   aria-pressed={preview === item.id}
                   onClick={() => setPreview(item.id)}
                 >
-                  <Icon name={item.icon} size={65} />
+                  <CosmeticArt id={item.id} />
                   <span className="item-tag">
                     {equipped.includes(item.id)
                       ? "EQUIPPED"
                       : owned.includes(item.id)
-                        ? "IN YOUR BAG"
-                        : "TRY ME ON"}
+                        ? "OWNED"
+                        : `${item.price} COINS`}
                   </span>
                 </button>
-                <h3>{item.name}</h3>
-                <p>{item.description}</p>
+                <h2 className="shop-item-name">{item.name}</h2>
                 <button
                   className={`button ${owned.includes(item.id) ? "button-soft" : "button-primary"}`}
                   disabled={
@@ -194,28 +168,24 @@ export function ShopScreen({
                   onClick={() => act(item)}
                 >
                   {pending === item.id ? (
-                    "One moment…"
+                    "Saving…"
                   ) : owned.includes(item.id) ? (
                     <>
                       <Icon
                         name={equipped.includes(item.id) ? "check" : "shirt"}
                         size={15}
                       />
-                      {equipped.includes(item.id)
-                        ? "Equipped · remove"
-                        : "Equip treasure"}
+                      {equipped.includes(item.id) ? "Unequip" : "Equip"}
                     </>
                   ) : (
                     <>
                       <Icon name="coin" size={17} />
-                      {item.price} coins <Icon name="plus" size={15} />
+                      {item.price} · Buy
                     </>
                   )}
                 </button>
                 {!owned.includes(item.id) && balance < item.price && (
-                  <p className="fine-print">
-                    A few more quests will get you there.
-                  </p>
+                  <p className="fine-print">Not enough coins</p>
                 )}
               </article>
             ))}
@@ -228,25 +198,12 @@ export function ShopScreen({
               {error}
             </p>
           )}
-          <div className="shop-note">
-            <Icon name="leaf" size={21} />
-            <p>
-              Earn coins through personal quests, with optional garden bonuses.
-              <br />
-              No paid coins. No shortcuts. Just your own little progress.
-            </p>
-          </div>
         </section>
       </div>
-      <footer className="page-footer">
-        <span>
-          <Icon name="spark" size={14} /> LITTLE THINGS THAT FEEL LIKE YOU
-        </span>
-        <span>Demo purchases · no real transactions</span>
-      </footer>
     </main>
   );
 }
+
 export function DemoShop() {
   const { balance, owned, equipped, buy, equip } = useDemo();
   return (

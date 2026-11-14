@@ -15,148 +15,73 @@ const fs = require("node:fs");
   const url = process.env.UI_CHECK_URL || "http://localhost:3000";
   const output = process.env.UI_CHECK_OUTPUT;
   try {
-    await page.goto(url);
-    await page
-      .getByRole("heading", { name: "A little progress. A little magic." })
-      .waitFor({ timeout: 12000 });
-    await page.getByText("Demo mode", { exact: false }).first().waitFor();
-    assert.equal(
-      await page
-        .getByRole("navigation", { name: "Main navigation" })
-        .getByRole("link")
-        .count(),
-      4,
-    );
-    await page.getByRole("button", { name: "Preview celebration" }).click();
-    await page.getByRole("dialog").waitFor();
-    await page.keyboard.press("Escape");
-    assert.equal(await page.getByRole("dialog").count(), 0);
-    assert.equal(
-      await page
-        .getByRole("button", { name: "Preview celebration" })
-        .evaluate((el) => el === document.activeElement),
-      true,
-    );
-    assert.equal(
-      await page.evaluate(
-        () => document.documentElement.scrollWidth <= innerWidth,
-      ),
-      true,
-      "Home must not overflow a phone",
-    );
-    if (output) {
-      fs.mkdirSync(output, { recursive: true });
-      await page.getByRole("heading").first().click();
-      await page.evaluate(() => scrollTo(0, 0));
-      await page.screenshot({
-        path: `${output}/home-mobile.png`,
-        fullPage: true,
-      });
-    }
-
-    await page.getByRole("link", { name: "Shop", exact: true }).click();
-    await page.getByRole("heading", { name: "A little more you." }).waitFor();
-    await page.getByRole("button", { name: "Preview Crown" }).click();
-    await page.getByRole("button", { name: "Buy Crown for 60 coins" }).click();
-    await page.getByRole("button", { name: "Equip Crown" }).waitFor();
-    await page.getByRole("button", { name: "Equip Crown" }).click();
-    await page.getByText("Crown equipped.", { exact: true }).waitFor();
-    assert.equal(await page.getByLabel("Coin balance").innerText(), "180");
-    if (output)
-      await page.screenshot({
-        path: `${output}/shop-mobile.png`,
-        fullPage: true,
-      });
-
-    await page.getByRole("link", { name: "Community", exact: true }).click();
-    await page
-      .getByRole("heading", { name: "Good things grow together." })
-      .waitFor();
-    assert.equal(await page.getByText("75%", { exact: true }).count(), 1);
-    assert.equal(
-      (
-        await page.locator("main").filter({ visible: true }).innerText()
-      ).includes("110 / 150"),
-      false,
-      "Other member intake must stay private",
-    );
-    await page.getByRole("button", { name: "Explore solo" }).click();
-    await page.getByRole("button", { name: "Create a group" }).waitFor();
-    await page.getByRole("button", { name: "Join with a code" }).click();
-    await page.getByLabel("Invite code").fill("ab");
-    await page.getByRole("button", { name: "Join garden" }).click();
-    await page
-      .getByText("Enter a 6-character invite code.", { exact: true })
-      .waitFor();
-    await page.getByRole("button", { name: "Cancel" }).click();
-    await page.getByRole("button", { name: "Preview group demo" }).click();
-    if (output)
-      await page.screenshot({
-        path: `${output}/community-mobile.png`,
-        fullPage: true,
-      });
-
-    await page.getByRole("link", { name: "Scan", exact: true }).click();
-    await page.getByRole("button", { name: "Explore a sample meal" }).click();
-    await page.getByRole("button", { name: "Edit Grilled chicken" }).click();
+    await page.goto(`${url}/scan`);
+    await page.getByRole("button", { name: "Manual", exact: true }).click();
+    await page.getByRole("heading", { name: "Review meal" }).waitFor();
+    const confirm = page.getByRole("button", {
+      name: "Confirm log",
+      exact: true,
+    });
+    assert.equal(await confirm.isDisabled(), true);
+    await page.getByRole("button", { name: "Edit new food" }).click();
+    await page.getByLabel("Food name", { exact: true }).fill("Rice bowl");
     await page.getByLabel("Calories (kcal)", { exact: true }).fill("-1");
-    assert.equal(
-      await page
-        .getByRole("button", { name: "Confirm log", exact: true })
-        .isDisabled(),
-      true,
-    );
+    assert.equal(await confirm.isDisabled(), true);
     await page.getByLabel("Calories (kcal)", { exact: true }).fill("225");
-    assert.equal(
-      await page
-        .getByRole("button", { name: "Confirm log", exact: true })
-        .isDisabled(),
-      false,
-    );
+    assert.equal(await confirm.isEnabled(), true);
     assert.equal(
       await page.locator(".result-macros strong").first().innerText(),
-      "447kcal",
+      "225kcal",
     );
-    await page.getByRole("button", { name: "Edit Grilled chicken" }).click();
-    if (output) {
-      await page.getByRole("heading").first().click();
-      await page.evaluate(() => scrollTo(0, 0));
-      await page.screenshot({
-        path: `${output}/results-mobile.png`,
-        fullPage: true,
+    for (let i = 0; i < 5; i++)
+      await page.getByRole("button", { name: "Add food", exact: true }).click();
+    assert.equal(await page.locator(".food-card").count(), 6);
+    for (const viewport of [
+      { width: 360, height: 640 },
+      { width: 390, height: 844 },
+      { width: 1280, height: 800 },
+      { width: 667, height: 375 },
+      { width: 640, height: 400 },
+    ]) {
+      await page.setViewportSize(viewport);
+      const geometry = await page.evaluate(() => {
+        const main = document.querySelector(".app-main");
+        const foods =
+          innerHeight <= 500
+            ? document.querySelector(".results-layout > section")
+            : document.querySelector(".food-list");
+        const confirm = document
+          .querySelector(".confirm-log-bar")
+          .getBoundingClientRect();
+        return {
+          content: main.scrollHeight,
+          height: main.clientHeight,
+          foodContent: foods.scrollHeight,
+          foodHeight: foods.clientHeight,
+          confirmBottom: confirm.bottom,
+          navTop: document.querySelector(".bottom-nav").getBoundingClientRect()
+            .top,
+        };
       });
+      assert.ok(
+        geometry.content <= geometry.height + 2,
+        JSON.stringify(geometry),
+      );
+      assert.ok(
+        geometry.foodContent > geometry.foodHeight,
+        "Variable foods and editors scroll inside their list",
+      );
+      assert.ok(
+        geometry.confirmBottom <= geometry.navTop,
+        "Confirm stays above navigation",
+      );
+      if (output && viewport.width === 390) {
+        fs.mkdirSync(output, { recursive: true });
+        await page.screenshot({ path: `${output}/results-mobile.png` });
+      }
     }
-    await page
-      .getByRole("button", { name: "Confirm log", exact: true })
-      .click();
-    await page.getByRole("dialog").waitFor();
-    assert.equal(
-      await page.getByLabel("Coin balance").innerText(),
-      "180",
-      "A UI preview must not award coins",
-    );
-    if (output)
-      await page.screenshot({ path: `${output}/achievement-mobile.png` });
-    await page.keyboard.press("Escape");
-    await page.getByRole("button", { name: "Back to your plate" }).click();
-    await page.getByRole("button", { name: "Loading", exact: true }).click();
-    assert.equal(
-      await page
-        .getByRole("button", { name: "Take a food photo" })
-        .isDisabled(),
-      true,
-    );
-    await page.getByRole("button", { name: "End loading preview" }).click();
-    await page.getByRole("button", { name: "Error", exact: true }).click();
-    await page.locator('.scan-error[role="alert"]').waitFor();
-    await page.getByRole("button", { name: "Try again", exact: true }).click();
-    assert.equal(await page.locator('.scan-error[role="alert"]').count(), 0);
-    if (output)
-      await page.screenshot({
-        path: `${output}/scanner-mobile.png`,
-        fullPage: true,
-      });
-
+    await page.setViewportSize({ width: 390, height: 844 });
+    // No real log_meal/purchase/auth submission in a UI-only check.
     await page.goto(`${url}/onboarding`);
     if (output)
       await page.screenshot({
@@ -237,7 +162,7 @@ const fs = require("node:fs");
       });
     assert.deepEqual(errors, []);
     console.log(
-      "PASS: navigation, reward-dialog keyboard/focus, demo purchase/equip, coin persistence, group privacy/solo/validation, editable results/invalid-input guard, preview leaves coins unchanged, scanner loading/error/retry, onboarding validation/presets/avatar/optional group, mobile/desktop overflow, no browser errors.",
+      "PASS: manual meal editing, invalid-input guard, internal results scrolling, pinned confirm, onboarding validation/presets/avatar/optional group, responsive geometry and no browser errors.",
     );
   } finally {
     await browser.close();

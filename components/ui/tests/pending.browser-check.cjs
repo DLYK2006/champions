@@ -22,6 +22,18 @@ const path = require("node:path");
     await page.goto(
       `${process.env.UI_CHECK_URL || "http://localhost:3000"}/digin-ui-check-fixture`,
     );
+    const celebration = page.getByRole("button", {
+      name: "Celebration fixture",
+      exact: true,
+    });
+    await celebration.click();
+    await page.getByRole("dialog").waitFor();
+    await page.keyboard.press("Escape");
+    assert.equal(await page.getByRole("dialog").count(), 0);
+    assert.equal(
+      await celebration.evaluate((el) => el === document.activeElement),
+      true,
+    );
     await page
       .getByRole("button", { name: "Create a group", exact: true })
       .click();
@@ -74,7 +86,7 @@ const path = require("node:path");
       .click();
     assert.equal(
       await page
-        .getByRole("button", { name: "Saving your meal…", exact: true })
+        .getByRole("button", { name: "Saving…", exact: true })
         .isDisabled(),
       true,
     );
@@ -141,7 +153,7 @@ const path = require("node:path");
         .count(),
       0,
     );
-    assert.equal(await page.getByLabel("Coin balance").innerText(), "240");
+    assert.equal(await page.getByLabel("Shop coin balance").innerText(), "240");
     console.log(
       "PASS: group/result/shop pending actions are guarded; rejected actions preserve details, balance and ownership without false rewards.",
     );
