@@ -10,6 +10,7 @@ import {
   presetsForGoal, resolveTargetWeight, round1, validateAge, validateBodyStats, validateCalories, validateGoal,
   validateOnboarding, validateOptionalMacro, validateProtein, type FieldResult, type Units,
 } from "../../lib/targets";
+import { createGroup, joinGroup } from "../../lib/groups/api";
 import { AVATAR_LABELS, AVATAR_OPTIONS, DEFAULT_AVATAR } from "./avatarOptions";
 import { PixelAvatar } from "../avatar";
 import { Icon } from "../ui/icons";
@@ -17,6 +18,9 @@ import { avatarOptionLabel } from "../avatar/option-labels";
 
 const STEPS = ["Body stats", "Goal", "Nutrition targets", "Avatar", "Group"] as const;
 const USERNAME_RE = /^[a-zA-Z0-9_]{3,20}$/;
+// Badge ids for new groups. Jay's UI maps these to art; the database stores the id as text.
+const GROUP_BADGES = ["dumbbell", "flame", "trophy", "apple", "bolt", "star"] as const;
+type GroupMode = "choose" | "join" | "create" | "created";
 
 const num = (s: string) => (s.trim() === "" ? null : Number(s));
 const Msg = ({ r }: { r?: FieldResult }) =>
@@ -29,6 +33,14 @@ export default function OnboardingFlow() {
   useEffect(() => { headingRef.current?.focus(); }, [step]);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
+  // group step: the profile is saved once, then Join / Create / Solo all build on it
+  const [profileSaved, setProfileSaved] = useState(false);
+  const [groupMode, setGroupMode] = useState<GroupMode>("choose");
+  const [joinCode, setJoinCode] = useState("");
+  const [groupName, setGroupName] = useState("");
+  const [groupBadge, setGroupBadge] = useState<string>(GROUP_BADGES[0]);
+  const [groupError, setGroupError] = useState<string | null>(null);
+  const [createdCode, setCreatedCode] = useState<string | null>(null);
 
   // screen 1 (inputs held as strings so partial typing is fine)
   const [units, setUnits] = useState<Units>("metric");
@@ -104,6 +116,7 @@ export default function OnboardingFlow() {
 
   async function saveProfile(): Promise<boolean> {
     setSaveError(null);
+    if (profileSaved) return true; // never insert twice (a failed group call must not redo this)
     if (!goal || metric.height_cm === null || metric.weight_kg === null || metric.age === null) return false;
     const values = {
       height_cm: metric.height_cm, weight_kg: metric.weight_kg, age: metric.age, goal_type: goal,
@@ -124,18 +137,44 @@ export default function OnboardingFlow() {
       setSaveError(error.code === "23505" ? "That username is taken. Go back and pick another." : "Couldn't save your profile. Try again.");
       return false;
     }
+    setProfileSaved(true);
     return true;
   }
 
-  async function finish(choice: "join" | "create" | "solo") {
+  const goHome = () => router.push("/");
+
+  // Continue solo: just save and go. Equally prominent with Join / Create (PRD 4.5).
+  async function continueSolo() {
     setSaving(true);
     const saved = await saveProfile();
     setSaving(false);
-    if (!saved) return;
-    // Join / create are stubbed until the Groups logic owner lands lib/groups; users can do it from Groups later.
-    if (choice !== "solo") sessionStorage.setItem("digin:after-onboarding", choice);
-    router.push("/");
+    if (saved) goHome();
   }
+
+  // Join / Create: save the profile first (groups need one). If the group call fails the profile stays
+  // saved, the user sees the reason, and can retry, switch option, or continue solo.
+  async function submitGroup(mode: "join" | "create") {
+    setGroupError(null);
+    setSaving(true);
+    try {
+      if (!(await saveProfile())) return;
+      if (mode === "join") {
+        await joinGroup(joinCode);
+        goHome();
+      } else {
+        const g = await createGroup(groupName, groupBadge);
+        setCreatedCode(g.invite_code);
+        setGroupMode("created");
+      }
+    } catch (e) {
+      setGroupError(e instanceof Error ? e.message : "Something went wrong. Try again.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  const joinOk = joinCode.trim().length === 6;
+  const createOk = groupName.trim().length >= 1 && groupName.trim().length <= 30;
 
   return (
     <main className="mx-auto max-w-md p-6" data-onboarding>
@@ -245,18 +284,69 @@ export default function OnboardingFlow() {
       {step === 4 && (
         <section>
           <h1 ref={headingRef} tabIndex={-1}>Better, if you like, together.</h1>
-          <p>Join a group, start one, or go solo. You can always join one later.</p>
-          <div>
-            <button type="button" disabled={saving} onClick={() => finish("join")}>Join a group</button>
-            <button type="button" disabled={saving} onClick={() => finish("create")}>Create a group</button>
-            <button type="button" disabled={saving} onClick={() => finish("solo")}>Continue solo</button>
-          </div>
+          {groupMode === "choose" && (
+            <>
+              <p>Join a group, start one, or go solo. You can always join one later.</p>
+              <div>
+                <button type="button" disabled={saving} onClick={() => setGroupMode("join")}>Join a group</button>
+                <button type="button" disabled={saving} onClick={() => setGroupMode("create")}>Create a group</button>
+                <button type="button" disabled={saving} onClick={continueSolo}>Continue solo</button>
+              </div>
+            </>
+          )}
+
+          {groupMode === "join" && (
+            <>
+              <label>Invite code
+                <input
+                  value={joinCode}
+                  onChange={(e) => setJoinCode(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6))}
+                  maxLength={6}
+                  autoCapitalize="characters"
+                  autoComplete="off"
+                />
+              </label>
+              <div>
+                <button type="button" disabled={saving || !joinOk} onClick={() => submitGroup("join")}>Join</button>
+                <button type="button" disabled={saving} onClick={() => { setGroupMode("choose"); setGroupError(null); }}>Back</button>
+                <button type="button" disabled={saving} onClick={continueSolo}>Continue solo</button>
+              </div>
+            </>
+          )}
+
+          {groupMode === "create" && (
+            <>
+              <label>Group name
+                <input value={groupName} onChange={(e) => setGroupName(e.target.value)} maxLength={30} />
+              </label>
+              <label>Badge
+                <select value={groupBadge} onChange={(e) => setGroupBadge(e.target.value)}>
+                  {GROUP_BADGES.map((b) => <option key={b} value={b}>{b}</option>)}
+                </select>
+              </label>
+              <div>
+                <button type="button" disabled={saving || !createOk} onClick={() => submitGroup("create")}>Create group</button>
+                <button type="button" disabled={saving} onClick={() => { setGroupMode("choose"); setGroupError(null); }}>Back</button>
+                <button type="button" disabled={saving} onClick={continueSolo}>Continue solo</button>
+              </div>
+            </>
+          )}
+
+          {groupMode === "created" && (
+            <>
+              <p>Your group is ready. Share this invite code with friends (up to 4 members):</p>
+              <p data-invite-code>{createdCode}</p>
+              <button type="button" onClick={goHome}>Continue</button>
+            </>
+          )}
+
+          {groupError && <p role="alert" data-error>{groupError}</p>}
           {saveError && <p role="alert" data-error>{saveError}</p>}
         </section>
       )}
 
       <nav>
-        {step > 0 && <button type="button" disabled={saving} onClick={() => setStep(step - 1)}>Back</button>}
+        {step > 0 && !profileSaved && <button type="button" disabled={saving} onClick={() => setStep(step - 1)}>Back</button>}
         {step < STEPS.length - 1 && <button type="button" disabled={!canNext} onClick={() => setStep(step + 1)}>Next</button>}
       </nav>
     </main>
