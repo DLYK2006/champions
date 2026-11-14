@@ -27,7 +27,7 @@ Shared presentation styles are in `components/ui/dig-in.css` plus scoped `compon
 
 Standard checks: `npm run lint`, `npx next typegen`, `npx tsc --noEmit`, `npm run build`, `node --test lib/targets/targets.test.mjs`.
 
-Browser checks use a separate temporary Playwright installation so the app dependency manifest is unchanged. With the dev server running, in PowerShell:
+Browser checks use a separate temporary Playwright installation so the app dependency manifest is unchanged. The real controllers need the public Supabase environment values to mount. For a signed-out UI-only test server without credentials, set process-only `NEXT_PUBLIC_SUPABASE_URL=https://digin-ui-test.supabase.co` and `NEXT_PUBLIC_SUPABASE_ANON_KEY=ui-only-test-key` before `npm run dev`; these placeholders cannot access backend data. The checks do not submit real auth, purchases or meals. With the dev server running, in PowerShell:
 
 ```powershell
 $checkDir = Join-Path $env:TEMP 'digin-ui-check'
@@ -48,3 +48,5 @@ The compact and pending checks create temporary fixture routes and remove them i
 A fresh reviewer found a pending create/join transition bug; a browser regression reproduced it, then passed after header transitions and openForm were locked during submission. The review's member-order assumption and zero-meal mood were corrected. Avatar configuration was added to the room/shop preview contract so custom appearances carry through to the room. No backend/domain/shared-type changes were needed.
 
 The compact-layout review found clipped Home controls, results editors and garden characters on short landscape screens. The layout now keeps Home controls reachable, scrolls the result panel internally at short heights, and calculates walking paths within the garden's available height. Browser checks cover these regressions at 667x375 and 640x400.
+
+After rebasing the latest ScanController, the signed-out setup notice is included in the flex layout so it cannot push capture controls or Confirm Log beneath navigation. The owner's setup link and auth logic are unchanged.
