@@ -1,4 +1,6 @@
-// Placeholder. Owner: @joshuatsou123
+// Owner: @joshuatsou123
+import { OnboardingFlow } from "../../components/onboarding";
+
 export default function Page() {
-  return <main className="p-6"><h1 className="text-xl font-semibold">Onboarding</h1></main>;
+  return <OnboardingFlow />;
 }
