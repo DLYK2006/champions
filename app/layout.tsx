@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Pixelify_Sans } from "next/font/google";
+import type { ReactNode } from "react";
 import "./globals.css";
+import "@/components/ui/dig-in.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -12,16 +14,22 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const pixel = Pixelify_Sans({
+  variable: "--font-pixel",
+  subsets: ["latin"],
+  display: "swap",
+});
+
 export const metadata: Metadata = {
   title: "DIG IN",
   description: "Scan meals, hit your goals, grow together.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${pixel.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

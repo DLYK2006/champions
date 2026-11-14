@@ -1,7 +1,7 @@
 "use client";
 // Onboarding: body stats -> goal -> nutrition targets -> avatar -> optional group step.
 // Logic only, plain markup. Jay restyles this folder after (see board). Rules: lib/targets.
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "../../lib/supabase/client";
 import type { AvatarConfig, GoalType } from "../../types/index";
@@ -11,6 +11,9 @@ import {
   validateOnboarding, validateOptionalMacro, validateProtein, type FieldResult, type Units,
 } from "../../lib/targets";
 import { AVATAR_LABELS, AVATAR_OPTIONS, DEFAULT_AVATAR } from "./avatarOptions";
+import { PixelAvatar } from "../avatar";
+import { Icon } from "../ui/icons";
+import { avatarOptionLabel } from "../avatar/option-labels";
 
 const STEPS = ["Body stats", "Goal", "Nutrition targets", "Avatar", "Group"] as const;
 const USERNAME_RE = /^[a-zA-Z0-9_]{3,20}$/;
@@ -22,6 +25,8 @@ const Msg = ({ r }: { r?: FieldResult }) =>
 export default function OnboardingFlow() {
   const router = useRouter();
   const [step, setStep] = useState(0);
+  const headingRef = useRef<HTMLHeadingElement>(null);
+  useEffect(() => { headingRef.current?.focus(); }, [step]);
   const [saving, setSaving] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
@@ -134,11 +139,12 @@ export default function OnboardingFlow() {
 
   return (
     <main className="mx-auto max-w-md p-6" data-onboarding>
-      <p>Step {step + 1} of {STEPS.length}: {STEPS[step]}</p>
+      <p>{step < 4 ? `Step ${step + 1} of 4: ${STEPS[step]}` : 'Optional · A little company'}</p>
+      <div className="onboarding-step-track" aria-hidden="true">{[0, 1, 2, 3].map(index => <span key={index} className={index <= step ? 'step-complete' : ''} />)}</div>
 
       {step === 0 && (
         <section>
-          <h1>About you</h1>
+          <h1 ref={headingRef} tabIndex={-1}>First, a little about you.</h1>
           <fieldset>
             <legend>Units</legend>
             <label><input type="radio" name="units" checked={units === "metric"} onChange={() => switchUnits("metric")} /> Metric (cm, kg)</label>
@@ -173,15 +179,11 @@ export default function OnboardingFlow() {
 
       {step === 1 && (
         <section>
-          <h1>Your goal</h1>
-          <label>I want to
-            <select value={goal ?? ""} onChange={(e) => e.target.value && pickGoal(e.target.value as GoalType)}>
-              <option value="" disabled>Choose…</option>
-              <option value="bulk">Bulk (gain weight)</option>
-              <option value="cut">Cut (lose weight)</option>
-              <option value="maintain">Maintain</option>
-            </select>
-          </label>
+          <h1 ref={headingRef} tabIndex={-1}>Choose your own path.</h1>
+          <p>Different journeys. The same little care for yourself.</p>
+          <div className="onboarding-goal-cards" role="group" aria-label="Personal goal">
+            {([{ id: 'bulk', title: 'Bulk', copy: 'Build and grow', icon: 'leaf' }, { id: 'cut', title: 'Cut', copy: 'A mindful change', icon: 'spark' }, { id: 'maintain', title: 'Maintain', copy: 'Find your rhythm', icon: 'sun' }] as const).map(choice => <button key={choice.id} type="button" aria-pressed={goal === choice.id} onClick={() => pickGoal(choice.id)}><Icon name={choice.icon} size={27} /><strong>{choice.title}</strong><span>{choice.copy}</span></button>)}
+          </div>
           <label>Target weight ({units === "metric" ? "kg" : "lb"})
             <input
               inputMode="decimal"
@@ -197,7 +199,7 @@ export default function OnboardingFlow() {
 
       {step === 2 && (
         <section>
-          <h1>Daily targets</h1>
+          <h1 ref={headingRef} tabIndex={-1}>Fuel your adventure.</h1>
           <p>{PRESETS_DISCLAIMER}</p>
           <div role="group" aria-label="Preset targets">
             {presetsForGoal(goal ?? "maintain").map((p) => (
@@ -228,11 +230,12 @@ export default function OnboardingFlow() {
 
       {step === 3 && (
         <section>
-          <h1>Your avatar</h1>
+          <h1 ref={headingRef} tabIndex={-1}>A little character. All you.</h1>
+          <div className="onboarding-avatar-preview"><PixelAvatar config={avatar} size={155} name="Your customized pixel avatar" /></div>
           {(Object.keys(AVATAR_OPTIONS) as (keyof AvatarConfig)[]).map((key) => (
-            <label key={key}>{AVATAR_LABELS[key]}
-              <select value={avatar[key]} onChange={(e) => setAvatar({ ...avatar, [key]: e.target.value })}>
-                {AVATAR_OPTIONS[key].map((o) => <option key={o} value={o}>{o}</option>)}
+            key === 'skinColor' || key === 'hairColor' ? <fieldset className="avatar-color-field" key={key}><legend>{AVATAR_LABELS[key]}</legend>{AVATAR_OPTIONS[key].map(option => <button type="button" className="avatar-color-swatch" key={option} aria-label={`${AVATAR_LABELS[key]}: ${avatarOptionLabel(key, option)}`} aria-pressed={avatar[key] === option} style={{ backgroundColor: `#${option}` }} onClick={() => setAvatar({ ...avatar, [key]: option })}>{avatar[key] === option && <Icon name="check" size={20} />}</button>)}</fieldset> : <label key={key}>{AVATAR_LABELS[key]}
+              <select aria-label={AVATAR_LABELS[key]} value={avatar[key]} onChange={(e) => setAvatar({ ...avatar, [key]: e.target.value })}>
+                {AVATAR_OPTIONS[key].map((o) => <option key={o} value={o}>{avatarOptionLabel(key, o)}</option>)}
               </select>
             </label>
           ))}
@@ -241,7 +244,7 @@ export default function OnboardingFlow() {
 
       {step === 4 && (
         <section>
-          <h1>Teams are better together</h1>
+          <h1 ref={headingRef} tabIndex={-1}>Better, if you like, together.</h1>
           <p>Join a group, start one, or go solo. You can always join one later.</p>
           <div>
             <button type="button" disabled={saving} onClick={() => finish("join")}>Join a group</button>

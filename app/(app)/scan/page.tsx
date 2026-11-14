@@ -1,4 +1,5 @@
-// Placeholder. Owner: @DLYK2006
+// Presentation demo; Daren replaces this wrapper with the real scan controller.
+import { DemoScan } from "@/components/scan/demo-scan";
 export default function Page() {
-  return <main className="p-6"><h1 className="text-xl font-semibold">Scan</h1></main>;
+  return <DemoScan />;
 }

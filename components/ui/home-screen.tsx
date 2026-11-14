@@ -1,0 +1,287 @@
+"use client";
+
+import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
+import type { DailyProgress, GroupDailyProgress, Profile } from "@/types";
+import { Icon } from "./icons";
+import { PageIntro, NutritionBar, SectionHeading } from "./primitives";
+import { PixelAvatar, RoomCharacter } from "@/components/avatar/pixel-avatar";
+import { AchievementDialog, type Achievement } from "./achievement";
+import { demoGroup, demoProfile, demoProgress, useDemo } from "./demo-context";
+
+export function HomeScreen({
+  profile,
+  progress,
+  group,
+}: {
+  profile: Profile;
+  progress: DailyProgress;
+  group: GroupDailyProgress | null;
+}) {
+  const [achievement, setAchievement] = useState<Achievement | null>(null);
+  const preview = () =>
+    setAchievement({
+      id: "preview-personal",
+      title: "Look at you grow!",
+      description:
+        "A little consistency deserves a little celebration. Your personal quest is complete.",
+      coins: 40,
+      preview: true,
+    });
+  return (
+    <main className="home-page">
+      <PageIntro
+        eyebrow={`YOUR EVERYDAY ADVENTURE · HI, ${profile.username.toUpperCase()}`}
+        title="A little progress. A little magic."
+        description="Nourish yourself. Tend your world. One meal at a time."
+        trailing={
+          <span className="streak-badge">
+            <Icon name="flame" size={24} />
+            <span>
+              <b>{profile.streak}-day streak</b>
+              <small>Look at you showing up.</small>
+            </span>
+          </span>
+        }
+      />
+      <div className="home-grid">
+        <div className="home-primary">
+          <section className="room-panel" aria-label="Your cozy room">
+            <Image
+              src="/dig-in/room.png"
+              alt="A sunlit woodland cottage with plants, books and a cozy green quilt"
+              fill
+              sizes="(max-width: 760px) 100vw, 700px"
+              priority
+              className="room-background"
+            />
+            <div className="room-topline">
+              <span className="room-name">
+                <Icon name="home" size={15} /> Your little corner
+              </span>
+              <span className="room-weather">
+                <Icon name="flame" size={17} /> {profile.streak}-day streak
+              </span>
+            </div>
+            <div className="room-bubble">
+              {progress.personal_goal_completed
+                ? "You did a lovely thing today!"
+                : "We’re growing at our own pace."}
+              <span>✦</span>
+            </div>
+            <RoomCharacter
+              config={profile.avatar}
+              equipped={profile.equipped}
+              mood={
+                progress.personal_goal_completed
+                  ? "goal_complete"
+                  : progress.meals_logged > 1
+                    ? "active"
+                    : progress.meals_logged === 1
+                      ? "progressing"
+                      : "ready"
+              }
+            />
+            <Link href="/shop" className="room-customize">
+              <Icon name="shirt" size={17} /> Make it yours{" "}
+              <Icon name="arrow" size={16} />
+            </Link>
+            <span className="room-corner-spark">✦</span>
+          </section>
+          <section className="panel nutrition-panel">
+            <SectionHeading
+              icon="bowl"
+              aside={
+                <span className="goal-badge">
+                  <Icon name="leaf" size={14} /> {profile.goal_type}
+                </span>
+              }
+            >
+              Today’s quest
+            </SectionHeading>
+            <p className="section-copy">
+              Every little bit fuels your adventure.
+            </p>
+            <NutritionBar
+              label="Calories"
+              value={progress.total_calories}
+              target={profile.calorie_target}
+              unit="kcal"
+              kind="calories"
+              icon="bowl"
+            />
+            <NutritionBar
+              label="Protein"
+              value={progress.total_protein_g}
+              target={profile.protein_target_g}
+              unit="g"
+              kind="protein"
+              icon="leaf"
+            />
+            <div className="macro-pair">
+              <div>
+                <Icon name="wheat" size={22} />
+                <span>Carbs</span>
+                <strong>
+                  {progress.total_carbs_g} <small>g</small>
+                </strong>
+              </div>
+              <div>
+                <Icon name="drop" size={21} />
+                <span>Fat</span>
+                <strong>
+                  {progress.total_fat_g} <small>g</small>
+                </strong>
+              </div>
+            </div>
+            <p className="nutrition-note">
+              Your goals are a guide. Progress has room to be human.
+            </p>
+          </section>
+        </div>
+        <aside className="home-sidebar">
+          <section className="panel quest-panel">
+            <SectionHeading
+              icon="spark"
+              aside={<span className="label-muted">DAILY QUESTS</span>}
+            >
+              Small wins
+            </SectionHeading>
+            <p className="section-copy">Good habits, little treasures.</p>
+            <div
+              className={`quest-item ${progress.meals_logged > 0 ? "is-complete" : ""}`}
+            >
+              <span className="quest-check">
+                {progress.meals_logged > 0 && <Icon name="check" size={16} />}
+              </span>
+              <div>
+                <strong>A nourishing start</strong>
+                <p>Log your first meal</p>
+              </div>
+              <span className="quest-reward">
+                <Icon name="coin" size={16} />
+                10
+              </span>
+            </div>
+            <div
+              className={`quest-item ${progress.protein_goal_completed ? "is-complete" : ""}`}
+            >
+              <span className="quest-check">
+                {progress.protein_goal_completed && (
+                  <Icon name="check" size={16} />
+                )}
+              </span>
+              <div>
+                <strong>A little stronger</strong>
+                <p>Reach your protein goal</p>
+              </div>
+              <span className="quest-reward">
+                <Icon name="coin" size={16} />
+                10
+              </span>
+            </div>
+            <div
+              className={`quest-item ${progress.personal_goal_completed ? "is-complete" : ""}`}
+            >
+              <span className="quest-check">
+                {progress.personal_goal_completed && (
+                  <Icon name="check" size={16} />
+                )}
+              </span>
+              <div>
+                <strong>Well nourished</strong>
+                <p>Complete your personal goals</p>
+              </div>
+              <span className="quest-reward">
+                <Icon name="coin" size={16} />
+                10
+              </span>
+            </div>
+            <div className="quest-footer">
+              <span>
+                {
+                  [
+                    progress.meals_logged > 0,
+                    progress.protein_goal_completed,
+                    progress.personal_goal_completed,
+                  ].filter(Boolean).length
+                }{" "}
+                of 3 little wins
+              </span>
+              <button
+                className="text-button"
+                onClick={preview}
+                aria-label="Preview celebration"
+              >
+                A moment of magic <Icon name="spark" size={15} />
+              </button>
+            </div>
+          </section>
+          <Link href="/groups" className="garden-preview panel">
+            <div className="garden-preview-art">
+              <Image
+                src="/dig-in/garden.png"
+                alt="A shared pixel garden with a cheerful sprout creature"
+                fill
+                sizes="400px"
+              />
+              <span className="garden-preview-tag">
+                <Icon name="users" size={15} /> BETTER TOGETHER
+              </span>
+            </div>
+            <div className="garden-preview-copy">
+              <div className="section-heading">
+                <h2>Your garden crew</h2>
+                <Icon name="arrow" size={21} />
+              </div>
+              <p>
+                {group
+                  ? `${group.completed_member_count} of ${group.eligible_member_count} personal goals complete. Your garden is growing!`
+                  : "A little company, a little extra magic. Groups are always optional."}
+              </p>
+              <div className="crew-bottom">
+                <div className="avatar-stack">
+                  {[0, 1, 2, 3].map((variant) => (
+                    <PixelAvatar key={variant} variant={variant} size={33} />
+                  ))}
+                </div>
+                <span className="bonus-mini">
+                  <Icon name="coin" size={16} /> Up to +30 bonus
+                </span>
+              </div>
+            </div>
+          </Link>
+          <div className="daily-note">
+            <Icon name="leaf" size={23} />
+            <p>
+              You don’t have to be perfect.
+              <br />
+              <strong>Just keep planting little seeds.</strong>
+            </p>
+          </div>
+        </aside>
+      </div>
+      <footer className="page-footer">
+        <span>
+          <Icon name="leaf" size={14} /> GROW AT YOUR OWN PACE
+        </span>
+        <span>Demo data · changes stay in this session</span>
+      </footer>
+      <AchievementDialog
+        achievement={achievement}
+        onClose={() => setAchievement(null)}
+      />
+    </main>
+  );
+}
+export function DemoHome() {
+  const { balance, equipped } = useDemo();
+  return (
+    <HomeScreen
+      profile={{ ...demoProfile, coin_balance: balance, equipped }}
+      progress={demoProgress}
+      group={demoGroup}
+    />
+  );
+}

@@ -1,2 +1,1 @@
-// Placeholder. Owner: @haojay1126
-export {};
+export { Garden } from './garden';
