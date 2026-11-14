@@ -35,11 +35,11 @@
 
 - [x] Read current repo, PRD, build plan, board, and ownership.
 - [x] Post presentation-only handoff request and ask for scaffold status (#6).
-- [ ] Generate and inspect original room and garden scenes, with no text baked into artwork; persist selected outputs and prompts.
-- [ ] Receive scaffold-ready announcement before coding. Jay-owned areas need no handoff; receive Daren's approval before editing onboarding or scan/results presentation.
-- [ ] Fetch fresh main, rebase issue branch, inspect package scripts, components, shared types, and call sites. Resolve exact component paths against scaffold and update this plan before edits.
-- [ ] Run baseline checks provided by scaffold; distinguish existing failures.
-- [ ] Commit only new design/art files, after board unread.
+- [x] Generate and inspect original room and garden scenes, with no text baked into artwork; persist selected outputs and prompts.
+- [x] Receive scaffold-ready announcement before coding. Lead cleared assigned folders on the board at 21:24 UTC. Jay-owned areas need no handoff; cross-owner edits remain pending Daren's approval.
+- [x] Fetch fresh main, rebase issue branch, inspect package scripts, components, shared types, and call sites. Scaffold matches planned app/component paths. Add scoped components/ui/dig-in.css via the owned root layout, components/ui/app-shell.tsx, components/ui/demo-context.tsx, components/ui/home-screen.tsx, components/ui/achievement.tsx, components/avatar/pixel-avatar.tsx and components/world/garden.tsx. No app/globals.css edits required.
+- [x] Run baseline checks provided by scaffold; lint passed. tsc before Next type generation reports missing LayoutProps in scaffold layouts; recheck after Next generation. Browser check uses temporary external Playwright installation, without changing app dependencies.
+- [x] Commit only new design/art files, after board unread.
 
 ## Task 2: Home, reusable presentation, navigation, and achievements
 
@@ -90,4 +90,4 @@
 
 ## Current status
 
-Design approved. Implementation is waiting on the team's scaffold announcement and presentation ownership handoffs. Plan paths reflect the committed build plan and must be reconciled with the actual scaffold before coding. Execution proceeds inline; no extra human approval is needed for the already approved design.
+Design approved. Scaffold announcement received and assigned-folder implementation started. Onboarding and scan/results ownership handoffs remain pending. Execution proceeds inline; no extra human approval is needed for the already approved design. All interactive state in the initial Jay-owned routes is explicitly demo-only; domain contracts remain unchanged.
