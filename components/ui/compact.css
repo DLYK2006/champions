@@ -1,0 +1,1173 @@
+.compact-app {
+  height: 100dvh;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.compact-app .app-header {
+  height: 64px;
+  flex-shrink: 0;
+}
+.compact-app .header-inner {
+  padding: 0 24px;
+  max-width: 1240px;
+}
+.compact-app .header-actions {
+  margin-left: auto;
+}
+.compact-app .brand {
+  font-size: 33px;
+}
+.compact-app .app-main {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  max-width: 1240px;
+  padding: 18px 24px;
+  overflow: hidden;
+}
+.compact-app.route-shop .app-main,
+.compact-app.route-other .app-main {
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+}
+.compact-app .bottom-nav {
+  position: static;
+  flex-shrink: 0;
+  backdrop-filter: none;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+.compact-app .nav-inner {
+  height: 72px;
+}
+.compact-app .nav-tab {
+  flex: 1;
+  max-width: 145px;
+  font-size: 11px;
+  color: #7b705d;
+  gap: 3px;
+}
+.compact-app .nav-icon {
+  height: 38px;
+  width: 52px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+}
+.compact-app .nav-tab.is-active {
+  color: #284b36;
+  font-weight: 750;
+}
+.compact-app .nav-tab.is-active .nav-icon {
+  background: #496c40;
+  color: #fff9e8;
+  border-color: #385631;
+  box-shadow: 0 2px 0 #2e4c29;
+}
+.compact-app .screen-title {
+  font-family: var(--font-pixel), monospace;
+  font-size: 29px;
+  font-weight: 550;
+  color: var(--forest);
+  line-height: 1.12;
+  margin: 0;
+}
+.compact-app .screen-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.compact-app .screen-title-row > .button {
+  padding: 8px 13px;
+}
+.compact-app .home-page {
+  height: 100%;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(300px, 1fr);
+  gap: 22px;
+}
+.compact-app.route-home .app-main {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+.compact-app.route-home .home-page {
+  height: auto;
+  flex: 1;
+  padding: 18px 24px;
+}
+.compact-app .room-panel {
+  min-height: 0;
+  height: 100%;
+  aspect-ratio: auto;
+  box-shadow: 0 3px 0 #dbc8aa;
+}
+.compact-app .room-character {
+  height: 58%;
+  width: 35%;
+  bottom: 7%;
+}
+.compact-app .room-bubble {
+  top: 20%;
+}
+.compact-app .room-weather {
+  display: flex;
+}
+.compact-app .room-name {
+  max-width: 65%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.compact-app .nutrition-panel {
+  align-self: center;
+  padding: 24px;
+}
+.compact-app .nutrition-panel .section-heading {
+  margin-bottom: 14px;
+}
+.compact-app .nutrition-row {
+  padding: 16px 0;
+}
+.compact-app .nutrition-label {
+  font-size: 14px;
+}
+.compact-app .nutrition-label > span {
+  font-size: 12px;
+}
+.compact-app .macro-pair {
+  margin-top: 17px;
+}
+.compact-app .macro-pair > div {
+  padding: 14px 12px;
+}
+.compact-app .scan-page,
+.compact-app .community-page,
+.compact-app .results-page {
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.compact-app .results-layout {
+  display: flex;
+  align-items: stretch;
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  width: min(100%, 850px);
+  align-self: center;
+}
+.compact-app .results-layout > section {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+.compact-app .meal-summary {
+  flex-shrink: 0;
+}
+.compact-app .meal-summary-heading {
+  margin: 0;
+  padding: 10px 14px 0;
+  justify-content: flex-start;
+  gap: 12px;
+}
+.results-thumbnail {
+  width: 36px;
+  height: 36px;
+  object-fit: cover;
+  border-radius: 4px;
+}
+.estimate-label {
+  color: #686347;
+  font-size: 12px;
+}
+.compact-app .result-macros {
+  margin: 12px;
+}
+.compact-app .result-macros > div {
+  gap: 5px;
+}
+.compact-app .result-macros strong {
+  font-size: 22px;
+}
+.compact-app .meal-type-buttons {
+  display: flex;
+  gap: 7px;
+  margin-top: 12px;
+  flex-shrink: 0;
+}
+.compact-app .meal-type-buttons .button {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 5px;
+  font-size: 11px;
+}
+.compact-app .food-list-heading {
+  margin: 12px 0 8px;
+  flex-shrink: 0;
+}
+.compact-app .food-list {
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 2px 3px 6px 0;
+  flex: 1;
+}
+.compact-app .food-card {
+  flex-shrink: 0;
+  padding: 12px;
+}
+.compact-app .food-card-bottom {
+  padding-top: 9px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+.compact-app .add-food {
+  flex-shrink: 0;
+  margin-top: 8px;
+  padding: 8px;
+  min-height: 40px;
+}
+.compact-app .confirm-log-bar {
+  position: static;
+  flex-shrink: 0;
+  margin: 0 auto;
+  padding: 0;
+  width: min(100%, 850px);
+  border: 0;
+  background: none;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+.compact-app .confirm-log-bar .button {
+  width: 100%;
+  margin: 0;
+}
+.compact-app .results-page > .field-error,
+.compact-app .results-page > .fine-print {
+  margin: 0;
+  flex-shrink: 0;
+}
+.compact-app .viewfinder-panel {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 850px;
+  align-self: center;
+}
+.compact-app .viewfinder {
+  flex: 1;
+  min-height: 0;
+}
+.compact-app .viewfinder-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  padding: 16px;
+}
+.compact-app .viewfinder-center > svg {
+  color: #647d4e;
+}
+.compact-app .viewfinder-center p {
+  font-family: var(--font-pixel), monospace;
+  font-size: 23px;
+  color: #526740;
+  margin: 0;
+}
+.compact-app .capture-controls {
+  flex-shrink: 0;
+  padding: 17px;
+}
+.compact-app .capture-secondary {
+  min-height: 48px;
+  font-size: 11px;
+  color: #586e41;
+}
+.compact-app .scan-error {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  padding: 12px 15px;
+}
+.compact-app .scan-error p {
+  margin: 0;
+  font-size: 12px;
+  color: #845b3f;
+}
+.compact-app .scan-error .form-actions {
+  flex-shrink: 0;
+  margin: 0;
+}
+.compact-app .scan-error .button {
+  padding: 8px 12px;
+}
+.compact-app .scan-demo-button {
+  flex-shrink: 0;
+  margin: 0;
+  min-height: 30px;
+}
+.compact-app .community-page > .garden-scene {
+  flex: 1;
+  width: 100%;
+  min-height: 180px;
+  aspect-ratio: auto;
+}
+.compact-app .garden-scene > img {
+  object-position: center 54%;
+}
+.compact-app .garden-label {
+  max-width: calc(100% - 30px);
+  font-size: 13px;
+  padding: 8px 12px;
+  z-index: 10;
+  color: #435c32;
+}
+.compact-app .group-progress-panel {
+  flex-shrink: 0;
+  padding: 15px 20px 12px;
+}
+.compact-group-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 11px;
+  color: #68784f;
+  font-size: 13px;
+  flex-wrap: wrap;
+}
+.compact-group-summary > span > strong {
+  color: #526d3b;
+  font-size: 22px;
+  font-family: var(--font-pixel), monospace;
+}
+.compact-group-summary .code-pill {
+  min-height: 36px;
+  padding: 8px 10px;
+}
+.compact-bonus-tiers {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  gap: 10px;
+  color: #7b705d;
+  font-size: 11px;
+}
+.compact-bonus-tiers > span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.compact-bonus-tiers > span.reached {
+  color: #436431;
+  font-weight: 650;
+}
+.compact-app .solo-actions {
+  flex-shrink: 0;
+  flex-direction: row;
+  gap: 9px;
+}
+.compact-app .solo-actions > .text-button {
+  padding: 0 8px;
+}
+.compact-app .form-panel {
+  width: min(100%, 440px);
+  margin: auto;
+  flex-shrink: 1;
+  overflow-y: auto;
+}
+.compact-app .shop-page {
+  min-height: 100%;
+}
+.compact-app .shop-page > .screen-title-row {
+  margin-bottom: 18px;
+}
+.compact-app .shop-grid {
+  grid-template-columns: 280px minmax(0, 1fr);
+}
+.compact-app .wardrobe-panel {
+  padding: 15px;
+  top: 0;
+}
+.compact-app .wardrobe-stage {
+  margin: 0;
+  height: 320px;
+}
+.compact-app .shop-preview-selection {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 12px;
+}
+.compact-app .shop-preview-selection .text-button {
+  font-size: 10px;
+}
+.compact-app .shop-item-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.compact-app .shop-card {
+  padding: 15px;
+}
+.compact-app .shop-item-preview {
+  height: 175px;
+  background: #e8eedb;
+  background-image:
+    linear-gradient(
+      45deg,
+      #cad6b34d 25%,
+      transparent 25%,
+      transparent 75%,
+      #cad6b34d 75%
+    ),
+    linear-gradient(
+      45deg,
+      #cad6b34d 25%,
+      transparent 25%,
+      transparent 75%,
+      #cad6b34d 75%
+    );
+  background-size: 20px 20px;
+  background-position:
+    0 0,
+    10px 10px;
+}
+.compact-app .item-crown {
+  background-color: #f6ebca;
+}
+.compact-app .item-sunglasses {
+  background-color: #ece6da;
+}
+.cosmetic-art {
+  image-rendering: pixelated;
+  filter: drop-shadow(5px 6px 0 #4b543127);
+  transition: transform 0.18s;
+}
+.compact-app .shop-item-preview:hover .cosmetic-art {
+  transform: translateY(-4px) rotate(-3deg);
+}
+.compact-app .shop-item-name {
+  font-family: var(--font-pixel), monospace;
+  color: #435b35;
+  font-size: 22px;
+  font-weight: 550;
+  margin: 15px 0;
+}
+.compact-app .shop-card > .button {
+  font-size: 12px;
+}
+.compact-app .shop-status {
+  margin-top: 12px;
+  min-height: 20px;
+}
+.compact-app .shop-tabs {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  margin-bottom: 16px;
+}
+/* CSS 3D cuboids: original block geometry, no canvas or game-engine dependency. */
+.garden-walker {
+  position: absolute;
+  width: 48px;
+  height: 76px;
+  z-index: 5;
+  perspective: 420px;
+  animation-duration: 20s;
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+}
+.walker-0 {
+  left: 17%;
+  top: calc(30px + (100% - 114px) * 0.53);
+  animation-name: garden-walk-a;
+}
+.walker-1 {
+  left: 70%;
+  top: calc(30px + (100% - 114px) * 0.58);
+  animation-name: garden-walk-b;
+}
+.walker-2 {
+  left: 26%;
+  top: calc(30px + (100% - 114px) * 0.72);
+  animation-name: garden-walk-c;
+}
+.walker-3 {
+  left: 68%;
+  top: calc(30px + (100% - 114px) * 0.76);
+  animation-name: garden-walk-d;
+}
+.walker-name {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 3px);
+  transform: translateX(-50%);
+  max-width: 100px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 4px 7px;
+  border: 1px solid #bfc99b;
+  background: #fff9e6ed;
+  border-radius: 3px;
+  color: #3d5732;
+  font-size: 11px;
+  font-weight: 650;
+  box-shadow: 1px 2px 0 #3e4d2e20;
+  z-index: 12;
+}
+.walker-name > span {
+  color: #416d35;
+}
+.walker-speech {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 34px);
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: 130px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 7px 9px;
+  border: 1px solid #8c9e69;
+  border-radius: 5px;
+  background: #fffaf0;
+  color: #405335;
+  font-family: var(--font-pixel), monospace;
+  font-size: 14px;
+  opacity: 0;
+  animation: garden-talk 20s linear infinite;
+  z-index: 15;
+  pointer-events: none;
+}
+.walker-1 .walker-speech,
+.walker-3 .walker-speech {
+  animation-delay: 2s;
+}
+.voxel-character {
+  display: block;
+  position: relative;
+  width: 44px;
+  height: 72px;
+  perspective: 420px;
+  transform-style: preserve-3d;
+}
+.voxel-character:after {
+  content: "";
+  position: absolute;
+  width: 34px;
+  height: 11px;
+  background: #32452e40;
+  border-radius: 50%;
+  left: 8px;
+  top: 66px;
+  filter: blur(1px);
+}
+.voxel-rig {
+  display: block;
+  position: absolute;
+  width: 44px;
+  height: 72px;
+  transform-style: preserve-3d;
+  transform: rotateX(-10deg) rotateY(-24deg);
+  animation: voxel-turn 20s linear infinite;
+}
+.walker-1 .voxel-rig,
+.walker-3 .voxel-rig {
+  animation-name: voxel-turn-other;
+}
+.voxel-block {
+  position: absolute;
+  display: block;
+  left: var(--x);
+  top: var(--y);
+  width: var(--w);
+  height: var(--h);
+  transform-style: preserve-3d;
+}
+.block-face {
+  position: absolute;
+  display: block;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  background: var(--tone);
+}
+.face-front {
+  transform: translateZ(calc(var(--d) / 2));
+  background: var(--tone);
+}
+.face-back {
+  transform: rotateY(180deg) translateZ(calc(var(--d) / 2));
+  background: color-mix(in srgb, var(--tone), black 24%);
+}
+.face-right,
+.face-left {
+  width: var(--d);
+  left: calc((var(--w) - var(--d)) / 2);
+  background: color-mix(in srgb, var(--tone), black 18%);
+}
+.face-right {
+  transform: rotateY(90deg) translateZ(calc(var(--w) / 2));
+}
+.face-left {
+  transform: rotateY(-90deg) translateZ(calc(var(--w) / 2));
+}
+.face-top,
+.face-bottom {
+  height: var(--d);
+  top: calc((var(--h) - var(--d)) / 2);
+  background: color-mix(in srgb, var(--tone), white 16%);
+}
+.face-top {
+  transform: rotateX(90deg) translateZ(calc(var(--h) / 2));
+}
+.face-bottom {
+  transform: rotateX(-90deg) translateZ(calc(var(--h) / 2));
+  background: color-mix(in srgb, var(--tone), black 30%);
+}
+.voxel-eyes {
+  position: absolute;
+  top: 9px;
+  left: 5px;
+  width: 3px;
+  height: 4px;
+  background: #302921;
+  box-shadow: 11px 0 #302921;
+}
+.voxel-mouth {
+  position: absolute;
+  top: 17px;
+  left: 9px;
+  width: 7px;
+  height: 2px;
+  background: #8b503b;
+}
+.voxel-character[data-eyes="happy"] .voxel-eyes {
+  height: 2px;
+}
+.voxel-character[data-eyes="wink"] .voxel-eyes {
+  box-shadow: 11px 1px #302921;
+  height: 2px;
+}
+.has-glasses .voxel-eyes {
+  left: 2px;
+  top: 8px;
+  width: 9px;
+  height: 6px;
+  background: #283c32;
+  box-shadow: 11px 0 #283c32;
+  border-top: 2px solid #b79a5d;
+}
+.voxel-character[data-mouth="twinkle"] .voxel-mouth {
+  height: 4px;
+}
+.voxel-hair .face-front {
+  background-image: repeating-linear-gradient(
+    90deg,
+    transparent 0,
+    transparent 5px,
+    #00000015 5px,
+    #00000015 7px
+  );
+}
+.voxel-shirt-detail {
+  position: absolute;
+  width: 4px;
+  height: 5px;
+  background: #dfbc62;
+  right: 3px;
+  top: 6px;
+}
+.has-hoodie .voxel-body .face-front:after {
+  content: "";
+  position: absolute;
+  width: 2px;
+  height: 8px;
+  top: 1px;
+  left: 5px;
+  background: #e5dfb7;
+  box-shadow: 6px 0 #e5dfb7;
+}
+.voxel-leg-left,
+.voxel-leg-right,
+.voxel-arm-left,
+.voxel-arm-right {
+  transform-origin: 50% 0;
+  --step: 19deg;
+  animation: voxel-step 20s linear infinite;
+}
+.voxel-leg-right,
+.voxel-arm-left {
+  --step: -19deg;
+}
+.voxel-arm-left .face-front:after,
+.voxel-arm-right .face-front:after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  height: 6px;
+  width: 100%;
+  background: var(--skin, #d6a578);
+}
+.voxel-leg-left .face-front:after,
+.voxel-leg-right .face-front:after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  height: 5px;
+  width: 100%;
+  background: #efe4c7;
+  border-bottom: 2px solid #8c8875;
+}
+.voxel-crown .face-front {
+  clip-path: polygon(
+    0 0,
+    20% 40%,
+    35% 0,
+    50% 40%,
+    65% 0,
+    80% 40%,
+    100% 0,
+    100% 100%,
+    0 100%
+  );
+}
+@keyframes garden-walk-a {
+  0%,
+  100% {
+    left: 17%;
+    top: calc(30px + (100% - 114px) * 0.53);
+  }
+  33%,
+  62% {
+    left: 34%;
+    top: calc(30px + (100% - 114px) * 0.56);
+  }
+  85% {
+    left: 22%;
+    top: calc(30px + (100% - 114px) * 0.62);
+  }
+}
+@keyframes garden-walk-b {
+  0%,
+  100% {
+    left: 70%;
+    top: calc(30px + (100% - 114px) * 0.58);
+  }
+  33%,
+  62% {
+    left: 59%;
+    top: calc(30px + (100% - 114px) * 0.56);
+  }
+  85% {
+    left: 69%;
+    top: calc(30px + (100% - 114px) * 0.64);
+  }
+}
+@keyframes garden-walk-c {
+  0%,
+  100% {
+    left: 26%;
+    top: calc(30px + (100% - 114px) * 0.72);
+  }
+  33%,
+  62% {
+    left: 32%;
+    top: calc(30px + (100% - 114px) * 0.76);
+  }
+  85% {
+    left: 16%;
+    top: calc(30px + (100% - 114px) * 0.74);
+  }
+}
+@keyframes garden-walk-d {
+  0%,
+  100% {
+    left: 68%;
+    top: calc(30px + (100% - 114px) * 0.76);
+  }
+  33%,
+  62% {
+    left: 59%;
+    top: calc(30px + (100% - 114px) * 0.76);
+  }
+  85% {
+    left: 71%;
+    top: calc(30px + (100% - 114px) * 0.69);
+  }
+}
+@keyframes garden-talk {
+  0%,
+  33%,
+  63%,
+  100% {
+    opacity: 0;
+  }
+  37%,
+  55% {
+    opacity: 1;
+  }
+}
+@keyframes voxel-turn {
+  0%,
+  31% {
+    transform: rotateX(-10deg) rotateY(-24deg);
+  }
+  34%,
+  62% {
+    transform: rotateX(-10deg) rotateY(24deg);
+  }
+  65%,
+  98% {
+    transform: rotateX(-10deg) rotateY(-24deg);
+  }
+}
+@keyframes voxel-turn-other {
+  0%,
+  31% {
+    transform: rotateX(-10deg) rotateY(24deg);
+  }
+  34%,
+  62% {
+    transform: rotateX(-10deg) rotateY(-24deg);
+  }
+  65%,
+  98% {
+    transform: rotateX(-10deg) rotateY(24deg);
+  }
+}
+@keyframes voxel-step {
+  0%,
+  10%,
+  20%,
+  30%,
+  70%,
+  80%,
+  90%,
+  100% {
+    transform: rotateX(var(--step));
+  }
+  5%,
+  15%,
+  25%,
+  65%,
+  75%,
+  85%,
+  95% {
+    transform: rotateX(calc(-1 * var(--step)));
+  }
+  33%,
+  62% {
+    transform: rotateX(0deg);
+  }
+}
+@media (max-width: 1000px) {
+  .compact-app .shop-item-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .compact-app .shop-grid {
+    grid-template-columns: 240px minmax(0, 1fr);
+  }
+}
+@media (max-width: 760px) {
+  .compact-app .app-header {
+    height: 58px;
+  }
+  .compact-app .header-inner {
+    padding: 0 16px;
+  }
+  .compact-app .brand {
+    font-size: 30px;
+  }
+  .compact-app .app-main {
+    padding: 14px;
+  }
+  .compact-app .nav-inner {
+    height: 68px;
+  }
+  .compact-app .nav-tab {
+    font-size: 10px;
+  }
+  .compact-app .nav-icon {
+    height: 36px;
+    width: 48px;
+  }
+  .compact-app .screen-title {
+    font-size: 26px;
+  }
+  .compact-app .home-page {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(0, 1fr) auto;
+    gap: 13px;
+  }
+  .compact-app.route-home .home-page {
+    padding: 14px;
+  }
+  .compact-app .room-character {
+    height: 62%;
+    width: 43%;
+    bottom: 12%;
+  }
+  .compact-app .room-topline {
+    inset: 10px 10px auto;
+  }
+  .compact-app .room-weather {
+    font-size: 9px;
+  }
+  .compact-app .room-name {
+    font-size: 10px;
+  }
+  .compact-app .nutrition-panel {
+    padding: 15px;
+    align-self: stretch;
+  }
+  .compact-app .nutrition-panel .section-heading {
+    margin-bottom: 4px;
+  }
+  .compact-app .nutrition-panel .section-heading h2 {
+    font-size: 23px;
+  }
+  .compact-app .nutrition-row {
+    padding: 10px 0;
+    gap: 8px;
+  }
+  .compact-app .nutrition-label {
+    font-size: 13px;
+  }
+  .compact-app .nutrition-label > span {
+    font-size: 11px;
+  }
+  .compact-app .macro-pair {
+    margin-top: 9px;
+    gap: 10px;
+  }
+  .compact-app .macro-pair > div {
+    padding: 10px;
+    font-size: 11px;
+  }
+  .compact-app .room-customize {
+    padding: 7px 9px;
+    min-height: 40px;
+  }
+  .compact-app .scan-page,
+  .compact-app .community-page {
+    gap: 12px;
+  }
+  .compact-app .capture-controls {
+    padding: 15px 10px;
+  }
+  .compact-app .viewfinder-center p {
+    font-size: 21px;
+  }
+  .compact-app .scan-error {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 10px 12px;
+  }
+  .compact-app .scan-error .form-actions {
+    max-width: none;
+  }
+  .compact-app .scan-error p {
+    font-size: 11px;
+  }
+  .compact-app .screen-title-row > .button {
+    font-size: 10px;
+    min-height: 40px;
+  }
+  .compact-app .community-page .screen-title {
+    max-width: 255px;
+    font-size: 25px;
+  }
+  .compact-app .community-page > .garden-scene {
+    min-height: 160px;
+  }
+  .compact-app .garden-label {
+    top: 10px;
+    left: 10px;
+    font-size: 12px;
+  }
+  .compact-app .group-progress-panel {
+    padding: 12px;
+  }
+  .compact-group-summary {
+    font-size: 11px;
+    gap: 7px;
+    margin-bottom: 9px;
+  }
+  .compact-group-summary > span > strong {
+    font-size: 21px;
+  }
+  .compact-group-summary .bonus-mini {
+    font-size: 10px;
+  }
+  .compact-group-summary .code-pill {
+    font-size: 9px;
+    padding: 7px;
+    min-height: 36px;
+    gap: 5px;
+  }
+  .compact-group-summary .code-pill b {
+    letter-spacing: 1px;
+  }
+  .compact-bonus-tiers {
+    font-size: 10px;
+    margin-top: 9px;
+    gap: 7px;
+  }
+  .compact-app .solo-actions {
+    flex-wrap: wrap;
+  }
+  .compact-app .solo-actions > .button {
+    flex: 1;
+    width: auto;
+    padding: 10px 8px;
+    font-size: 11px;
+  }
+  .walker-name {
+    font-size: 10px;
+    max-width: 80px;
+  }
+  .walker-speech {
+    font-size: 12px;
+    max-width: 105px;
+  }
+  .garden-walker {
+    transform: scale(0.9);
+    transform-origin: 50% 100%;
+  }
+  .compact-app .shop-page > .screen-title-row {
+    margin-bottom: 13px;
+  }
+  .compact-app .shop-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  .compact-app .wardrobe-panel {
+    position: static;
+    padding: 10px;
+  }
+  .compact-app .wardrobe-stage {
+    height: 170px;
+    max-width: 260px;
+    margin: auto;
+  }
+  .compact-app .wardrobe-stage .room-character {
+    height: 95%;
+    width: 60%;
+    bottom: 4%;
+  }
+  .compact-app .shop-item-grid {
+    gap: 12px;
+  }
+  .compact-app .shop-card {
+    padding: 12px;
+  }
+  .compact-app .shop-item-preview {
+    height: 150px;
+    min-height: 130px;
+  }
+  .compact-app .shop-item-name {
+    font-size: 21px;
+    margin: 12px 0;
+  }
+  .compact-app .shop-preview-selection {
+    font-size: 11px;
+  }
+  .compact-app .shop-tabs button {
+    font-size: 11px;
+  }
+}
+@media (max-height: 650px) {
+  .compact-app .app-main {
+    padding: 9px 12px;
+  }
+  .compact-app .home-page {
+    gap: 9px;
+  }
+  .compact-app .nutrition-panel {
+    padding: 11px 14px;
+  }
+  .compact-app .nutrition-row {
+    padding: 7px 0;
+  }
+  .compact-app .macro-pair > div {
+    padding: 7px 10px;
+  }
+  .compact-app .room-character {
+    height: 67%;
+  }
+  .compact-app .community-page > .garden-scene {
+    min-height: 100px;
+  }
+  .garden-walker {
+    transform: scale(0.75);
+    transform-origin: 50% 100%;
+  }
+}
+/* Keep content reachable in landscape and at browser zoom. */
+@media (max-height: 500px) {
+  .compact-app.route-home .home-page {
+    overflow-y: auto;
+    padding: 9px 12px;
+    grid-template-rows: minmax(180px, 1fr) auto;
+  }
+  .compact-app .results-layout > section {
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding-right: 3px;
+  }
+  .compact-app .food-list {
+    flex: 0 0 auto;
+    overflow: visible;
+  }
+  .compact-app .results-page,
+  .compact-app .community-page {
+    gap: 8px;
+  }
+  .compact-app .community-page .screen-title {
+    font-size: 23px;
+  }
+  .compact-app .group-progress-panel {
+    padding: 9px;
+  }
+}
+@media (max-height: 500px) and (min-width: 560px) {
+  .compact-app.route-home .home-page {
+    grid-template-columns: minmax(0, 1fr) minmax(260px, 1fr);
+    grid-template-rows: minmax(180px, 1fr);
+    gap: 12px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .garden-walker,
+  .voxel-rig,
+  .voxel-block,
+  .walker-speech {
+    animation: none !important;
+  }
+  .walker-speech {
+    display: none;
+  }
+  .cosmetic-art {
+    transition: none;
+  }
+}
+
+.compact-app .home-page .adventurer-art {
+  object-position: center bottom;
+}

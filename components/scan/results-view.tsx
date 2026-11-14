@@ -3,7 +3,6 @@
 import { useRef, useState } from "react";
 import type { MealType, ScanItem, ScanResult } from "@/types";
 import { Icon } from "@/components/ui/icons";
-import { PageIntro } from "@/components/ui/primitives";
 
 export interface ResultsViewProps {
   result: ScanResult;
@@ -60,7 +59,7 @@ export function ResultsView({
       setSaveError(
         err instanceof Error
           ? err.message
-          : "Your meal wasn’t saved. Your edits are still here; try again.",
+          : "Meal not saved. Your edits are kept; try again.",
       );
     } finally {
       inFlight.current = false;
@@ -69,69 +68,26 @@ export function ResultsView({
   }
   return (
     <main className="results-page">
-      <button
-        className="text-button back-link"
-        onClick={onBack}
-        disabled={busy}
-      >
-        <Icon name="back" size={17} /> Back to your plate
-      </button>
-      <PageIntro
-        eyebrow="A LITTLE CHECK BEFORE WE DIG IN"
-        title="Review your meal."
-        description="Here’s our best estimate. You know your plate best—make it yours."
-      />
+      <div className="screen-title-row">
+        <h1 className="screen-title">Review meal</h1>
+        <button className="text-button" onClick={onBack} disabled={busy}>
+          <Icon name="back" size={17} /> Back
+        </button>
+      </div>
       <div className="results-layout">
         <section>
           <div className="meal-summary panel">
-            <div
-              className="meal-photo"
-              style={
-                previewUrl
-                  ? { backgroundImage: `url(${JSON.stringify(previewUrl)})` }
-                  : undefined
-              }
-            >
-              {!previewUrl && (
-                <div
-                  className="pixel-meal"
-                  aria-label="Illustrated rice bowl"
-                  role="img"
-                >
-                  <span className="meal-rice" />
-                  <span className="meal-leaf leaf-a" />
-                  <span className="meal-leaf leaf-b" />
-                  <span className="meal-protein" />
-                  <span className="meal-bowl" />
-                  <span className="meal-chopstick" />
-                </div>
-              )}
-              <span className="meal-estimate-badge">
-                <Icon name="spark" size={14} />
-                {previewUrl ? "AI ESTIMATE" : "MEAL ESTIMATE"}
-              </span>
-            </div>
             <div className="meal-summary-heading">
-              <div>
-                <p className="eyebrow">YOUR NOURISHMENT</p>
-                <h2>Your meal, estimated.</h2>
-              </div>
-              <label className="meal-select">
-                <span className="sr-only">Meal type</span>
-                <select
-                  value={mealType}
-                  onChange={(event) =>
-                    onMealType(event.target.value as MealType)
-                  }
-                  disabled={busy}
-                >
-                  {["breakfast", "lunch", "dinner", "snack"].map((meal) => (
-                    <option key={meal} value={meal}>
-                      {meal[0].toUpperCase() + meal.slice(1)}
-                    </option>
-                  ))}
-                </select>
-              </label>
+              {previewUrl && (
+                // Preview comes from the owner's local camera/file controller.
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  className="results-thumbnail"
+                  src={previewUrl}
+                  alt="Your meal"
+                />
+              )}
+              <span className="estimate-label">Nutrition estimate</span>
             </div>
             <div className="result-macros">
               {[
@@ -173,11 +129,30 @@ export function ResultsView({
               ))}
             </div>
           </div>
+          <div
+            className="meal-type-buttons"
+            role="group"
+            aria-label="Meal type"
+          >
+            {(["breakfast", "lunch", "dinner", "snack"] as MealType[]).map(
+              (meal) => (
+                <button
+                  key={meal}
+                  className={`button ${mealType === meal ? "button-primary" : "button-soft"}`}
+                  aria-pressed={mealType === meal}
+                  onClick={() => onMealType(meal)}
+                  disabled={busy}
+                >
+                  {meal[0].toUpperCase() + meal.slice(1)}
+                </button>
+              ),
+            )}
+          </div>
           <div className="food-list-heading">
-            <h2>What’s on your plate</h2>
+            <h2>Foods</h2>
             <span>
               {result.items.length}{" "}
-              {result.items.length === 1 ? "food" : "foods"} found
+              {result.items.length === 1 ? "food" : "foods"}
             </span>
           </div>
           <div className="food-list">
@@ -229,7 +204,7 @@ export function ResultsView({
                     {item.confidence === "low"
                       ? "Check portion"
                       : item.confidence === "medium"
-                        ? "Worth a quick check"
+                        ? "Check estimate"
                         : "Good estimate"}
                   </span>
                 </div>
@@ -305,9 +280,7 @@ export function ResultsView({
             ))}
           </div>
           {!result.items.length && (
-            <p className="fine-print">
-              Nothing on this plate yet. Add a food to keep going.
-            </p>
+            <p className="fine-print">Add a food to continue.</p>
           )}
           <button
             className="add-food"
@@ -317,51 +290,17 @@ export function ResultsView({
             }}
             disabled={busy}
           >
-            <Icon name="plus" size={18} /> Add a missing food
+            <Icon name="plus" size={18} /> Add food
           </button>
         </section>
-        <aside className="results-aside">
-          <section className="panel estimate-note">
-            <span className="estimate-note-icon">
-              <Icon name="leaf" size={29} />
-            </span>
-            <h2>
-              A helpful estimate.
-              <br />
-              Your final say.
-            </h2>
-            <p>
-              Photos don’t tell the whole story. Portions, recipes, and hidden
-              ingredients can vary.
-            </p>
-            <p>
-              Take a moment to check your foods and amounts. You can edit every
-              number.
-            </p>
-            <span className="confidence-legend">
-              <Icon name="check" size={15} />
-              Nothing is logged until you confirm.
-            </span>
-          </section>
-          {result.coach_tip && (
-            <section className="panel coach-note">
-              <p className="eyebrow">A LITTLE FOOD FOR THOUGHT</p>
-              <p>{result.coach_tip}</p>
-            </section>
-          )}
-        </aside>
       </div>
       <div className="confirm-log-bar">
-        <div>
-          <Icon name="leaf" size={18} />
-          <span>Your plate. Your pace.</span>
-        </div>
         <button
           className="button button-primary"
           onClick={confirm}
           disabled={busy || invalid}
         >
-          {busy ? "Saving your meal…" : "Confirm log"}
+          {busy ? "Saving…" : "Confirm log"}
           <Icon name="check" size={19} />
         </button>
       </div>
