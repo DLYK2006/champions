@@ -1,4 +1,4 @@
-import { DemoShop } from "@/components/ui/shop-screen";
+import { ShopController } from "@/components/shop";
 export default function Page() {
-  return <DemoShop />;
+  return <ShopController />;
 }
