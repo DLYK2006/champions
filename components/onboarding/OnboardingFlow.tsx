@@ -134,7 +134,15 @@ export default function OnboardingFlow() {
     }
     const { error } = await supabase.from("profiles").insert({ id: user.id, username, avatar, ...values });
     if (error) {
-      setSaveError(error.code === "23505" ? "That username is taken. Go back and pick another." : "Couldn't save your profile. Try again.");
+      if (error.code === "23505" && /username/i.test(error.message)) {
+        setSaveError("That username is taken. Go back and pick another.");
+        return false;
+      }
+      if (error.code === "23505") { // profiles_pkey: this account is already onboarded, carry on with it
+        setProfileSaved(true);
+        return true;
+      }
+      setSaveError("Couldn't save your profile. Try again.");
       return false;
     }
     setProfileSaved(true);

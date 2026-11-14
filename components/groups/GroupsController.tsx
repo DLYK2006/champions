@@ -6,11 +6,22 @@
 import { useState } from "react";
 import { CommunityScreen } from "../ui/community-screen";
 import { createGroup, joinGroup, leaveGroup, useGroupLive } from "../../lib/groups";
+import { RequireProfile } from "../auth";
 
 const MAX_NAME = 30; // groups.name check in 0002_groups.sql
 const DEFAULT_BADGE = "leaf"; // matches the badge on Jay's demo garden
 
+// Signed-out or not-yet-onboarded visitors are sent to /onboarding before any group data is requested
+// (the group functions are not callable without a session).
 export default function GroupsController() {
+  return (
+    <RequireProfile>
+      <GroupsView />
+    </RequireProfile>
+  );
+}
+
+function GroupsView() {
   const { status, loading, error, refresh } = useGroupLive();
   const [notice, setNotice] = useState<string | null>(null);
 

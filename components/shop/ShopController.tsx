@@ -5,8 +5,18 @@
 import { useCallback, useEffect, useState } from "react";
 import { ShopScreen, demoShopItems } from "../ui/shop-screen";
 import { buyItem, equipItem, loadShop, nextEquipState, type ShopState } from "../../lib/shop";
+import { RequireProfile } from "../auth";
 
+// Signed-out or not-yet-onboarded visitors are sent to /onboarding before any shop data is requested.
 export default function ShopController() {
+  return (
+    <RequireProfile>
+      <ShopView />
+    </RequireProfile>
+  );
+}
+
+function ShopView() {
   const [state, setState] = useState<ShopState | null>(null);
   const [error, setError] = useState<string | null>(null);
 

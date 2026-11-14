@@ -14,6 +14,8 @@ const FRIENDLY: Record<string, string> = {
 };
 
 function fail(message: string): never {
+  // Without a session Postgres says "permission denied for function ..."; never show that raw.
+  if (/permission denied/i.test(message)) throw new Error(FRIENDLY["not signed in"]);
   throw new Error(FRIENDLY[message] ?? message);
 }
 
