@@ -58,10 +58,10 @@ returns jsonb language sql immutable
 as $$ select jsonb_build_object('id', g.id, 'name', g.name, 'badge', g.badge,
                                 'invite_code', g.invite_code, 'creator_id', g.creator_id) $$;
 
--- 60% of members done pays tier 10, 80% pays 20, everyone pays 30.
+-- 60% of members done pays tier 10, 80% pays 20, everyone pays 30. Solo groups earn nothing (groups are 2 to 4).
 create function public.group_tier(p_done int, p_total int)
 returns int language sql immutable
-as $$ select case when p_total <= 0 then 0
+as $$ select case when p_total < 2 then 0
                   when p_done >= p_total then 30
                   when p_done * 100 >= 80 * p_total then 20
                   when p_done * 100 >= 60 * p_total then 10

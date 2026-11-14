@@ -171,6 +171,7 @@ await t("tier thresholds", async () => {
   assert.deepEqual([await tier(2, 4), await tier(3, 4), await tier(4, 4)], [0, 10, 30]);
   assert.deepEqual([await tier(3, 5), await tier(4, 5), await tier(5, 5)], [10, 20, 30]);
   assert.equal(await tier(0, 0), 0);
+  assert.equal(await tier(1, 1), 0); // solo group earns no group bonus
 });
 await t("creator leaves: ownership transfers; last member leaves: group deleted", async () => {
   await rpc("a", "leave_group");
