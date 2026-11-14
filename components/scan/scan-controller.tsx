@@ -1,7 +1,8 @@
 "use client";
 // Real scan flow: photo -> /api/scan -> editable results -> log_meal. Owner: @DLYK2006 (views by @haojay1126).
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Link from "next/link";
 import type { Confidence, LogMealResponse, MealType, ScanItem } from "@/types";
 import { createClient } from "@/lib/supabase/client";
 import { sumMacros } from "@/lib/scan";
@@ -25,6 +26,11 @@ export function ScanController() {
   const [mealType, setMealType] = useState<MealType>("lunch");
   const [eventId, setEventId] = useState("");
   const [achievement, setAchievement] = useState<Achievement | null>(null);
+  const [signedIn, setSignedIn] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    createClient().auth.getSession().then(({ data }) => setSignedIn(!!data.session));
+  }, []);
 
   function showResults(next: ScanItem[], confidence: Confidence, tip: string | null) {
     setItems(next);
@@ -47,7 +53,7 @@ export function ScanController() {
     setView("scanning");
     try {
       const { data } = await createClient().auth.getSession();
-      if (!data.session) throw new Error("Finish onboarding to sign in before scanning.");
+      if (!data.session) throw new Error("Set up your profile first (link above), then scan.");
       const res = await fetch("/api/scan", {
         method: "POST",
         headers: { authorization: `Bearer ${data.session.access_token}`, "content-type": "application/json" },
@@ -80,6 +86,11 @@ export function ScanController() {
 
   return (
     <>
+      {signedIn === false && (
+        <p className="scan-demo-notice" role="status">
+          You need a profile before scanning. <Link href="/onboarding">Set up your profile →</Link>
+        </p>
+      )}
       {view === "results" ? (
         <ResultsView
           result={{ items, total: sumMacros(items), overall_confidence: overall, coach_tip: coachTip }}
