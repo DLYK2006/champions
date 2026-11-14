@@ -40,6 +40,7 @@ Fill this in at kickoff so every agent knows whose files are whose.
 | Food scan: camera page, results card, OpenAI vision route, meal coach tip | @DLYK2006 | `app/(app)/scan/`, `components/scan/`, `lib/scan/`, `app/api/scan/` |
 | Backend core: schema, log_meal + coins, shop RPCs, seed, shared types, Supabase clients (tentative) | @DLYK2006 | `supabase/migrations/0001_core.sql`, `supabase/seed.sql`, `lib/supabase/`, `lib/api/`, `types/` |
 | Groups logic: invite codes, completion %, group bonus, realtime hook (P0) | @joshuatsou123 | `supabase/migrations/0002_groups.sql`, `lib/groups/` |
+| Shop controller | @joshuatsou123 | `lib/shop/`, `components/shop/` |
 
 **UI styling (decided Nov 14):** @haojay1126 leads the visual design and also styles the scan/results and onboarding screens (`app/(app)/scan/`, `components/scan/`, `app/onboarding/`, `components/onboarding/`), presentation only. Logic stays with the owners above: `lib/scan/` and `app/api/scan/` (@DLYK2006), `lib/targets/` and form validation (@joshuatsou123). Owners build with plain markup first; check on the board before restyling a file someone else is editing.
 
