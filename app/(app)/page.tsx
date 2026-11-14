@@ -1,4 +1,4 @@
-import { DemoHome } from "@/components/ui/home-screen";
+import { HomeController } from "@/components/home";
 export default function Page() {
-  return <DemoHome />;
+  return <HomeController />;
 }
