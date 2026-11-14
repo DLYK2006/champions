@@ -15,22 +15,28 @@ const assert = require("node:assert/strict");
       await page.goto(
         `${process.env.UI_CHECK_URL || "http://localhost:3000"}${route}`,
       );
-      if (route === "/scan")
-        await page
-          .getByRole("button", { name: "Explore a sample meal" })
-          .click();
-      const result = await new AxeBuilder({ page })
-        .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
-        .analyze();
-      assert.deepEqual(
-        result.violations.map((violation) => ({
-          id: violation.id,
-          nodes: violation.nodes.map((node) => node.html),
-        })),
-        [],
-        `${route} accessibility violations`,
-      );
-      console.log(`PASS: ${route} automated WCAG A/AA check`);
+      for (const state of route === "/scan"
+        ? ["capture", "results"]
+        : ["default"]) {
+        if (state === "results") {
+          await page
+            .getByRole("button", { name: "Manual", exact: true })
+            .click();
+          await page.getByRole("button", { name: "Edit new food" }).click();
+        }
+        const result = await new AxeBuilder({ page })
+          .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
+          .analyze();
+        assert.deepEqual(
+          result.violations.map((violation) => ({
+            id: violation.id,
+            nodes: violation.nodes.map((node) => node.html),
+          })),
+          [],
+          `${route} ${state} accessibility violations`,
+        );
+        console.log(`PASS: ${route} ${state} automated WCAG A/AA check`);
+      }
     }
   } finally {
     await browser.close();
