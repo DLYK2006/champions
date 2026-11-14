@@ -1,6 +1,6 @@
 # DIG IN Pixel RPG Frontend Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [x]`) syntax for tracking.
 
 **Goal:** Implement the approved cozy pixel-RPG presentation without replacing teammates' functionality.
 
@@ -47,11 +47,11 @@
 
 **Interfaces:** consume Profile, DailyProgress, CoinEvent, GroupDailyProgress and owner handlers; produce reusable panel/button/nutrition/scene/dialog components and Home composition. Keep AvatarConfig compatible.
 
-- [ ] Check existing fixtures/tests; add meaningful interaction assertions for successful vs rejected actions, dialog dismiss/focus restoration, and repeated reward identity where these behaviors are implemented here.
-- [ ] Implement shared visuals and Home, preserving existing data hooks; use clearly marked demo fixtures only if owner APIs are unavailable.
-- [ ] Add four-tab navigation, responsive layouts, reduced-motion styles, and accessible achievement presentation.
-- [ ] Verify 360px phone, larger phone, desktop, long values, zero targets, empty data, keyboard focus and reduced motion.
-- [ ] Run scaffold checks and focused interactions; commit only owned/handoff files.
+- [x] Check existing fixtures/tests; add meaningful interaction assertions for successful vs rejected actions, dialog dismiss/focus restoration, and repeated reward identity where these behaviors are implemented here.
+- [x] Implement shared visuals and Home, preserving existing data hooks; use clearly marked demo fixtures only if owner APIs are unavailable.
+- [x] Add four-tab navigation, responsive layouts, reduced-motion styles, and accessible achievement presentation.
+- [x] Verify 360px phone, larger phone, desktop, long values, zero targets, empty data, keyboard focus and reduced motion.
+- [x] Run scaffold checks and focused interactions; commit only owned/handoff files.
 
 ## Task 3: Scan and results presentation
 
@@ -59,10 +59,10 @@
 
 **Interfaces:** consume ScanResult and owner-provided capture, upload, edit, retry and confirm handlers. Owner's successful LogMealResponse drives reward presentation.
 
-- [ ] Pin pending submit and rejected-save behavior with existing test tools: no repeat handler invocation while pending, edits survive error, failed responses show no rewards.
-- [ ] Style capture, scanning, empty/error and editable result states; implement readable confidence and estimation guidance.
-- [ ] Verify sticky confirmation and keyboard don't obscure food fields on mobile; verify camera/AI logic diff is empty.
-- [ ] Run relevant checks and commit.
+- [x] Pin pending submit and rejected-save behavior with existing test tools: no repeat handler invocation while pending, edits survive error, failed responses show no rewards.
+- [x] Style capture, scanning, empty/error and editable result states; implement readable confidence and estimation guidance.
+- [x] Verify sticky confirmation and keyboard don't obscure food fields on mobile; verify camera/AI logic diff is empty.
+- [x] Run relevant checks and commit.
 
 ## Task 4: Community and shop presentation
 
@@ -70,11 +70,11 @@
 
 **Interfaces:** consume Group, GroupDailyProgress, GroupMemberStatus and existing group/shop hooks. Callback results drive authoritative purchase/equip states.
 
-- [ ] Test solo/empty group and pending/rejected purchase states with existing tools where logic lives in presentation.
-- [ ] Build evolving garden, member status cards, correct bonus-tier labels and create/join presentation without exposing exact member intake.
-- [ ] Build item preview/inventory and explicit buy/equip/error states using existing item IDs/prices.
-- [ ] Verify group routes don't gate Home/Scan/Shop and no client code awards coins.
-- [ ] Run relevant checks and commit.
+- [x] Test solo/empty group and pending/rejected purchase states with existing tools where logic lives in presentation.
+- [x] Build evolving garden, member status cards, correct bonus-tier labels and create/join presentation without exposing exact member intake.
+- [x] Build item preview/inventory and explicit buy/equip/error states using existing item IDs/prices.
+- [x] Verify group routes don't gate Home/Scan/Shop and no client code awards coins.
+- [x] Run relevant checks and commit.
 
 ## Task 5: Onboarding presentation and complete verification
 
@@ -82,12 +82,21 @@
 
 **Interfaces:** existing onboarding state, validation, avatar config and callbacks; produces approved visual treatment without changing input rules.
 
-- [ ] Apply the visual system to welcome, body stats, goals, targets and avatar steps; preserve optional group skip.
-- [ ] Verify existing validation messages, units, back navigation, submission and focus remain intact.
-- [ ] Run lint/type/build and meaningful tests once; inspect screenshots at phone and desktop sizes, keyboard flow, reduced motion, all priority states.
-- [ ] Review final diff for ownership and technical boundaries; document live vs mock integrations and unavailable verification.
+- [x] Apply the visual system to welcome, body stats, goals, targets and avatar steps; preserve optional group skip.
+- [x] Verify existing validation messages, units, back navigation, submission and focus remain intact.
+- [x] Run lint/type/build and meaningful tests once; inspect screenshots at phone and desktop sizes, keyboard flow, reduced motion, all priority states.
+- [x] Review final diff for ownership and technical boundaries; document live vs mock integrations and unavailable verification.
 - [ ] Board unread; fetch and rebase; push issue branch; open PR with Closes #6. Merge only if checks and team handoffs are satisfied; post landed UI contract effects.
 
 ## Current status
 
-Design approved. Scaffold announcement received and assigned-folder implementation started. Onboarding and scan/results ownership handoffs remain pending. Execution proceeds inline; no extra human approval is needed for the already approved design. All interactive state in the initial Jay-owned routes is explicitly demo-only; domain contracts remain unchanged.
+Design approved and implemented inline. Scaffold and cross-owner styling handoffs received; onboarding logic merged before restyling. All five routes and the scanner result/achievement states are implemented. Typed demo wrappers remain explicit; domain contracts are unchanged. Lint, generated route types, TypeScript, production build, 10 target tests, browser interactions, rejected async-action regression, and automated accessibility checks passed. Final publishing/merge remains pending below.
+
+## Final review and rulings
+
+- Fresh reviewer found one material issue: pending group requests could switch form and lose retry details. Regression failed before the guard, then passed after disabling the header transition and guarding openForm. Rejected result/shop callbacks are also covered.
+- Corrected the first-member identity assumption and empty-day ready mood; added configurable full-body avatar support for profile appearances.
+- Ruling: use the existing issue branch in the shared checkout, preserving teammates through owned-file edits and approved presentation handoffs; no second scaffold or backend changes.
+- Ruling: retain demo wrappers until owner controllers wire authoritative data. Live camera/AI/auth/save/realtime integration is not claimed by frontend-only checks.
+- Ruling: keep Playwright/axe outside the app dependency manifest; documented reproducible browser commands in docs/FRONTEND_HANDOFF.md.
+- No deferred review findings.

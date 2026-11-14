@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Pixelify_Sans } from "next/font/google";
-import type { ReactNode } from 'react';
+import type { ReactNode } from "react";
 import "./globals.css";
-import '@/components/ui/dig-in.css';
+import "@/components/ui/dig-in.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,7 +14,11 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const pixel = Pixelify_Sans({ variable: '--font-pixel', subsets: ['latin'], display: 'swap' });
+const pixel = Pixelify_Sans({
+  variable: "--font-pixel",
+  subsets: ["latin"],
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "DIG IN",

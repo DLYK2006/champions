@@ -1,15 +1,208 @@
-'use client';
+"use client";
 
-import { useRef } from 'react';
-import { Icon } from '@/components/ui/icons';
-import { PageIntro } from '@/components/ui/primitives';
+import { useRef, type ChangeEvent } from "react";
+import { Icon } from "@/components/ui/icons";
+import { PageIntro } from "@/components/ui/primitives";
 
 export interface ScanViewProps {
-  status: 'ready' | 'scanning' | 'error'; error?: string; previewUrl?: string;
-  onFile: (file: File) => void; onManual: () => void; onRetry: () => void; onDemo?: () => void;
+  status: "ready" | "scanning" | "error";
+  error?: string;
+  previewUrl?: string;
+  onFile: (file: File) => void;
+  onManual: () => void;
+  onRetry: () => void;
+  onDemo?: () => void;
 }
-export function ScanView({ status, error, previewUrl, onFile, onManual, onRetry, onDemo }: ScanViewProps) {
+export function ScanView({
+  status,
+  error,
+  previewUrl,
+  onFile,
+  onManual,
+  onRetry,
+  onDemo,
+}: ScanViewProps) {
   const input = useRef<HTMLInputElement>(null);
-  const scanning = status === 'scanning';
-  return <main className="scan-page"><PageIntro eyebrow="NOURISHMENT, MEET A LITTLE MAGIC" title="What’s on your plate?" description="A quick photo. A little check. Another step on your adventure." /><div className="scan-layout"><section className={`viewfinder-panel ${scanning ? 'is-scanning' : ''}`} aria-label="Food photo capture"><div className="viewfinder" style={previewUrl ? { backgroundImage: `url(${JSON.stringify(previewUrl)})` } : undefined}><div className="viewfinder-grid" /><span className="viewfinder-corner corner-tl" /><span className="viewfinder-corner corner-tr" /><span className="viewfinder-corner corner-bl" /><span className="viewfinder-corner corner-br" /><div className="viewfinder-center"><span className="viewfinder-camera"><Icon name={scanning ? 'spark' : 'bowl'} size={62} /></span><h2>{scanning ? 'A little food magic…' : 'Your next little win starts here.'}</h2><p>{scanning ? 'Estimating your meal. You’ll get to check everything.' : 'Place your meal in the frame, with a little light.'}</p></div>{scanning && <div className="scan-sweep" />}<span className="viewfinder-caption"><Icon name="leaf" size={14} /> {scanning ? 'ESTIMATING, NOT GUESSING YOUR GOALS' : 'YOUR PHOTO STAYS YOURS'}</span></div><div className="capture-controls"><button className="capture-secondary" disabled={scanning} onClick={() => input.current?.click()}><Icon name="plus" size={20} /><span>Upload photo</span></button><button className="shutter-button" disabled={scanning} onClick={() => input.current?.click()} aria-label="Take a food photo"><Icon name="scan" size={30} /></button><button className="capture-secondary" disabled={scanning} onClick={onManual}><Icon name="bowl" size={20} /><span>Type instead</span></button><input className="sr-only" ref={input} type="file" accept="image/*" capture="environment" aria-label="Food photo" disabled={scanning} onChange={event => { const file = event.target.files?.[0]; if (file) onFile(file); event.target.value = ''; }} /></div></section><aside className="scan-guide"><section className="panel scan-tips"><p className="eyebrow">A GOOD LITTLE SNAP</p><h2>Let’s make it easy.</h2><div><span>01</span><p><strong>A little daylight</strong><br />Natural light helps the details shine.</p></div><div><span>02</span><p><strong>The whole delicious picture</strong><br />Keep your plate and portions in view.</p></div><div><span>03</span><p><strong>You get the final say</strong><br />Review and edit before anything is logged.</p></div></section><div className="daily-note"><Icon name="leaf" size={25} /><p>Food is fuel, comfort, and connection.<br /><strong>No perfect plates required.</strong></p></div>{onDemo && <button className="button button-soft scan-demo-button" onClick={onDemo} disabled={scanning}>Explore a sample meal <Icon name="arrow" size={17} /></button>}</aside></div>{status === 'error' && <section className="panel scan-error" role="alert"><Icon name="leaf" size={25} /><div><h2>Let’s give that another try.</h2><p>{error || 'We couldn’t estimate that meal. Try another photo or enter it yourself.'}</p><div className="form-actions"><button className="button" onClick={onRetry}>Try again</button><button className="button button-primary" onClick={onManual}>Enter manually</button></div></div></section>}{scanning && <p className="scan-status" role="status">Estimating your meal… You can review the results before logging.</p>}<footer className="page-footer"><span><Icon name="leaf" size={14} /> NO PERFECT PLATES REQUIRED</span><span>Nutrition estimates are always yours to edit</span></footer></main>;
+  const cameraInput = useRef<HTMLInputElement>(null);
+  const scanning = status === "scanning";
+  function selected(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (file) onFile(file);
+    event.target.value = "";
+  }
+  return (
+    <main className="scan-page">
+      <PageIntro
+        eyebrow="NOURISHMENT, MEET A LITTLE MAGIC"
+        title="What’s on your plate?"
+        description="A quick photo. A little check. Another step on your adventure."
+      />
+      <div className="scan-layout">
+        <section
+          className={`viewfinder-panel ${scanning ? "is-scanning" : ""}`}
+          aria-label="Food photo capture"
+        >
+          <div
+            className="viewfinder"
+            style={
+              previewUrl
+                ? { backgroundImage: `url(${JSON.stringify(previewUrl)})` }
+                : undefined
+            }
+          >
+            <div className="viewfinder-grid" />
+            <span className="viewfinder-corner corner-tl" />
+            <span className="viewfinder-corner corner-tr" />
+            <span className="viewfinder-corner corner-bl" />
+            <span className="viewfinder-corner corner-br" />
+            <div className="viewfinder-center">
+              <span className="viewfinder-camera">
+                <Icon name={scanning ? "spark" : "bowl"} size={62} />
+              </span>
+              <h2>
+                {scanning
+                  ? "A little food magic…"
+                  : "Your next little win starts here."}
+              </h2>
+              <p>
+                {scanning
+                  ? "Estimating your meal. You’ll get to check everything."
+                  : "Place your meal in the frame, with a little light."}
+              </p>
+            </div>
+            {scanning && <div className="scan-sweep" />}
+            <span className="viewfinder-caption">
+              <Icon name="leaf" size={14} />{" "}
+              {scanning
+                ? "ESTIMATING, NOT GUESSING YOUR GOALS"
+                : "YOUR PHOTO STAYS YOURS"}
+            </span>
+          </div>
+          <div className="capture-controls">
+            <button
+              className="capture-secondary"
+              disabled={scanning}
+              onClick={() => input.current?.click()}
+            >
+              <Icon name="plus" size={20} />
+              <span>Upload photo</span>
+            </button>
+            <button
+              className="shutter-button"
+              disabled={scanning}
+              onClick={() => cameraInput.current?.click()}
+              aria-label="Take a food photo"
+            >
+              <Icon name="scan" size={30} />
+            </button>
+            <button
+              className="capture-secondary"
+              disabled={scanning}
+              onClick={onManual}
+            >
+              <Icon name="bowl" size={20} />
+              <span>Type instead</span>
+            </button>
+            <input
+              className="sr-only"
+              ref={input}
+              type="file"
+              accept="image/*"
+              aria-label="Food photo"
+              disabled={scanning}
+              onChange={selected}
+            />
+            <input
+              className="sr-only"
+              ref={cameraInput}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              aria-label="Camera food photo"
+              disabled={scanning}
+              onChange={selected}
+            />
+          </div>
+        </section>
+        <aside className="scan-guide">
+          <section className="panel scan-tips">
+            <p className="eyebrow">A GOOD LITTLE SNAP</p>
+            <h2>Let’s make it easy.</h2>
+            <div>
+              <span>01</span>
+              <p>
+                <strong>A little daylight</strong>
+                <br />
+                Natural light helps the details shine.
+              </p>
+            </div>
+            <div>
+              <span>02</span>
+              <p>
+                <strong>The whole delicious picture</strong>
+                <br />
+                Keep your plate and portions in view.
+              </p>
+            </div>
+            <div>
+              <span>03</span>
+              <p>
+                <strong>You get the final say</strong>
+                <br />
+                Review and edit before anything is logged.
+              </p>
+            </div>
+          </section>
+          <div className="daily-note">
+            <Icon name="leaf" size={25} />
+            <p>
+              Food is fuel, comfort, and connection.
+              <br />
+              <strong>No perfect plates required.</strong>
+            </p>
+          </div>
+          {onDemo && (
+            <button
+              className="button button-soft scan-demo-button"
+              onClick={onDemo}
+              disabled={scanning}
+            >
+              Explore a sample meal <Icon name="arrow" size={17} />
+            </button>
+          )}
+        </aside>
+      </div>
+      {status === "error" && (
+        <section className="panel scan-error" role="alert">
+          <Icon name="leaf" size={25} />
+          <div>
+            <h2>Let’s give that another try.</h2>
+            <p>
+              {error ||
+                "We couldn’t estimate that meal. Try another photo or enter it yourself."}
+            </p>
+            <div className="form-actions">
+              <button className="button" onClick={onRetry}>
+                Try again
+              </button>
+              <button className="button button-primary" onClick={onManual}>
+                Enter manually
+              </button>
+            </div>
+          </div>
+        </section>
+      )}
+      {scanning && (
+        <p className="scan-status" role="status">
+          Estimating your meal… You can review the results before logging.
+        </p>
+      )}
+      <footer className="page-footer">
+        <span>
+          <Icon name="leaf" size={14} /> NO PERFECT PLATES REQUIRED
+        </span>
+        <span>Nutrition estimates are always yours to edit</span>
+      </footer>
+    </main>
+  );
 }

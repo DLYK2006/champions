@@ -69,3 +69,7 @@ The implementer may choose component names, isolated style organization, artwork
 Use scaffold lint/type/build commands, interaction tests for meaningful state handling, keyboard/dialog checks, mobile/desktop screenshots, long values and empty/error states, reduced-motion checks, and integration boundary review. Report unavailable checks accurately. No production-readiness claims from mock-only verification.
 
 A fresh builder reviewer checked the approved design and plan on November 14 and found no material unanswered design questions. Scaffold readiness and cross-owner handoffs remain external prerequisites.
+
+## Implementation status
+
+The lead announced scaffold readiness and approved pixel avatars plus presentation-only scan/onboarding handoffs on November 14. Joshua merged the real onboarding flow before Jay restyled it. The approved UI is implemented on issue branch 6-pixel-rpg-ui; see docs/FRONTEND_HANDOFF.md for exports, mock boundaries, test commands and remaining owner integrations. Backend, domain logic and shared types are unchanged.
