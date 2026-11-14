@@ -8,7 +8,7 @@ Decided by Daren (lead), Nov 14. The PRD is the product. This file pins the deci
 - **Supabase:** Auth (email/password, plus anonymous for demo users), Postgres, Realtime, Storage.
 - **Vision:** Gemini, called **only** from the server route `app/api/scan/route.ts`. Env vars are `GEMINI_API_KEY` and `GEMINI_MODEL` (default `gemini-flash-latest`). The key never reaches the browser.
 - **Camera:** `<input type="file" accept="image/*" capture="environment">`. Resize to max 1024 px JPEG (quality about 0.7) in the browser before upload, to stay fast and under Vercel's request size limit.
-- **Avatar:** DiceBear `avataaars` (`@dicebear/core` + `@dicebear/collection`, MIT), rendered as inline SVG. Shop items: Sunglasses = `accessories: sunglasses`; Hoodie = `clothing: hoodie`; Crown = our own SVG overlay, since avataaars has no crown.
+- **Avatar:** our own pixel-art renderer in `components/avatar/` (Jay), decided Nov 14; it replaces DiceBear `avataaars`. The contract is unchanged: `AvatarConfig` plus the equipped shop item ids `sunglasses`, `hoodie`, `crown`.
 - **Env:** `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` (browser), `SUPABASE_SERVICE_ROLE_KEY`, `GEMINI_API_KEY`, `GEMINI_MODEL` (server only). Set them in `.env.local` and in Vercel.
 
 ## Rules the PRD leaves open (decided)
@@ -39,6 +39,8 @@ Decided by Daren (lead), Nov 14. The PRD is the product. This file pins the deci
 | Food scan: camera page, results card, Gemini route, meal coach tip | @DLYK2006 (Daren) | `app/(app)/scan/`, `components/scan/`, `lib/scan/`, `app/api/scan/` |
 | Backend core: schema, `log_meal` + coins, shop RPCs, seed, shared types, Supabase clients (**tentative**) | @DLYK2006 (Daren) | `supabase/migrations/0001_core.sql`, `supabase/seed.sql`, `lib/supabase/`, `lib/api/`, `types/` |
 | **Groups logic: create/join by invite code, completion %, group bonus, realtime hook (P0, UNOWNED: claim it on the board)** | unowned | `supabase/migrations/0002_groups.sql`, `lib/groups/` |
+
+**UI styling (decided Nov 14):** Jay leads the visual design (pixel-RPG) and also styles the scan/results and onboarding screens (`app/(app)/scan/`, `components/scan/`, `app/onboarding/`, `components/onboarding/`), presentation only. Logic stays with the owners: `lib/scan/` and `app/api/scan/` (Daren), `lib/targets/` and form validation (Joshua). Owners build with plain markup first; check on the board before restyling a file someone else is editing.
 
 **Shared files** (`package.json`, `tailwind.config.*`, `types/`): add packages with `npm i <pkg>` and post on the board when you do. Changes to `types/` go through Daren: post the change, then edit.
 
