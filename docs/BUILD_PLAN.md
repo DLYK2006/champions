@@ -94,16 +94,16 @@ Takes `{ image_base64, mime_type }` or `{ text }` and returns a `ScanResult` wit
 
 - `log_meal(p_event_id uuid, p_date date, p_meal_type text, p_items jsonb)` returns `LogMealResponse`. **Daren.** It is idempotent on `p_event_id`, updates `daily_progress`, pays personal coins, then calls `evaluate_group_bonus(user, date)`.
 - `evaluate_group_bonus(p_user uuid, p_date date)` returns `GroupDailyProgress | null`. **Groups owner.** Until it's claimed, Daren ships a stub that returns null.
-- `create_group(p_name text, p_badge text)` returns a `Group` with a 6-character invite code. `join_group(p_code text)` returns a `Group` (2 to 4 members, one group per user for the MVP). `leave_group()`. **Groups owner.**
+- `create_group(p_name text, p_badge text)` returns a `Group` with a 6-character invite code. `join_group(p_code text)` returns a `Group` (2 to 4 members, one group per user for the MVP). `leave_group()`. `get_group_status(p_date date)` returns `{ group, progress, members: GroupMemberStatus[] }` or null; it is the only way members see each other. **Groups owner.**
 - `buy_item(p_item_id text)` returns `{ coin_balance }` and `equip_item(p_item_id text, p_equipped boolean)` returns `{ equipped }`. **Daren.**
 
 ### Realtime
 
-The Groups page subscribes to `postgres_changes` on `group_daily_progress` (filtered by `group_id`) and on `daily_progress` for the group's members. `lib/groups/useGroupLive.ts` (groups owner) wraps this.
+The Groups page subscribes to `postgres_changes` on `group_daily_progress` and `group_members` (filtered by `group_id`) and refetches `get_group_status()` on each event. It does not subscribe to `daily_progress`, because row-level security would expose exact intake. `lib/groups/useGroupLive.ts` (groups owner) wraps this.
 
 ### Tables (PRD 15 data models, snake_case)
 
-`profiles`, `meals`, `daily_progress (user_id, date)`, `coin_transactions (reward_event_id unique)`, `shop_items`, `inventory`, `groups`, `group_members`, `group_daily_progress (group_id, date)`. Row-level security means users read and write only their own rows. Group members can read each other's `daily_progress` completion flags and avatars, but never weights or exact intake.
+`profiles`, `meals`, `daily_progress (user_id, date)`, `coin_transactions (reward_event_id unique)`, `shop_items`, `inventory`, `groups`, `group_members`, `group_daily_progress (group_id, date)`. Row-level security means users read and write only their own rows. Group members never read each other's `daily_progress` or `profiles` rows; they see only username, avatar, equipped items and personal_goal_completed through `get_group_status()` (decided Nov 14).
 
 ### Seed
 
