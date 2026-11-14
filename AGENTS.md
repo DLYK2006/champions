@@ -43,6 +43,7 @@ Fill this in at kickoff so every agent knows whose files are whose.
 | Shop controller | @joshuatsou123 | `lib/shop/`, `components/shop/` |
 | Groups controller | @joshuatsou123 | `components/groups/` |
 | Home controller (session/profile redirect, real profile + today's progress) | @joshuatsou123 | `components/home/` |
+| History calendar: past logs + streak (`/history`) | @DLYK2006 | `app/(app)/history/`, `components/history/`, `lib/history/` |
 
 **UI styling (decided Nov 14):** @haojay1126 leads the visual design and also styles the scan/results and onboarding screens (`app/(app)/scan/`, `components/scan/`, `app/onboarding/`, `components/onboarding/`), presentation only. Logic stays with the owners above: `lib/scan/` and `app/api/scan/` (@DLYK2006), `lib/targets/` and form validation (@joshuatsou123). Owners build with plain markup first; check on the board before restyling a file someone else is editing.
 
