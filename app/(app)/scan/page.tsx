@@ -1,5 +1,4 @@
-// Presentation demo; Daren replaces this wrapper with the real scan controller.
-import { DemoScan } from "@/components/scan/demo-scan";
+import { ScanController } from "@/components/scan/scan-controller";
 export default function Page() {
-  return <DemoScan />;
+  return <ScanController />;
 }
