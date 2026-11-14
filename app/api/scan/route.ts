@@ -13,6 +13,12 @@ List each visible food item with a short portion description, estimated grams, c
 Use confidence "low" when the food or portion is unclear. If there is no food, return an empty items list.
 coach_tip: one short, encouraging sentence about the meal (e.g. a protein or veggie pairing idea). Never shame, never suggest skipping meals or eating less. Use null if nothing useful to say.`;
 
+const GOALS = {
+  bulk: "build up and gain weight, so ideas that add protein or extra energy fit well",
+  cut: "lose weight gradually, so ideas about protein, fibre and volume fit well; never suggest eating less or skipping meals",
+  maintain: "maintain their weight, so ideas about balance and variety fit well",
+};
+
 const num = { type: "number" };
 const confidence = { type: "string", enum: ["high", "medium", "low"] };
 const SCHEMA = {
@@ -40,9 +46,14 @@ const clean = (n: number) => (Number.isFinite(n) && n > 0 ? Math.round(n * 10) /
 export async function POST(request: Request) {
   const token = request.headers.get("authorization")?.replace(/^Bearer /, "");
   if (!token) return fail(401, "Sign in to scan meals.");
-  const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!);
+  const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
+    global: { headers: { Authorization: `Bearer ${token}` } }, // must be capitalized: lowercase is merged with supabase-js's own and rejected
+  });
   const { data: auth } = await supabase.auth.getUser(token);
   if (!auth.user) return fail(401, "Sign in to scan meals.");
+  // PRD 6.4: the coach tip is personalized to the user's goal. RLS lets users read their own profile.
+  const { data: profile } = await supabase.from("profiles").select("goal_type").eq("id", auth.user.id).maybeSingle();
+  const goal = profile ? GOALS[profile.goal_type as keyof typeof GOALS] : undefined;
 
   const body = await request.json().catch(() => null);
   let content: object[];
@@ -65,7 +76,10 @@ export async function POST(request: Request) {
       headers: { authorization: `Bearer ${process.env.OPENAI_API_KEY}`, "content-type": "application/json" },
       body: JSON.stringify({
         model: process.env.OPENAI_MODEL || "gpt-5.6-luna",
-        input: [{ role: "system", content: PROMPT }, { role: "user", content }],
+        input: [
+          { role: "system", content: goal ? `${PROMPT}\nFor coach_tip: the user wants to ${goal}.` : PROMPT },
+          { role: "user", content },
+        ],
         text: { format: { type: "json_schema", name: "scan_result", strict: true, schema: SCHEMA } },
       }),
       signal: AbortSignal.timeout(TIMEOUT_MS),

@@ -75,12 +75,17 @@ export function ScanController() {
     if (error) throw new Error(`Your meal wasn't saved: ${error.message}`);
     const r = data as LogMealResponse;
     const coins = r.coins_awarded.reduce((s, c) => s + c.amount, 0);
+    const groupCoins = r.coins_awarded.find((c) => c.reason === "group_bonus")?.amount ?? 0;
     setAchievement({
       id: eventId,
-      title: r.progress.personal_goal_completed ? "Personal goal complete!" : "Meal logged.",
-      description: coins ? `You earned ${coins} coins. Balance: ${r.coin_balance}.` : `Balance: ${r.coin_balance} coins.`,
+      title: groupCoins
+        ? r.group?.bonus_tier === 30 ? "Your whole group made it!" : "Your group levelled up!"
+        : r.progress.personal_goal_completed ? "Personal goal complete!" : "Meal logged.",
+      description: groupCoins
+        ? `You earned ${coins} coins, including a ${groupCoins}-coin group bonus. Balance: ${r.coin_balance}.`
+        : coins ? `You earned ${coins} coins. Balance: ${r.coin_balance}.` : `Balance: ${r.coin_balance} coins.`,
       coins,
-      group: (r.group?.bonus_tier ?? 0) > 0,
+      group: groupCoins > 0,
     });
   }
 
