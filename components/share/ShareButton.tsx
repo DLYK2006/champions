@@ -2,14 +2,22 @@
 // "Share my progress" (PRD 11.4): step 1 draws a preview, step 2 opens the share sheet (or downloads).
 // Two steps because navigator.share must run straight from a tap, not after async drawing.
 // Owner: @DLYK2006. Plain markup; Jay styles it.
-import { useRef, useState } from "react";
-import { PixelAvatar } from "@/components/avatar";
-import { loadShareData, type ShareData } from "@/lib/share/data";
-import { CARD_H, CARD_W, drawCard, loadImage, svgToImage } from "@/lib/share/card";
+import { useState } from "react";
+import { drawSprite, prepareSprite } from "@/components/avatar/sprite-art";
+import { loadShareData } from "@/lib/share/data";
+import { CARD_H, CARD_W, drawCard, loadImage } from "@/lib/share/card";
+import type { Avatar } from "@/types";
+
+// The user's own sprite, drawn with the same shared renderer as every scene (Jay's components/avatar/sprite-art).
+async function avatarCanvas(avatar: Avatar, equipped: string[]) {
+  const atlas = await prepareSprite(avatar, equipped);
+  const canvas = document.createElement("canvas");
+  canvas.width = canvas.height = 240;
+  drawSprite(canvas.getContext("2d")!, atlas, 120, 220, "down", 0, 210);
+  return canvas;
+}
 
 export function ShareButton() {
-  const avatarRef = useRef<HTMLDivElement>(null);
-  const [data, setData] = useState<ShareData | null>(null);
   const [card, setCard] = useState<{ file: File; url: string } | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -19,13 +27,9 @@ export function ShareButton() {
     setError(null);
     try {
       const d = await loadShareData();
-      setData(d); // renders the hidden avatar below with the user's own look
-      await new Promise((r) => requestAnimationFrame(r));
-      const svg = avatarRef.current?.querySelector("svg");
-      if (!svg) throw new Error("Couldn't draw your avatar.");
       const [scene, avatar] = await Promise.all([
         Promise.all(d.group ? ["/dig-in/garden-starter.png", "/dig-in/garden.png"].map(loadImage) : [loadImage("/dig-in/room.png")]),
-        svgToImage(svg),
+        avatarCanvas(d.avatar, d.equipped),
       ]);
       await document.fonts.ready;
       const canvas = document.createElement("canvas");
@@ -86,11 +90,6 @@ export function ShareButton() {
             <button type="button" onClick={download}>Download</button>
             <button type="button" onClick={close}>Close</button>
           </div>
-        </div>
-      )}
-      {data && (
-        <div ref={avatarRef} aria-hidden hidden>
-          <PixelAvatar config={data.avatar} equipped={data.equipped} size={240} transparent />
         </div>
       )}
     </section>

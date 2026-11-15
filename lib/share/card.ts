@@ -16,9 +16,6 @@ export const loadImage = (src: string) =>
     img.src = src;
   });
 
-export const svgToImage = (svg: SVGSVGElement) =>
-  loadImage(`data:image/svg+xml;charset=utf-8,${encodeURIComponent(new XMLSerializer().serializeToString(svg))}`);
-
 // Lines of text under the picture. Counts and statuses only, never intake numbers.
 export function cardLines(d: ShareData): string[] {
   return [
@@ -28,8 +25,8 @@ export function cardLines(d: ShareData): string[] {
   ];
 }
 
-// scene: [starter, grown] garden images when in a group, or [room] when solo; avatar is the user's PixelAvatar.
-export function drawCard(ctx: CanvasRenderingContext2D, d: ShareData, scene: HTMLImageElement[], avatar: HTMLImageElement, font: string) {
+// scene: [starter, grown] garden images when in a group, or [room] when solo; avatar is the user's sprite (240x240).
+export function drawCard(ctx: CanvasRenderingContext2D, d: ShareData, scene: HTMLImageElement[], avatar: CanvasImageSource, font: string) {
   ctx.fillStyle = "#FBF4E4";
   ctx.fillRect(0, 0, CARD_W, CARD_H);
 
