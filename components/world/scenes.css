@@ -1,0 +1,86 @@
+.garden-scene > .garden-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+.compact-app .garden-scene > img {
+  object-position: center;
+}
+.garden-members {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.garden-member {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  will-change: transform;
+}
+.garden-name {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  transform: translateX(-50%);
+  padding: 3px 6px;
+  max-width: 76px;
+  width: max-content;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font:
+    600 10px var(--font-geist-sans),
+    sans-serif;
+  color: #344b2c;
+  background: #fff9e5ed;
+  border: 1px solid #a4b386;
+  border-radius: 3px;
+  box-shadow: 0 2px 0 #2b412322;
+}
+.garden-name > span {
+  color: #406630;
+}
+.room-character {
+  animation: none;
+  transform: translateX(-50%);
+}
+.room-background {
+  object-position: center bottom;
+}
+@media (max-width: 760px) {
+  /* Keep both connected grass regions visible on tall phones. */
+  .compact-app .community-page > .garden-scene {
+    max-height: calc(150vw - 51px);
+  }
+}
+.character-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center bottom;
+  image-rendering: pixelated;
+}
+.sprite-load-error {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  padding: 5px;
+  background: #fff8e8;
+  font-size: 11px;
+  color: #654c35;
+}
+.compact-coach-tip {
+  margin: 0 14px 12px;
+  color: #576a40;
+  font-size: 11px;
+  line-height: 1.5;
+  max-height: 4.5em;
+  overflow-y: auto;
+  overflow-wrap: anywhere;
+}

@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import "./globals.css";
 import "@/components/ui/dig-in.css";
 import "@/components/ui/compact.css";
+import "@/components/world/scenes.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

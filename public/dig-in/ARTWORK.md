@@ -1,5 +1,31 @@
 # DIG IN original artwork
 
+## adventurer-atlas.png (autonomous 2D overhaul, issue #31)
+
+Generated with the built-in imagegen tool; original transparent 1536x1024 RGBA PNG, 6 columns by 4 rows. Directions: down, left, right, up. Columns: idle, blink, four walk phases. The renderer registers feet, samples with nearest-neighbor filtering, removes faint alpha matte noise while drawing, and caches palette/equipment variants. The existing environments were preserved. No external character art was copied.
+
+Final generation prompt:
+
+> Use case: stylized-concept. Asset type: production transparent sprite atlas for an original cozy 2D pixel RPG called DIG IN.
+> Create ONE rigorously arranged sprite sheet, 6 columns by 4 rows, exactly 24 individual full-body sprites of the SAME young adult woodland adventurer. Landscape 1536x1024 canvas, each cell 256x256, no gaps or gutters, no grid lines. Transparent background everywhere except character pixels.
+> Character: polished indie-game chibi proportions, large expressive head but real torso/arms/legs, wavy chestnut hair with an irregular appealing silhouette, warm tan skin, clear dark eyes and brows, a small kind smile, cream zip jacket with forest-green collar and cuffs, brown trousers, tan leather ankle boots, small sage backpack. Original design, rich deliberate 16-bit pixel clusters, warm top-left lighting, restrained 24-color earthy palette, strong readable silhouette, tidy 1-logical-pixel dark brown outline, 2-3 shade ramps, no anti-aliased painting. Draw at an implied 64x64 pixel grid per cell, enlarged nearest-neighbor 4x. High craft, not simplistic squares.
+> Registration is critical: every character centered at x128 within its cell with the lowest foot at y232; each sprite roughly 112px wide x192px tall, same head size and body proportions throughout, transparent padding all around. NO shadows, NO ground, NO text, numbers, labels, borders or props outside the character. Never crop any hair/feet.
+> Rows from top to bottom:
+> 1 FRONT, facing viewer (south).
+> 2 LEFT PROFILE, facing screen left (west), genuine profile anatomy, not front face.
+> 3 RIGHT PROFILE, facing screen right (east), genuine profile anatomy.
+> 4 BACK, facing away (north), back of hair and backpack visible, NO face.
+> Within EACH row, columns left to right:
+> 1 standing idle, eyes open, both feet planted.
+> 2 standing idle identical pose but blink eyes closed (back row identical relaxed idle).
+> 3 WALK contact A, left leg steps forward, right leg back, opposing arm swing.
+> 4 WALK passing A, feet draw together, knee lifts, torso settles.
+> 5 WALK contact B, right leg steps forward, left leg back, opposing arm swing.
+> 6 WALK passing B, feet draw together, other knee lifts.
+> Four walk frames must be visibly different coherent phases, a seamless gait, not six copies of a static character. Keep the head/torso aligned, no shape morphing. Side walk has clear stride silhouettes; back walk has alternating boot soles.
+> Deliver only the precisely aligned transparent 24-sprite atlas, original high-quality pixel art, no background scene or UI.
+
+
 Generated for the approved DIG IN frontend using the built-in imagegen tool on November 14, 2026. These backgrounds are original art, not screenshots or extracted assets from the supplied mood reference. All interface text, controls, characters and state indicators remain separate layers.
 
 ## adventurer.png
