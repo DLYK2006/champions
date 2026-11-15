@@ -229,7 +229,7 @@ export default function OnboardingFlow() {
           <h1 ref={headingRef} tabIndex={-1}>Choose your own path.</h1>
           <p>Different journeys. The same little care for yourself.</p>
           <div className="onboarding-goal-cards" role="group" aria-label="Personal goal">
-            {([{ id: 'bulk', title: 'Bulk', copy: 'Build and grow', icon: 'leaf' }, { id: 'cut', title: 'Cut', copy: 'A mindful change', icon: 'spark' }, { id: 'maintain', title: 'Maintain', copy: 'Find your rhythm', icon: 'sun' }] as const).map(choice => <button key={choice.id} type="button" aria-pressed={goal === choice.id} onClick={() => pickGoal(choice.id)}><Icon name={choice.icon} size={27} /><strong>{choice.title}</strong><span>{choice.copy}</span></button>)}
+            {([{ id: 'bulk', title: 'Bulk', copy: 'Build and grow', icon: 'meat' }, { id: 'cut', title: 'Cut', copy: 'A mindful change', icon: 'carrot' }, { id: 'maintain', title: 'Maintain', copy: 'Find your rhythm', icon: 'sun' }] as const).map(choice => <button key={choice.id} type="button" aria-pressed={goal === choice.id} onClick={() => pickGoal(choice.id)}><Icon name={choice.icon} size={27} /><strong>{choice.title}</strong><span>{choice.copy}</span></button>)}
           </div>
           <label>Target weight ({units === "metric" ? "kg" : "lb"})
             <input
