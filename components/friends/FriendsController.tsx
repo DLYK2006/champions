@@ -23,7 +23,8 @@ export default function FriendsController() {
 const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 const MARK = { goal: "Goal met", logged: "Logged", none: "" } as const;
 
-function FriendsView() {
+/** The Friends view without the sign-in guard, for pages that already guard (the Communities tab). */
+export function FriendsView() {
   const { overview, loading, error, refresh } = useFriends();
   const [notice, setNotice] = useState<string | null>(null);
   const [query, setQuery] = useState("");
@@ -89,45 +90,54 @@ function FriendsView() {
   }
 
   return (
-    <main>
-      <h1>Friends</h1>
-      {notice && <p role="alert">{notice}</p>}
+    <main style={PAGE}>
+      <div className="screen-title-row">
+        <h1 className="screen-title">Friends</h1>
+      </div>
+      {notice && <p role="alert" className="field-error">{notice}</p>}
 
-      <form onSubmit={onSearch}>
-        <label>Find a friend by username
-          <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Username" autoCapitalize="none" autoCorrect="off" />
-        </label>
-        <button type="submit" disabled={searching}>{searching ? "Searching…" : "Search"}</button>
-      </form>
-      {results && (
-        results.length === 0 ? <p>No one found with that username.</p> : (
-          <ul aria-label="Search results">
-            {results.map((r) => (
-              <li key={r.user_id}>
-                {r.username}{" "}
-                {r.relation === "none" && (
-                  <button type="button" onClick={() => void act(() => sendFriendRequest(r.user_id), () => runSearch(query))}>Add</button>
-                )}
-                {r.relation === "incoming" && (
-                  <button type="button" onClick={() => void act(() => respondToRequest(r.user_id, true), () => runSearch(query))}>Accept request</button>
-                )}
-                {r.relation === "outgoing" && <span>Request sent</span>}
-                {r.relation === "friend" && <span>Friends</span>}
-              </li>
-            ))}
-          </ul>
-        )
-      )}
+      <section className="panel form-panel">
+        <form onSubmit={onSearch} noValidate>
+          <label className="field-label">Find a friend by username
+            <input className="text-input" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Username"
+              autoCapitalize="none" autoCorrect="off" />
+          </label>
+          <div className="form-actions">
+            <button type="submit" className="button button-primary" disabled={searching}>{searching ? "Searching…" : "Search"}</button>
+          </div>
+        </form>
+        {results && (
+          results.length === 0 ? <p>No one found with that username.</p> : (
+            <ul aria-label="Search results" style={LIST}>
+              {results.map((r) => (
+                <li key={r.user_id} style={ROW}>
+                  <span style={NAME}>{r.username}</span>
+                  {r.relation === "none" && (
+                    <button type="button" className="button button-soft" onClick={() => void act(() => sendFriendRequest(r.user_id), () => runSearch(query))}>Add</button>
+                  )}
+                  {r.relation === "incoming" && (
+                    <button type="button" className="button button-soft" onClick={() => void act(() => respondToRequest(r.user_id, true), () => runSearch(query))}>Accept request</button>
+                  )}
+                  {r.relation === "outgoing" && <span>Request sent</span>}
+                  {r.relation === "friend" && <span>Friends</span>}
+                </li>
+              ))}
+            </ul>
+          )
+        )}
+      </section>
 
       {incoming.length > 0 && (
-        <section aria-label="Friend requests">
+        <section aria-label="Friend requests" className="panel" style={PANEL}>
           <h2>Requests</h2>
-          <ul>
+          <ul style={LIST}>
             {incoming.map((r) => (
-              <li key={r.user_id}>
-                {r.username}{" "}
-                <button type="button" onClick={() => void act(() => respondToRequest(r.user_id, true))}>Accept</button>{" "}
-                <button type="button" onClick={() => void act(() => respondToRequest(r.user_id, false))}>Decline</button>
+              <li key={r.user_id} style={ROW}>
+                <span style={NAME}>{r.username}</span>
+                <span style={{ display: "flex", gap: 8 }}>
+                  <button type="button" className="button button-primary" onClick={() => void act(() => respondToRequest(r.user_id, true))}>Accept</button>
+                  <button type="button" className="button button-soft" onClick={() => void act(() => respondToRequest(r.user_id, false))}>Decline</button>
+                </span>
               </li>
             ))}
           </ul>
@@ -135,28 +145,28 @@ function FriendsView() {
       )}
 
       {outgoing.length > 0 && (
-        <section aria-label="Sent requests">
+        <section aria-label="Sent requests" className="panel" style={PANEL}>
           <h2>Sent</h2>
-          <ul>
+          <ul style={LIST}>
             {outgoing.map((r) => (
-              <li key={r.user_id}>
-                {r.username} (waiting){" "}
-                <button type="button" onClick={() => void act(() => removeFriend(r.user_id))}>Cancel</button>
+              <li key={r.user_id} style={ROW}>
+                <span style={NAME}>{r.username} (waiting)</span>
+                <button type="button" className="button button-soft" onClick={() => void act(() => removeFriend(r.user_id))}>Cancel</button>
               </li>
             ))}
           </ul>
         </section>
       )}
 
-      <section aria-label="Your friends">
+      <section aria-label="Your friends" className="panel" style={PANEL}>
         <h2>Your friends</h2>
         {friends.length === 0 ? (
           <p>No friends yet. Search for a username to add one.</p>
         ) : (
-          <ul>
+          <ul style={LIST}>
             {friends.map((f) => (
-              <li key={f.user_id}>
-                <button type="button" onClick={() => setOpenFriend(f)}>{f.username}</button>{" "}
+              <li key={f.user_id} style={ROW}>
+                <button type="button" className="text-button" style={NAME} onClick={() => setOpenFriend(f)}>{f.username}</button>
                 <span>{f.streak > 0 ? `${f.streak}-day streak` : "No streak yet"}</span>
               </li>
             ))}
@@ -166,6 +176,14 @@ function FriendsView() {
     </main>
   );
 }
+
+// Small layout helpers on top of the app's classes (Jay may replace these when he styles the view).
+const LIST = { listStyle: "none", padding: 0, margin: "12px 0 0" } as const;
+const ROW = { display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "10px 0", borderTop: "1px solid #e2dac6" } as const;
+const NAME = { fontWeight: 600, overflowWrap: "anywhere" } as const;
+const PANEL = { padding: 18 } as const;
+// Not .community-page: that class is a full-height flex column for the garden and stretches these panels apart.
+const PAGE = { display: "flex", flexDirection: "column", gap: 14 } as const;
 
 function FriendCalendarView({ friend, onBack, onRemoved }: { friend: FriendSummary; onBack: () => void; onRemoved: () => void }) {
   const now = new Date();
@@ -205,35 +223,45 @@ function FriendCalendarView({ friend, onBack, onRemoved }: { friend: FriendSumma
 
   const status = cal ? statusByDate(cal) : null;
   return (
-    <main>
-      <button type="button" onClick={onBack}>Back</button>
-      <h1>{friend.username}</h1>
-      <p>{(cal?.streak ?? friend.streak) > 0 ? `${cal?.streak ?? friend.streak}-day streak` : "No streak yet"}</p>
-      {error && <p role="alert">{error}</p>}
-      <p>
-        <button type="button" aria-label="Previous month" onClick={() => step(-1)}>‹</button>{" "}
-        <strong>{MONTHS[ym.month]} {ym.year}</strong>{" "}
-        <button type="button" aria-label="Next month" onClick={() => step(1)}>›</button>
-      </p>
-      {!cal && !error ? (
-        <p role="status">Loading…</p>
-      ) : (
-        <ol aria-label="Calendar" style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 4, listStyle: "none", padding: 0 }}>
-          {monthCells(ym.year, ym.month).map((date, i) =>
-            date === null ? <li key={`b${i}`} aria-hidden /> : (
-              <li key={date} title={status ? MARK[status(date)] : ""} data-status={status ? status(date) : "none"} style={{ textAlign: "center" }}>
-                {Number(date.slice(8))}
-                <br />
-                <span aria-label={status ? MARK[status(date)] || "No log" : undefined}>
-                  {status?.(date) === "goal" ? "●" : status?.(date) === "logged" ? "○" : "·"}
-                </span>
-              </li>
-            ),
-          )}
-        </ol>
-      )}
-      <p><small>● goal met · ○ logged · · nothing logged</small></p>
-      <button type="button" onClick={() => void remove()} disabled={removing}>Remove friend</button>
+    <main style={PAGE}>
+      <div className="screen-title-row">
+        <h1 className="screen-title">{friend.username}</h1>
+        <button type="button" className="button button-soft" onClick={onBack}>Back</button>
+      </div>
+      <section className="panel" style={PANEL}>
+        <p style={{ fontWeight: 600 }}>
+          {(cal?.streak ?? friend.streak) > 0 ? `${cal?.streak ?? friend.streak}-day streak` : "No streak yet"}
+        </p>
+        {error && <p role="alert" className="field-error">{error}</p>}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", margin: "12px 0" }}>
+          <button type="button" className="button button-soft" aria-label="Previous month" onClick={() => step(-1)}>‹</button>
+          <strong>{MONTHS[ym.month]} {ym.year}</strong>
+          <button type="button" className="button button-soft" aria-label="Next month" onClick={() => step(1)}>›</button>
+        </div>
+        {!cal && !error ? (
+          <p role="status">Loading…</p>
+        ) : (
+          <ol aria-label="Calendar" style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 4, listStyle: "none", padding: 0, margin: 0 }}>
+            {monthCells(ym.year, ym.month).map((date, i) =>
+              date === null ? <li key={`b${i}`} aria-hidden /> : (
+                <li key={date} title={status ? MARK[status(date)] : ""} data-status={status ? status(date) : "none"}
+                  style={{ textAlign: "center", padding: "6px 0", borderRadius: 6,
+                    background: status?.(date) === "goal" ? "#dfe8c8" : status?.(date) === "logged" ? "#f2ecde" : "transparent" }}>
+                  {Number(date.slice(8))}
+                  <br />
+                  <span aria-label={status ? MARK[status(date)] || "No log" : undefined}>
+                    {status?.(date) === "goal" ? "●" : status?.(date) === "logged" ? "○" : "·"}
+                  </span>
+                </li>
+              ),
+            )}
+          </ol>
+        )}
+        <p style={{ marginTop: 12 }}><small>● goal met · ○ logged · · nothing logged</small></p>
+      </section>
+      <div style={{ marginTop: 16 }}>
+        <button type="button" className="button button-soft" onClick={() => void remove()} disabled={removing}>Remove friend</button>
+      </div>
     </main>
   );
 }

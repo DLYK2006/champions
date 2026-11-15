@@ -11,6 +11,7 @@ import {
   createGroup, joinGroup, leaveGroup, useGroupLive,
 } from "../../lib/groups";
 import { RequireProfile } from "../auth";
+import { FriendsView } from "../friends";
 
 const MAX_NAME = 30; // groups.name check in 0002_groups.sql
 
@@ -24,8 +25,23 @@ export default function GroupsController() {
   }, []);
   return (
     <RequireProfile>
-      <GroupsView />
+      <CommunitiesView />
     </RequireProfile>
+  );
+}
+
+// PRD 11.1: the Communities tab switches between the Group view and the Friends view.
+// Uses the app's existing segmented-control style (.shop-tabs) so it matches the Shop filters.
+function CommunitiesView() {
+  const [view, setView] = useState<"group" | "friends">("group");
+  return (
+    <>
+      <div className="shop-tabs" role="group" aria-label="Communities view" style={{ marginBottom: 12 }}>
+        <button type="button" aria-pressed={view === "group"} onClick={() => setView("group")}>Group</button>
+        <button type="button" aria-pressed={view === "friends"} onClick={() => setView("friends")}>Friends</button>
+      </div>
+      {view === "group" ? <GroupsView /> : <FriendsView />}
+    </>
   );
 }
 
