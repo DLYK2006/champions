@@ -108,7 +108,7 @@ The Groups page subscribes to `postgres_changes` on `group_daily_progress` and `
 ### Friends (PRD 11.1-11.3, added in v3.1, P1)
 
 - Communities tab = toggle between the existing Group view and a Friends view (Jay: toggle and visuals).
-- Friends owner: `0004_friends.sql` (friendships with pending/accepted, RLS), RPCs to search by username, send/accept/decline/remove, and `get_friend_calendar(p_friend uuid, p_from date, p_to date)` that returns only `{ date, status: 'goal' | 'logged' }` rows plus the friend's current streak, and only for accepted friends. Never return calories, macros, meals, weight, targets, avatar or group.
+- Friends owner: `0006_friends.sql` (friendships with pending/accepted, RLS), RPCs to search by username, send/accept/decline/remove, and `get_friend_calendar(p_friend uuid, p_from date, p_to date)` that returns only `{ date, status: 'goal' | 'logged' }` rows plus the friend's current streak, and only for accepted friends. Never return calories, macros, meals, weight, targets, avatar or group.
 - Reuse `lib/history/calendar.ts` (`dayStatus`, `currentStreak`, `monthCells`) so friend calendars match `/history`.
 
 ### Share card (PRD 11.4, added in v3.1, P1)
