@@ -53,6 +53,9 @@ export function NutritionBar({
   unit,
   kind,
   icon,
+  hint,
+  completed,
+  overTarget,
 }: {
   label: string;
   value: number;
@@ -60,6 +63,9 @@ export function NutritionBar({
   unit: string;
   kind: string;
   icon: IconName;
+  hint?: string;
+  completed?: boolean;
+  overTarget?: boolean;
 }) {
   const percent =
     target > 0 ? Math.max(0, Math.round((value / target) * 100)) : 0;
@@ -87,6 +93,19 @@ export function NutritionBar({
         >
           <span style={{ width: `${Math.min(percent, 100)}%` }} />
         </div>
+        {hint && (
+          <div className="nutrition-guidance">
+            <span>{hint}</span>
+            {completed ? (
+              <span className="nutrition-met" aria-label="Goal met">
+                <Icon name="check" size={12} />
+                Goal met
+              </span>
+            ) : overTarget ? (
+              <span>A little over today</span>
+            ) : null}
+          </div>
+        )}
       </div>
       <span className="progress-percent">
         {target > 0 ? `${percent}%` : "—"}

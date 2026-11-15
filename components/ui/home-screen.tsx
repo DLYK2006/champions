@@ -17,6 +17,9 @@ export function HomeScreen({
   progress: DailyProgress;
   group: GroupDailyProgress | null;
 }) {
+  const amount = (n: number) => n.toLocaleString("en-US");
+  const calorieMinimum = amount(Math.ceil(profile.calorie_target * 0.9));
+  const calorieMaximum = amount(Math.floor(profile.calorie_target * 1.1));
   return (
     <>
       <header className="app-header">
@@ -103,6 +106,12 @@ export function HomeScreen({
             unit="kcal"
             kind="calories"
             icon="bowl"
+            hint={`Aim for ${calorieMinimum}${profile.goal_type === "bulk" ? "+" : `\u2013${calorieMaximum}`} kcal`}
+            completed={progress.calorie_goal_completed}
+            overTarget={
+              profile.goal_type !== "bulk" &&
+              progress.total_calories > profile.calorie_target * 1.1
+            }
           />
           <NutritionBar
             label="Protein"
@@ -111,6 +120,8 @@ export function HomeScreen({
             unit="g"
             kind="protein"
             icon="leaf"
+            hint={`Aim for ${amount(Math.ceil(profile.protein_target_g * 0.9))}+ g`}
+            completed={progress.protein_goal_completed}
           />
           <div className="macro-pair">
             <div>
