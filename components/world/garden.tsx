@@ -30,6 +30,7 @@ export function Garden({
     "Your garden is in full bloom",
   ][stage];
   return (
+    <div className="garden-viewport">
     <div className={`garden-scene stage-${stage}`}>
       <Image
         src="/dig-in/garden-starter.png"
@@ -50,6 +51,7 @@ export function Garden({
         <Icon name="leaf" size={15} /> {name}
       </span>
       <GardenCharacters members={members} />
+    </div>
     </div>
   );
 }

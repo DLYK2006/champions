@@ -6,6 +6,10 @@ const { chromium } = require("playwright"),
   const browser = await chromium.launch();
   try {
     const { context, page, base, model, errors } = await harness(browser);
+    await page.goto(base + "/profile");
+    await page.getByRole("button", { name: "Settings", exact: true }).waitFor();
+    for (const name of ["Settings", "Wardrobe", "Calendar"])
+      assert.equal(await page.getByRole("button", { name, exact: true }).getAttribute("aria-expanded"), "false");
     await page.goto(base + "/profile?section=wardrobe");
     await page.getByRole("button", { name: "Wardrobe", exact: true }).waitFor();
     assert.equal(

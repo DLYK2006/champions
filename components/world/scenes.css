@@ -7,7 +7,39 @@
   pointer-events: none;
 }
 .compact-app .garden-scene > img {
+  object-fit: contain;
   object-position: center;
+}
+.compact-app .community-page > .garden-viewport {
+  flex: 1;
+  min-height: 0;
+  min-width: 0;
+  container-type: size;
+  display: grid;
+  place-items: center;
+}
+.garden-viewport > .garden-scene {
+  width: min(100cqw, 150cqh);
+  height: auto;
+  aspect-ratio: 3 / 2;
+  min-height: 0;
+  max-height: 100%;
+}
+@media (max-height: 500px) and (min-width: 560px) {
+  .compact-app .community-page {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 250px;
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+  .compact-app .community-page > .screen-title-row {
+    grid-column: 1 / -1;
+  }
+  .compact-app .community-page > .garden-viewport {
+    height: 100%;
+  }
+  .compact-app .community-page > .group-progress-panel {
+    align-self: center;
+  }
 }
 .garden-members {
   position: absolute;
@@ -51,12 +83,6 @@
 }
 .room-background {
   object-position: center bottom;
-}
-@media (max-width: 760px) {
-  /* Keep both connected grass regions visible on tall phones. */
-  .compact-app .community-page > .garden-scene {
-    max-height: calc(150vw - 51px);
-  }
 }
 .character-canvas {
   display: block;
