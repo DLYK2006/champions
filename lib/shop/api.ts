@@ -3,6 +3,7 @@
 import { createClient } from "../supabase/client";
 import type { Avatar } from "../../types/index";
 import type { ShopItem } from "../../components/ui/shop-screen";
+import { notifyProfileUpdated } from "../settings/settings";
 import { GENERIC_SHOP_ERROR, friendlyShopError, sanitizeAvatar, toShopItems, type ShopItemRow } from "./shop";
 
 export interface ShopState {
@@ -38,6 +39,7 @@ export async function loadShop(presentation: readonly ShopItem[]): Promise<ShopS
 export async function buyItem(id: string): Promise<number> {
   const { data, error } = await createClient().rpc("buy_item", { p_item_id: id });
   if (error) throw new Error(friendlyShopError(error.message));
+  notifyProfileUpdated();
   return (data as { coin_balance: number }).coin_balance;
 }
 
@@ -45,6 +47,7 @@ export async function buyItem(id: string): Promise<number> {
 export async function equipItem(id: string, equipped: boolean): Promise<string[]> {
   const { data, error } = await createClient().rpc("equip_item", { p_item_id: id, p_equipped: equipped });
   if (error) throw new Error(friendlyShopError(error.message));
+  notifyProfileUpdated();
   return (data as { equipped: string[] }).equipped;
 }
 
@@ -58,5 +61,6 @@ export async function saveAvatar(avatar: Avatar): Promise<Avatar> {
   if (!uid) throw new Error("Sign in to save your look.");
   const { data, error } = await supabase.from("profiles").update({ avatar: clean }).eq("id", uid).select("avatar").maybeSingle();
   if (error || !data) throw new Error("Couldn't save that look. Try again.");
+  notifyProfileUpdated();
   return sanitizeAvatar(data.avatar as Record<string, unknown>);
 }
