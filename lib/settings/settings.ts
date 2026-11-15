@@ -1,12 +1,15 @@
 // Settings logic with no React or Supabase, so it can be unit tested. Owner: @joshuatsou123.
 // Uses the same rules as onboarding (lib/targets) so the Profile page can never save what onboarding refuses.
 import { resolveTargetWeight, validateOnboarding, type FieldResult } from "../targets/targets";
+import { sanitizeAvatar } from "../shop/shop";
+import { FALLBACK_AVATAR } from "../home/home";
+import type { Avatar } from "../../types/index";
 import type { SettingsCheck, SettingsProfile } from "./types";
 
 export const USERNAME_RE = /^[a-zA-Z0-9_]{3,20}$/;
 export const SETTINGS_COLUMNS =
   "username, goal_type, height_cm, weight_kg, age, target_weight_kg, calorie_target, protein_target_g, " +
-  "carbs_target_g, fat_target_g, unit_preference, hide_status_from_group, notify_meal_reminders, notify_group_alerts";
+  "carbs_target_g, fat_target_g, unit_preference, hide_status_from_group, notify_meal_reminders, notify_group_alerts, avatar";
 
 const num = (v: unknown) => (typeof v === "string" ? Number(v) : (v as number));
 const numOrNull = (v: unknown) => (v === null || v === undefined ? null : num(v));
@@ -28,8 +31,23 @@ export function toSettings(row: Record<string, unknown>): SettingsProfile {
     hide_status_from_group: row.hide_status_from_group === true,
     notify_meal_reminders: row.notify_meal_reminders === true,
     notify_group_alerts: row.notify_group_alerts === true,
+    avatar: avatarFromRow(row.avatar),
   };
 }
+
+/** An old or partial avatar (the column defaults to {}) still loads: missing core keys use the fallback look. */
+function avatarFromRow(v: unknown): Avatar {
+  const raw = v && typeof v === "object" ? (v as Record<string, unknown>) : {};
+  try {
+    return sanitizeAvatar({ ...FALLBACK_AVATAR, ...raw });
+  } catch {
+    return { ...FALLBACK_AVATAR };
+  }
+}
+
+const cleanAvatar = (a: Avatar): Avatar | null => {
+  try { return sanitizeAvatar(a as unknown as Record<string, unknown>); } catch { return null; }
+};
 
 /** Maintain locks target weight to current weight (PRD 4.2); username is trimmed. */
 export function normalizeSettings(s: SettingsProfile): SettingsProfile {
@@ -37,6 +55,7 @@ export function normalizeSettings(s: SettingsProfile): SettingsProfile {
     ...s,
     username: s.username.trim(),
     target_weight_kg: s.goal_type ? resolveTargetWeight(s.goal_type, s.weight_kg, s.target_weight_kg) : s.target_weight_kg,
+    avatar: cleanAvatar(s.avatar) ?? s.avatar, // drops unknown keys; an invalid avatar is reported by validateSettings
   };
 }
 
@@ -53,6 +72,7 @@ export function validateSettings(input: SettingsProfile): SettingsCheck {
     ...o.targets.fields,
     unit_preference: s.unit_preference === "metric" || s.unit_preference === "imperial" ? { ok: true } : bad("Pick metric or imperial"),
   };
+  fields.avatar = cleanAvatar(s.avatar) ? { ok: true } : bad("Couldn't save that look. Try again.");
   for (const k of ["hide_status_from_group", "notify_meal_reminders", "notify_group_alerts"] as const) {
     fields[k] = typeof s[k] === "boolean" ? { ok: true } : bad("Must be on or off");
   }

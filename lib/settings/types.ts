@@ -1,6 +1,6 @@
 // What the Profile settings page reads and writes (PRD 14.1). Storage is metric; the UI converts for display
 // with lib/targets (cmFromFeetInches, kgFromLb, ...). Owner: @joshuatsou123.
-import type { GoalType } from "../../types/index";
+import type { Avatar, GoalType } from "../../types/index";
 import type { FieldResult, Units } from "../targets";
 
 export interface SettingsProfile {
@@ -18,6 +18,8 @@ export interface SettingsProfile {
   hide_status_from_group: boolean;
   notify_meal_reminders: boolean;
   notify_group_alerts: boolean;
+  /** Base look plus the free starter wardrobe (hat/pants/shoes). Paid items are equipped via the Shop RPCs, not here. */
+  avatar: Avatar;
 }
 
 export type SettingsField = keyof SettingsProfile;
