@@ -130,14 +130,7 @@ body {
 .profile-avatar .profile-panel-toggle .text-button[aria-pressed="true"] {
   color: #f5d895;
 }
-.profile-avatar:has(.macro-chart) {
-  color: #493b2b;
-  background: #f5efdf;
-}
-.profile-avatar:has(.macro-chart) .profile-identity h2,
-.profile-avatar:has(.macro-chart) .profile-panel-toggle .text-button {
-  color: #34522f;
-}
+/* The macros chart keeps the green panel; its chart areas sit on white cards (components/analytics/MacroChart). */
 @media (max-width: 700px) {
   .profile-avatar .profile-stage {
     min-height: 0;

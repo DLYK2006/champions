@@ -13,6 +13,8 @@ const MACROS = [
   { key: "fat_g", label: "Fat", color: "#b0573a" },
 ] as const;
 const INK = "#2f3b26", MUTED = "#6b6146", BAND = "#e3dcc6", BAR = "#46623b";
+const ON_GREEN = "#f1ead7", ON_GREEN_MUTED = "#bdcbb1"; // evening theme text on the green panel
+const CARD = "rounded-lg bg-white p-3 shadow-sm";
 const MAX_BARS = 14;
 
 type Day = { date: string; calories: number; protein_g: number; carbs_g: number; fat_g: number };
@@ -52,10 +54,10 @@ export function MacroChart({ date, from, to, calorieTarget, goalType }: Props) {
   const shown = data.days.slice(-MAX_BARS);
 
   return (
-    <div className="macro-chart space-y-3 text-sm" style={{ overflowY: "auto", maxHeight: "min(52vh, 24rem)", width: "100%", maxWidth: "22rem", margin: "0 auto" }}>
-      <h3 className="text-base font-semibold">Your macros · {title}</h3>
+    <div className="macro-chart space-y-3 text-sm" style={{ overflowY: "auto", maxHeight: "min(52vh, 24rem)", width: "100%", maxWidth: "22rem", margin: "0 auto", scrollbarWidth: "thin", scrollbarColor: "#bdcbb1 transparent" }}>
+      <h3 className="text-base font-semibold" style={{ color: ON_GREEN }}>Your macros · {title}</h3>
 
-      <section aria-label="Macro split" className="space-y-1">
+      <section aria-label="Macro split" className={`space-y-1 ${CARD}`}>
         <h4 className="text-xs font-semibold uppercase tracking-wide" style={{ color: MUTED }}>{n > 1 ? `Macro split · avg of ${n} days` : "Macro split"}</h4>
         <svg viewBox="0 0 300 14" width="100%" role="img" aria-label={macros.map((m) => `${m.label} ${round(m.grams)} g`).join(", ")}>
           {macros.map((m, i) => {
@@ -79,7 +81,7 @@ export function MacroChart({ date, from, to, calorieTarget, goalType }: Props) {
         </ul>
       </section>
 
-      <section aria-label="Calories versus target" className="space-y-1">
+      <section aria-label="Calories versus target" className={`space-y-1 ${CARD}`}>
         <h4 className="text-xs font-semibold uppercase tracking-wide" style={{ color: MUTED }}>Calories vs target</h4>
         <CaloriesBars days={shown} lo={lo} hi={hi} target={calorieTarget} />
         <p className="text-xs" style={{ color: MUTED }}>
@@ -87,7 +89,7 @@ export function MacroChart({ date, from, to, calorieTarget, goalType }: Props) {
         </p>
       </section>
 
-      <details className="text-xs">
+      <details className={`text-xs ${CARD}`} style={{ color: INK }}>
         <summary>Show numbers</summary>
         <table className="w-full text-left">
           <thead><tr><th>Date</th><th>kcal</th><th>Protein</th><th>Carbs</th><th>Fat</th></tr></thead>
@@ -99,7 +101,7 @@ export function MacroChart({ date, from, to, calorieTarget, goalType }: Props) {
         </table>
       </details>
 
-      <p className="text-xs" style={{ color: MUTED }}>
+      <p className="text-xs" style={{ color: ON_GREEN_MUTED }}>
         {data.source === "databricks" ? "Analytics by Databricks" : "Databricks is warming up; showing your saved totals"}
       </p>
     </div>
