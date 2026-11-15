@@ -1,4 +1,4 @@
-# Build plan (24 h): what we actually build from docs/PRD.md (DIG IN v3.0)
+# Build plan (24 h): what we actually build from docs/PRD.md (DIG IN v3.1)
 
 Decided by Daren (lead), Nov 14. The PRD is the product. This file pins the decisions the PRD leaves open: stack details, owners, contracts and milestones. If the two disagree on an implementation detail, this file wins; on product intent, the PRD wins.
 
@@ -104,6 +104,16 @@ The Groups page subscribes to `postgres_changes` on `group_daily_progress` and `
 ### Tables (PRD 15 data models, snake_case)
 
 `profiles`, `meals`, `daily_progress (user_id, date)`, `coin_transactions (reward_event_id unique)`, `shop_items`, `inventory`, `groups`, `group_members`, `group_daily_progress (group_id, date)`. Row-level security means users read and write only their own rows. Group members never read each other's `daily_progress` or `profiles` rows; they see only username, avatar, equipped items and personal_goal_completed through `get_group_status()` (decided Nov 14).
+
+### Friends (PRD 11.1-11.3, added in v3.1, P1)
+
+- Communities tab = toggle between the existing Group view and a Friends view (Jay: toggle and visuals).
+- Friends owner: `0004_friends.sql` (friendships with pending/accepted, RLS), RPCs to search by username, send/accept/decline/remove, and `get_friend_calendar(p_friend uuid, p_from date, p_to date)` that returns only `{ date, status: 'goal' | 'logged' }` rows plus the friend's current streak, and only for accepted friends. Never return calories, macros, meals, weight, targets, avatar or group.
+- Reuse `lib/history/calendar.ts` (`dayStatus`, `currentStreak`, `monthCells`) so friend calendars match `/history`.
+
+### Share card (PRD 11.4, added in v3.1, P1)
+
+Daren. Client-side image (canvas) with the garden and completion (or avatar when solo), streak, today's meals logged and goal met; no calorie, macro or weight numbers. Share with `navigator.share({ files })` when supported, else download the PNG. No server storage, no public pages.
 
 ### History (added Nov 14, beyond the PRD)
 

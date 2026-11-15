@@ -1,4 +1,4 @@
-DIG IN — Health Tracker App PRD v3.0
+DIG IN — Health Tracker App PRD v3.1
 Date: November 14, 2026
 Theme: Let's Dig In
 Platform: Mobile-first web app (PWA)
@@ -385,15 +385,26 @@ The world serves as an optional social reward experience.
 
 Solo users retain their own avatar and personal progression.
 
-11. Friends and Social Features
-Hackathon MVP
-- Invite friends through group links or codes.
-- Display group members.
-- Show daily achievement completion.
-- Display group progress.
-- Show shared-world updates.
+11. Communities and Friends
+11.1 Communities Tab
+The Groups tab becomes the Communities tab, with a toggle between two views:
+- Group: the existing group view (invite through group links or codes, group members, daily achievement completion, group progress, shared-world updates).
+- Friends: the user's friends and friend requests.
+11.2 Adding Friends
+- Search for a user by username and send a friend request.
+- Friendship is mutual: the other user must accept. Pending requests appear in the Friends view with Accept and Decline.
+- Either user can remove the friendship at any time.
+11.3 What Friends See
+Tapping a friend opens their progress:
+- Current streak.
+- Calendar of past days marked goal met, logged, or nothing.
+Friends never see calories, macros, meals, body weight, targets, avatar, or group membership. Missed days are shown neutrally.
+11.4 Sharing
+Users can share a progress card to other apps, similar to Strava activity cards.
+- The app draws an image card and opens the phone's native share sheet (Instagram Stories, WhatsApp, etc.), or downloads the image if sharing isn't available.
+- Card contents: the group's garden and completion (or the user's avatar when solo), current streak, and today's status (meals logged, goal met). No calorie, macro, or weight numbers.
+- Nothing is posted automatically, and there are no public profile pages.
 Future Features
-- Friends list.
 - Progress feed.
 - Reactions.
 - Encouragement nudges.
@@ -450,18 +461,15 @@ Users can:
 All purchases must be validated server-side.
 
 14. Navigation
-The application uses six bottom navigation tabs.
+The application uses five bottom navigation tabs.
 Tab	Function
 Home	Personal avatar and nutrition dashboard
 Log Food	AI camera scanner
-Friends	Friends and social activity
-Groups	Optional community challenges and shared world
+Communities	Group view (challenges and shared world) and Friends view, switched by a toggle
 Shop	Avatar cosmetics
 Profile	Personal settings, avatar and account
 
 The camera button is centered and visually emphasized.
-
-For the 24-hour MVP, Friends may be reduced to an invite screen integrated with Groups.
 
 14.1 Profile and Settings
 The Profile tab is a settings page. It does not show progress or statistics (streaks and past logs stay on Home and History).
@@ -611,6 +619,8 @@ Build after core functionality works:
 - Group achievement celebration.
 - AI meal suggestions.
 - Profile and Settings tab (14.1).
+- Friends in the Communities tab (username search, mutual requests, friend streak and calendar).
+- Share progress card to other apps.
 P2 — Post-Hackathon
 - Full friends feed.
 - More complex group challenges.
