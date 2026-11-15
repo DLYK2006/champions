@@ -2,6 +2,7 @@ import type { CSSProperties } from "react";
 
 export type IconName =
   | "home"
+  | "profile"
   | "scan"
   | "users"
   | "shop"
@@ -27,6 +28,7 @@ export type IconName =
   | "carrot";
 const paths: Record<IconName, string> = {
   home: "M3 11 12 3l9 8M5 10v11h5v-7h4v7h5V10",
+  profile: "M8 3h8v8H8ZM5 16l4-3h6l4 3v6H5Z",
   scan: "M4 8h4l2-3h5l2 3h3v12H4ZM9 13h6v4H9Z",
   users: "M8 4h4v5H8ZM16 6h4v4h-4ZM3 13l3-2h8l3 2v7H3ZM17 13h3l2 3v4h-3",
   shop: "M4 10v11h16V10M3 10l2-7h14l2 7ZM9 21v-7h6v7M3 10l3 2 3-2 3 2 3-2 3 2 3-2",

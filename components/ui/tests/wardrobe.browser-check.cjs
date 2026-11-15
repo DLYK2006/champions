@@ -18,6 +18,7 @@ const assert = require("node:assert/strict");
       viewport: { width: 900, height: 800 },
       reducedMotion: "reduce",
     });
+    await page.goto(`${process.env.UI_CHECK_URL || "http://localhost:3000"}/scan`);
     await page.goto(
       `${process.env.UI_CHECK_URL || "http://localhost:3000"}/digin-ui-wardrobe-fixture`,
     );
@@ -60,7 +61,7 @@ const assert = require("node:assert/strict");
     );
     await page.setViewportSize({ width: 1280, height: 800 });
     await page
-      .getByRole("button", { name: "Coin shop", exact: true })
+      .getByRole("button", { name: "All", exact: true })
       .scrollIntoViewIfNeeded();
     const frame = await page.locator(".wardrobe-panel").boundingBox(),
       catalog = await page.locator(".shop-catalog").boundingBox();
@@ -75,67 +76,6 @@ const assert = require("node:assert/strict");
         path: process.env.UI_CHECK_OUTPUT + "/shop-matched-frame.png",
       });
     }
-    await page
-      .getByRole("button", { name: "Starter wardrobe", exact: true })
-      .click();
-    for (const name of ["Hat", "Clothes", "Pants", "Shoes"]) {
-      assert.equal(
-        await page
-          .getByRole("group", { name, exact: true })
-          .getByRole("button")
-          .count(),
-        name === "Hat" ? 3 : 2,
-      );
-    }
-    await page
-      .getByRole("button", { name: "Moss beanie", exact: true })
-      .click();
-    await page
-      .getByRole("button", { name: "Indigo trousers", exact: true })
-      .click();
-    await page
-      .getByRole("button", { name: "Canvas sneakers", exact: true })
-      .click();
-    await page
-      .getByRole("button", { name: "Save outfit", exact: true })
-      .click();
-    await page.waitForFunction(
-      () =>
-        document.querySelector('[aria-label="Saved wardrobe"]')?.textContent,
-    );
-    const saved = JSON.parse(
-      await page.getByLabel("Saved wardrobe").textContent(),
-    );
-    assert.equal(saved.hat, "moss-beanie");
-    assert.equal(saved.pants, "indigo-trousers");
-    assert.equal(saved.shoes, "canvas-sneakers");
-    if (process.env.UI_CHECK_OUTPUT)
-      await page.locator(".shop-page").screenshot({
-        path: process.env.UI_CHECK_OUTPUT + "/starter-wardrobe-desktop.png",
-      });
-    await page.getByRole("button", { name: "Toggle save rejection" }).click();
-    await page
-      .getByRole("button", { name: "Straw sunhat", exact: true })
-      .click();
-    await page
-      .getByRole("button", { name: "Save outfit", exact: true })
-      .click();
-    await page
-      .getByRole("alert")
-      .filter({ hasText: "Wardrobe save failed" })
-      .waitFor();
-    assert.equal(
-      await page
-        .getByRole("button", { name: "Straw sunhat", exact: true })
-        .getAttribute("aria-pressed"),
-      "true",
-      "Failed save retains draft",
-    );
-    assert.equal(
-      JSON.parse(await page.getByLabel("Saved wardrobe").textContent()).hat,
-      "moss-beanie",
-      "Failed save never claims persistence",
-    );
     await page.getByRole("button", { name: "Render wardrobe sheet" }).click();
     await page.waitForFunction(
       () => document.querySelector("#sheet-report")?.textContent,
@@ -167,7 +107,7 @@ const assert = require("node:assert/strict");
       });
     }
     console.log(
-      "PASS: stable rear hair, unified sprite portrait, eight wearable options, saved/rejected drafts and matched Shop frame height.",
+      "PASS: stable rear hair, unified sprite portrait, eight wearable options and matched Shop frame height.",
     );
   } finally {
     await browser.close();

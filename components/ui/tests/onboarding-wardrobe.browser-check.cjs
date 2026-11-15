@@ -80,7 +80,11 @@ const { default: AxeBuilder } = require("@axe-core/playwright");
         else if (url.pathname.startsWith("/rest/v1/rpc/")) {
           const rpc = url.pathname.split("/").at(-1);
           calls.push({ rpc, args: req.postDataJSON() });
-          body =
+          if (rpc === "save_outfit") {
+            const args = req.postDataJSON();
+            profile.avatar = args.p_avatar; profile.equipped = args.p_equipped;
+            body = {avatar:profile.avatar,equipped:profile.equipped};
+          } else body =
             rpc === "get_group_status"
               ? null
               : {
@@ -238,10 +242,7 @@ const { default: AxeBuilder } = require("@axe-core/playwright");
         "Saved appearance survives reload",
       );
       if (mode === "solo") {
-        await page.goto(url + "/shop");
-        await page
-          .getByRole("button", { name: "Starter wardrobe", exact: true })
-          .click();
+        await page.goto(url + "/profile?section=wardrobe");
         assert.equal(
           await page
             .getByRole("button", { name: "Moss beanie", exact: true })
@@ -252,7 +253,7 @@ const { default: AxeBuilder } = require("@axe-core/playwright");
           .getByRole("button", { name: "Straw sunhat", exact: true })
           .click();
         await page
-          .getByRole("button", { name: "Save outfit", exact: true })
+          .getByRole("button", { name: "Save Outfit", exact: true })
           .click();
         await page
           .getByRole("status")
@@ -261,18 +262,16 @@ const { default: AxeBuilder } = require("@axe-core/playwright");
         assert.equal(
           profile.avatar.hat,
           "straw-sunhat",
-          "Real ShopController uses owner saveAvatar PATCH",
+          "Real ProfileController uses atomic save_outfit",
         );
         await page.reload();
-        await page
-          .getByRole("button", { name: "Starter wardrobe", exact: true })
-          .click();
+
         assert.equal(
           await page
             .getByRole("button", { name: "Straw sunhat", exact: true })
             .getAttribute("aria-pressed"),
           "true",
-          "Saved Shop choice survives reload",
+          "Saved Profile choice survives reload",
         );
         assert.equal(
           profile.coin_balance,
@@ -283,7 +282,8 @@ const { default: AxeBuilder } = require("@axe-core/playwright");
           !calls.some((c) => c.rpc === "buy_item" || c.rpc === "equip_item"),
           "Starter choices never invoke paid inventory RPCs",
         );
-        await page.goto(url + "/history");
+        await page.goto(url + "/");
+        await page.getByRole("button", {name:"Open sharing",exact:true}).click();
         await page.getByRole("button", {name:"Share my progress",exact:true}).click();
         const card = page.getByRole("img", {name:/Your progress card:/});
         await card.waitFor({timeout:5000});

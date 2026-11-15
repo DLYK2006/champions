@@ -106,7 +106,6 @@ export default function InteractionFixture() {
           equipped={[]}
           items={demoShopItems}
           onBuy={pendingRequest}
-          onEquip={pendingRequest}
         />
       )}
     </>

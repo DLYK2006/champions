@@ -8,6 +8,7 @@ import { DemoProvider } from "./demo-context";
 
 const tabs: { href: string; label: string; icon: IconName }[] = [
   { href: "/", label: "Home", icon: "home" },
+  { href: "/profile", label: "Profile", icon: "profile" },
   { href: "/scan", label: "Scan", icon: "scan" },
   { href: "/groups", label: "Community", icon: "users" },
   { href: "/shop", label: "Shop", icon: "shop" },
@@ -23,7 +24,9 @@ function Shell({ children }: { children: ReactNode }) {
           ? "community"
           : pathname.startsWith("/shop")
             ? "shop"
-            : "other";
+            : pathname.startsWith("/profile")
+              ? "profile"
+              : "other";
   return (
     <div className={`dig-app compact-app route-${route}`}>
       <a className="skip-link" href="#main-content">

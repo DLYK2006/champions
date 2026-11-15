@@ -64,3 +64,13 @@ export async function saveAvatar(avatar: Avatar): Promise<Avatar> {
   notifyProfileUpdated();
   return sanitizeAvatar(data.avatar as Record<string, unknown>);
 }
+
+/** Atomically saves the free outfit and owned paid equipment. Ownership is checked by the RPC. */
+export async function saveOutfit(avatar: Avatar, equipped: string[]): Promise<{ avatar: Avatar; equipped: string[] }> {
+  const clean = sanitizeAvatar(avatar as unknown as Record<string, unknown>);
+  const { data, error } = await createClient().rpc("save_outfit", { p_avatar: clean, p_equipped: equipped });
+  if (error || !data) throw new Error(error ? friendlyShopError(error.message) : "Couldn't save your outfit. Try again.");
+  const saved = data as { avatar: Avatar; equipped: string[] };
+  notifyProfileUpdated();
+  return { avatar: sanitizeAvatar(saved.avatar as unknown as Record<string, unknown>), equipped: saved.equipped };
+}

@@ -1,4 +1,4 @@
-import { HistoryController } from "@/components/history/HistoryController";
+import { redirect } from "next/navigation";
 export default function Page() {
-  return <HistoryController />;
+  redirect("/profile?section=calendar");
 }
