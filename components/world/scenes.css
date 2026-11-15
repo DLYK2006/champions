@@ -41,6 +41,39 @@
     align-self: center;
   }
 }
+@media (min-width: 1000px) and (min-height: 501px) {
+  .compact-app.route-community .app-main:has(.garden-viewport) {
+    max-width: 1600px;
+  }
+  .compact-app .community-page:has(> .garden-viewport) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 220px;
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+  .compact-app .community-page > .screen-title-row {
+    grid-column: 1 / -1;
+  }
+  .compact-app .community-page > .garden-viewport {
+    height: 100%;
+  }
+  .compact-app .community-page > .group-progress-panel,
+  .compact-app .community-page > .solo-actions {
+    align-self: center;
+  }
+  .compact-app .community-page .compact-group-summary,
+  .compact-app .community-page > .solo-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 18px;
+  }
+  .compact-app .community-page .compact-bonus-tiers {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .compact-app .community-page .compact-bonus-tiers > span {
+    justify-content: space-between;
+  }
+}
 .garden-members {
   position: absolute;
   inset: 0;
