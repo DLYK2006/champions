@@ -52,9 +52,12 @@ function ProfileView() {
   const params = useSearchParams(),
     router = useRouter();
   const requested = params.get("section");
-  const section: Section = sections.includes(requested as Section)
-    ? (requested as Section)
-    : "settings";
+  const section: Section | null =
+    requested === "none"
+      ? null
+      : sections.includes(requested as Section)
+        ? (requested as Section)
+        : "settings";
   const [saved, setSaved] = useState<SettingsProfile | null>(null),
     [shop, setShop] = useState<ShopState | null>(null);
   const [draft, setDraft] = useState<SettingsProfile | null>(null);
@@ -208,7 +211,9 @@ function ProfileView() {
                   onClick={() => {
                     setError("");
                     setMessage("");
-                    router.push(`/profile?section=${id}`, { scroll: false });
+                    const query = new URLSearchParams(params.toString());
+                    query.set("section", section === id ? "none" : id);
+                    router.push(`/profile?${query}`, { scroll: false });
                   }}
                 >
                   <Icon name={sectionIcon[id]} size={19} />

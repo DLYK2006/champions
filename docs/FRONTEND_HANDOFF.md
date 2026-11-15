@@ -91,3 +91,14 @@ Shop has one purchase catalog. Owned rows remain visible with OWNED and a Wardro
 New checks: `node components/ui/tests/profile.browser-check.cjs`, `profile-responsive.browser-check.cjs`, and `profile-navigation.browser-check.cjs` (same directory and external Playwright setup above). Backend interception is restricted to the dummy digin-ui-test host. They cover real production controllers, authoritative-price purchases, failed save retention/retry, independent drafts, resets, metric/imperial round trips, persisted looks, auth/onboarding guards, five-tab geometry, full-body avatar visibility and axe at 320/390/768/1440. Existing onboarding/wardrobe/art and pending regressions were adapted to Profile. Run fixture-based checks sequentially and finish all of them before type generation/build; fixture routes must never be deployed.
 
 Home goal guidance follows the lead's 0007 presentation request: Bulk shows a minimum with no maximum, Cut/Maintain show the 90-110% range, protein shows its minimum. Goal-met labels use daily_progress completion flags, never a client-derived reward decision. `home-goals.browser-check.cjs` verifies differing goal types, stale-looking amounts with false server flags and dialog keyboard close.
+
+
+## Profile collapse and Calendar date selection (#74)
+
+An active Profile accordion can be closed (`section=none`); Settings and Wardrobe drafts stay mounted and are preserved. Section navigation preserves Calendar query filters and browser history.
+
+Calendar no longer displays the color legend. The default view is analysis selection for all dates; applying both From/To fields selects an inclusive range. `from=YYYY-MM-DD&to=YYYY-MM-DD` is the public URL contract. Clicking a calendar date adds `date=YYYY-MM-DD` and displays that day's existing meal details; Back to analysis removes date and retains the range. All dates clears all three filters. Invalid/partial/reversed/future ranges cannot be applied. Invalid shared URL dates fall back to all-date selection. Results are tagged with their date so browser navigation never renders a previous day's meals under a new heading.
+
+Daren owns the future Databricks connection; Jay explicitly deferred it. `HistoryController` accepts optional `renderAnalysis(range)` with typed `AnalysisRange = {kind:'all'} | {kind:'range',from,to}` from `components/history/analysis-selection.ts`. The slot is currently empty: only the chosen scope is displayed, with no fabricated analytics or new API/backend calls.
+
+Regression: `node --test components/history/analysis-selection.test.mjs`; `node components/ui/tests/calendar-filters.browser-check.cjs` with the existing external Playwright setup. Browser checks cover all accordion toggles, retained drafts, default/range/day/reset modes, validation and responsive axe checks.
