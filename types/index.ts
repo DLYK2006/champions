@@ -3,16 +3,17 @@ export type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack';
 export type Confidence = 'high' | 'medium' | 'low';
 export type Mood = 'ready' | 'progressing' | 'active' | 'goal_complete' | 'group_success';
 
-export interface AvatarConfig {
-  skinColor: string; top: string; hairColor: string; eyes: string; mouth: string; clothing: string;
-  hat?: string; pants?: string; shoes?: string; // free starter wardrobe (Jay); clothing is the top piece
-}
+export interface AvatarConfig { skinColor: string; top: string; hairColor: string; eyes: string; mouth: string; clothing: string }
+// Free starter wardrobe (Jay); clothing is the top piece. Kept out of AvatarConfig so
+// Record<keyof AvatarConfig, ...> option tables stay valid.
+export interface StarterWardrobe { hat?: string; pants?: string; shoes?: string }
+export type Avatar = AvatarConfig & StarterWardrobe;
 
 export interface Profile {
   id: string; username: string; goal_type: GoalType;
   height_cm: number; weight_kg: number; age: number; target_weight_kg: number | null;
   calorie_target: number; protein_target_g: number; carbs_target_g: number | null; fat_target_g: number | null;
-  avatar: AvatarConfig; equipped: string[];        // shop item ids
+  avatar: Avatar; equipped: string[];        // shop item ids
   coin_balance: number; streak: number;
 }
 
@@ -33,6 +34,6 @@ export interface GroupDailyProgress {
   group_id: string; date: string; eligible_member_count: number; completed_member_count: number;
   completion_percentage: number; bonus_tier: 0 | 10 | 20 | 30;
 }
-export interface GroupMemberStatus { user_id: string; username: string; avatar: AvatarConfig; equipped: string[]; personal_goal_completed: boolean }
+export interface GroupMemberStatus { user_id: string; username: string; avatar: Avatar; equipped: string[]; personal_goal_completed: boolean }
 
 export interface LogMealResponse { progress: DailyProgress; coins_awarded: CoinEvent[]; coin_balance: number; group: GroupDailyProgress | null }
