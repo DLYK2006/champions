@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { SettingsProfile } from "@/lib/settings";
 import { validateSettings } from "@/lib/settings";
 import {
@@ -9,9 +9,9 @@ import {
   kgFromLb,
   lbFromKg,
   round1,
-  presetsForGoal,
   PRESETS_DISCLAIMER,
 } from "@/lib/targets";
+import { ACTIVITY_LEVELS, recommendTargets, type ActivityLevel } from "@/lib/targets/recommend";
 import { AppearancePicker } from "@/components/avatar/appearance-picker";
 
 const measurements = (s: SettingsProfile) => {
@@ -62,6 +62,28 @@ export function SettingsForm({
     fat_target_g: value.fat_target_g == null ? "" : String(value.fat_target_g),
   }));
   const check = validateSettings(value);
+  // Personal recommendation (same formula as onboarding); the AI only explains it.
+  const statsOk = [value.weight_kg, value.height_cm, value.age].every((n) => Number.isFinite(n) && n > 0);
+  const rec = value.activity_level && statsOk
+    ? recommendTargets({ weight_kg: value.weight_kg, height_cm: value.height_cm, age: value.age, goal: value.goal_type, activity: value.activity_level })
+    : null;
+  const recKey = rec ? `${value.goal_type}|${value.activity_level}|${value.weight_kg}|${value.height_cm}|${value.age}` : "";
+  const [explained, setExplained] = useState<{ key: string; text: string } | null>(null);
+  useEffect(() => {
+    if (!rec || explained?.key === recKey) return;
+    let active = true;
+    const t = setTimeout(() => {
+      fetch("/api/targets/explain", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ weight_kg: value.weight_kg, height_cm: value.height_cm, age: value.age, goal: value.goal_type, activity: value.activity_level }),
+      })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((b) => { if (active && b?.explanation) setExplained({ key: recKey, text: b.explanation }); })
+        .catch(() => undefined); // optional; the numbers never depend on it
+    }, 600); // wait for typing to settle
+    return () => { active = false; clearTimeout(t); };
+  }, [recKey]); // eslint-disable-line react-hooks/exhaustive-deps -- recKey captures every input
   const imperial = value.unit_preference === "imperial";
   function measure(
     key: "height" | "ft" | "inch" | "weight" | "target",
@@ -197,6 +219,17 @@ export function SettingsForm({
           "age",
         )}
       </div>
+      <label className="profile-field">
+        How often do you exercise?
+        <select
+          value={value.activity_level ?? ""}
+          disabled={pending}
+          onChange={(e) => onChange({ ...value, activity_level: (e.target.value || null) as ActivityLevel | null })}
+        >
+          <option value="">Choose one</option>
+          {ACTIVITY_LEVELS.map((a) => <option key={a.id} value={a.id}>{a.label}</option>)}
+        </select>
+      </label>
       <fieldset className="profile-choice" disabled={pending}>
         <legend>Goal</legend>
         {(["bulk", "cut", "maintain"] as const).map((g) => (
@@ -261,34 +294,28 @@ export function SettingsForm({
           </div>
         ))}
       </div>
-      {presetsForGoal(value.goal_type).map((p) => (
+      {rec ? (
         <button
           className="button button-soft"
           type="button"
           disabled={pending}
-          key={p.id}
           onClick={() => {
             const fields = {
-              calorie_target: p.calorie_target,
-              protein_target_g: p.protein_target_g,
-              carbs_target_g: p.carbs_target_g,
-              fat_target_g: p.fat_target_g,
+              calorie_target: rec.calorie_target,
+              protein_target_g: rec.protein_target_g,
+              carbs_target_g: rec.carbs_target_g,
+              fat_target_g: rec.fat_target_g,
             };
             onChange({ ...value, ...fields });
-            setRaw({
-              ...raw,
-              ...Object.fromEntries(
-                Object.entries(fields).map(([k, v]) => [
-                  k,
-                  v == null ? "" : String(v),
-                ]),
-              ),
-            });
+            setRaw({ ...raw, ...Object.fromEntries(Object.entries(fields).map(([k, v]) => [k, String(v)])) });
           }}
         >
-          Apply {p.label} preset
+          Apply recommended for you · {rec.calorie_target} kcal · {rec.protein_target_g} g protein
         </button>
-      ))}
+      ) : (
+        <p className="profile-hint">Choose how often you exercise to see a recommendation.</p>
+      )}
+      {rec && explained?.key === recKey && <p className="profile-hint">{explained.text}</p>}
       <p className="profile-hint">{PRESETS_DISCLAIMER}</p>
       <h3>Appearance</h3>
       <AppearancePicker

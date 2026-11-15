@@ -1,6 +1,7 @@
 // Settings logic with no React or Supabase, so it can be unit tested. Owner: @joshuatsou123.
 // Uses the same rules as onboarding (lib/targets) so the Profile page can never save what onboarding refuses.
 import { resolveTargetWeight, validateOnboarding, type FieldResult } from "../targets/targets";
+import { ACTIVITY_LEVELS, type ActivityLevel } from "../targets/recommend";
 import { sanitizeAvatar } from "../shop/shop";
 import { FALLBACK_AVATAR } from "../home/home";
 import type { Avatar } from "../../types/index";
@@ -9,7 +10,7 @@ import type { SettingsCheck, SettingsProfile } from "./types";
 export const USERNAME_RE = /^[a-zA-Z0-9_]{3,20}$/;
 export const SETTINGS_COLUMNS =
   "username, goal_type, height_cm, weight_kg, age, target_weight_kg, calorie_target, protein_target_g, " +
-  "carbs_target_g, fat_target_g, unit_preference, hide_status_from_group, notify_meal_reminders, notify_group_alerts, avatar";
+  "carbs_target_g, fat_target_g, unit_preference, hide_status_from_group, notify_meal_reminders, notify_group_alerts, avatar, activity_level";
 
 const num = (v: unknown) => (typeof v === "string" ? Number(v) : (v as number));
 const numOrNull = (v: unknown) => (v === null || v === undefined ? null : num(v));
@@ -31,6 +32,7 @@ export function toSettings(row: Record<string, unknown>): SettingsProfile {
     hide_status_from_group: row.hide_status_from_group === true,
     notify_meal_reminders: row.notify_meal_reminders === true,
     notify_group_alerts: row.notify_group_alerts === true,
+    activity_level: ACTIVITY_LEVELS.some((a) => a.id === row.activity_level) ? (row.activity_level as ActivityLevel) : null,
     avatar: avatarFromRow(row.avatar),
   };
 }
@@ -73,6 +75,8 @@ export function validateSettings(input: SettingsProfile): SettingsCheck {
     unit_preference: s.unit_preference === "metric" || s.unit_preference === "imperial" ? { ok: true } : bad("Pick metric or imperial"),
   };
   fields.avatar = cleanAvatar(s.avatar) ? { ok: true } : bad("Couldn't save that look. Try again.");
+  fields.activity_level = s.activity_level == null || ACTIVITY_LEVELS.some((a) => a.id === s.activity_level)
+    ? { ok: true } : bad("Pick how often you exercise");
   for (const k of ["hide_status_from_group", "notify_meal_reminders", "notify_group_alerts"] as const) {
     fields[k] = typeof s[k] === "boolean" ? { ok: true } : bad("Must be on or off");
   }
