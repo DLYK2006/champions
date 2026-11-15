@@ -10,6 +10,7 @@ export type IconName =
   | "flame"
   | "leaf"
   | "spark"
+  | "share"
   | "arrow"
   | "check"
   | "close"
@@ -36,6 +37,7 @@ const paths: Record<IconName, string> = {
   flame: "M13 2v7l4-3 4 8-2 6-7 2-7-3-2-6 5-7v6Z",
   leaf: "M20 3H10L4 9v7l4 4h7l6-6V3ZM4 21 16 9M9 16V9M9 16h7",
   spark: "M12 2v5l5 5-5 5v5M2 12h5l5-5 5 5h5M19 2v4M17 4h4",
+  share: "M5 14v7h14v-7M12 3v13M7 8l5-5 5 5",
   arrow: "M4 12h15M13 6l6 6-6 6",
   check: "M4 12l5 5L20 6",
   close: "M6 6l12 12M18 6 6 18",

@@ -19,7 +19,6 @@ import type { Avatar } from "@/types";
 import type { Facing } from "@/components/world/wander";
 import { SettingsForm } from "./settings-form";
 import { OwnedWardrobe } from "./owned-wardrobe";
-import { AccountSection } from "@/components/account/AccountSection";
 
 const sections = ["settings", "wardrobe", "calendar"] as const;
 type Section = (typeof sections)[number];
@@ -288,7 +287,6 @@ function ProfileView() {
               {message}
             </p>
           )}
-          <AccountSection />
         </aside>
         <section className="profile-avatar panel" aria-label="Your character">
           <div className="profile-identity">
