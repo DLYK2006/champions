@@ -130,10 +130,10 @@ const fs = require("node:fs");
       .getByRole("button", { name: "Skin tone: Deep brown", exact: true })
       .click();
     assert.equal(
-      (await page
+      await page
         .getByRole("img", { name: "Your customized pixel avatar" })
         .locator('canvas[data-sprite-ready="true"]')
-        .count()),
+        .count(),
       1,
     );
     if (output)

@@ -4,7 +4,7 @@
 // coins locally. Owner: @joshuatsou123 (pending board confirmation).
 import { useCallback, useEffect, useState } from "react";
 import { ShopScreen, demoShopItems } from "../ui/shop-screen";
-import { buyItem, equipItem, loadShop, nextEquipState, type ShopState } from "../../lib/shop";
+import { buyItem, equipItem, loadShop, nextEquipState, saveAvatar, type ShopState } from "../../lib/shop";
 import { RequireProfile } from "../auth";
 
 // Signed-out or not-yet-onboarded visitors are sent to /onboarding before any shop data is requested.
@@ -59,6 +59,10 @@ function ShopView() {
       onEquip={async (id) => {
         const equipped = await equipItem(id, nextEquipState(state.equipped, id));
         setState((s) => (s ? { ...s, equipped } : s));
+      }}
+      onSaveAvatar={async (avatar) => {
+        const saved = await saveAvatar(avatar);
+        setState((s) => (s ? { ...s, avatar: saved } : s));
       }}
     />
   );

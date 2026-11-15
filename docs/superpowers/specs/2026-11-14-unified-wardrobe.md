@@ -4,7 +4,7 @@ User requests direct implementation. Preserve the approved original sprite style
 
 Use one shared sprite renderer for onboarding, portraits, Home, garden, Shop and achievements. Fix rear hair at the renderer source: remove destructive partial hair clipping and register directional head layers consistently across frames. Keep source artwork intact.
 
-Add two free starter designs in each slot: moss beanie / straw sunhat; linen shirt / forest jacket; denim cuffs / trail trousers; canvas sneakers / hiking boots. Reuse shaded sprite surfaces for clothing, legs and feet, with direction-aware pixel layers for hats and details. Hats replace one another; paid crown and hoodie retain precedence while equipped. All frames must remain shaded, grounded and consistent.
+Add two free starter designs in each slot: moss beanie / straw sunhat; linen shirt / forest jacket; indigo trousers / cocoa trousers; canvas sneakers / hiking boots. Reuse shaded sprite surfaces for clothing, legs and feet, with direction-aware pixel layers for hats and details. Hats replace one another; paid crown and hoodie retain precedence while equipped. All frames must remain shaded, grounded and consistent.
 
 Onboarding has the same sprite preview with facing controls and clear selected choices. Shop has a compact starter wardrobe, instant local preview and explicit save through an owner-provided callback. Cancel/reset restores saved appearance; failures retain edits without claiming success. Keep paid items, prices and inventory callbacks unchanged.
 

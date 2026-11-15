@@ -4,7 +4,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "../../lib/supabase/client";
-import type { AvatarConfig, GoalType } from "../../types/index";
+import type { Avatar, GoalType } from "../../types/index";
 import {
   ADULTS_ONLY_MESSAGE, PRESETS_DISCLAIMER, RANGES, cmFromFeetInches, kgFromLb, lbFromKg, feetInchesFromCm,
   presetsForGoal, resolveTargetWeight, round1, validateAge, validateBodyStats, validateCalories, validateGoal,
@@ -12,10 +12,9 @@ import {
 } from "../../lib/targets";
 import { createGroup, joinGroup } from "../../lib/groups/api";
 import { GROUP_BADGES, DEFAULT_BADGE, peekPendingCode, clearPendingCode } from "../../lib/groups/invite";
-import { AVATAR_LABELS, AVATAR_OPTIONS, DEFAULT_AVATAR } from "./avatarOptions";
-import { PixelAvatar } from "../avatar";
+import { DEFAULT_AVATAR } from "./avatarOptions";
+import { AvatarCustomizer } from "../avatar/avatar-customizer";
 import { Icon } from "../ui/icons";
-import { avatarOptionLabel } from "../avatar/option-labels";
 
 const STEPS = ["Body stats", "Goal", "Nutrition targets", "Avatar", "Group"] as const;
 const USERNAME_RE = /^[a-zA-Z0-9_]{3,20}$/;
@@ -59,7 +58,7 @@ export default function OnboardingFlow() {
   const [fat, setFat] = useState("");
   const [presetId, setPresetId] = useState<string | null>(null);
   // screen 4
-  const [avatar, setAvatar] = useState<AvatarConfig>(DEFAULT_AVATAR);
+  const [avatar, setAvatar] = useState<Avatar>(DEFAULT_AVATAR);
 
   // ---- metric values derived from the inputs (storage is always metric) ----
   const metric = useMemo(() => {
@@ -278,14 +277,7 @@ export default function OnboardingFlow() {
       {step === 3 && (
         <section>
           <h1 ref={headingRef} tabIndex={-1}>A little character. All you.</h1>
-          <div className="onboarding-avatar-preview"><PixelAvatar config={avatar} size={155} name="Your customized pixel avatar" /></div>
-          {(Object.keys(AVATAR_OPTIONS) as (keyof AvatarConfig)[]).map((key) => (
-            key === 'skinColor' || key === 'hairColor' ? <fieldset className="avatar-color-field" key={key}><legend>{AVATAR_LABELS[key]}</legend>{AVATAR_OPTIONS[key].map(option => <button type="button" className="avatar-color-swatch" key={option} aria-label={`${AVATAR_LABELS[key]}: ${avatarOptionLabel(key, option)}`} aria-pressed={avatar[key] === option} style={{ backgroundColor: `#${option}` }} onClick={() => setAvatar({ ...avatar, [key]: option })}>{avatar[key] === option && <Icon name="check" size={20} />}</button>)}</fieldset> : <label key={key}>{AVATAR_LABELS[key]}
-              <select aria-label={AVATAR_LABELS[key]} value={avatar[key]} onChange={(e) => setAvatar({ ...avatar, [key]: e.target.value })}>
-                {AVATAR_OPTIONS[key].map((o) => <option key={o} value={o}>{avatarOptionLabel(key, o)}</option>)}
-              </select>
-            </label>
-          ))}
+          <AvatarCustomizer value={avatar} onChange={setAvatar} />
         </section>
       )}
 
