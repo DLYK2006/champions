@@ -84,7 +84,19 @@ export function ScanController() {
         body: JSON.stringify({ event_id: eventId }),
       }).then((res) => { if (!res.ok) console.warn("analytics copy failed", res.status); }),
     ).catch((e) => console.warn("analytics copy failed", e));
-    const coins = r.coins_awarded.reduce((s, c) => s + c.amount, 0);
+    // Same for the group's day (leaderboard): solo users have no group row, so nothing is sent for them.
+    if (r.group) {
+      const groupDate = r.group.date;
+      void createClient().auth.getSession().then(({ data: s }) =>
+        fetch("/api/analytics/group", {
+          method: "POST",
+          keepalive: true,
+          headers: { authorization: `Bearer ${s.session?.access_token}`, "content-type": "application/json" },
+          body: JSON.stringify({ date: groupDate }),
+        }).then((res) => { if (!res.ok) console.warn("group analytics copy failed", res.status); }),
+      ).catch((e) => console.warn("group analytics copy failed", e));
+    }
+    const coins =r.coins_awarded.reduce((s, c) => s + c.amount, 0);
     const groupCoins = r.coins_awarded.find((c) => c.reason === "group_bonus")?.amount ?? 0;
     // Who to show in the dialog: the whole group when it paid out, else yourself. The meal is already saved
     // here, so a failed avatar load must not throw (ResultsView would say "not saved"): show the dialog without them.

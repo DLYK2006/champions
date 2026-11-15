@@ -12,6 +12,7 @@ import {
 } from "../../lib/groups";
 import { RequireProfile } from "../auth";
 import { FriendsView } from "../friends";
+import GroupLeaderboard from "./GroupLeaderboard";
 
 const MAX_NAME = 30; // groups.name check in 0002_groups.sql
 
@@ -30,21 +31,22 @@ export default function GroupsController() {
   );
 }
 
-// PRD 11.1: the Communities tab switches between the Group view and the Friends view.
+// PRD 11.1: the Communities tab switches between the Group, Friends and Leaderboard views.
 // Uses the app's existing segmented-control style (.shop-tabs) so it matches the Shop filters.
 // Layout: on phones this route is a fixed-height, non-scrolling screen (compact.css). The toggle takes its own
 // small row and the view below gets the rest, so the garden shrinks instead of the progress panel being pushed
 // off the bottom. The Friends view scrolls inside that space.
 function CommunitiesView() {
-  const [view, setView] = useState<"group" | "friends">("group");
+  const [view, setView] = useState<"group" | "friends" | "leaderboard">("group");
   return (
     <div style={{ height: "100%", minHeight: 0, display: "flex", flexDirection: "column", gap: 8 }}>
       <div className="shop-tabs" role="group" aria-label="Communities view" style={{ margin: 0, padding: 3, flexShrink: 0 }}>
         <button type="button" style={TOGGLE_BUTTON} aria-pressed={view === "group"} onClick={() => setView("group")}>Group</button>
         <button type="button" style={TOGGLE_BUTTON} aria-pressed={view === "friends"} onClick={() => setView("friends")}>Friends</button>
+        <button type="button" style={TOGGLE_BUTTON} aria-pressed={view === "leaderboard"} onClick={() => setView("leaderboard")}>Leaderboard</button>
       </div>
-      <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column", overflowY: view === "friends" ? "auto" : "hidden" }}>
-        {view === "group" ? <GroupsView /> : <FriendsView />}
+      <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column", overflowY: view === "group" ? "hidden" : "auto" }}>
+        {view === "group" ? <GroupsView /> : view === "friends" ? <FriendsView /> : <GroupLeaderboard />}
       </div>
     </div>
   );
