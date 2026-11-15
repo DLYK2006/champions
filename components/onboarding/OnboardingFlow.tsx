@@ -11,6 +11,7 @@ import {
   validateOnboarding, validateOptionalMacro, validateProtein, type FieldResult, type Units,
 } from "../../lib/targets";
 import { createGroup, joinGroup } from "../../lib/groups/api";
+import { GROUP_BADGES, DEFAULT_BADGE, peekPendingCode, clearPendingCode } from "../../lib/groups/invite";
 import { AVATAR_LABELS, AVATAR_OPTIONS, DEFAULT_AVATAR } from "./avatarOptions";
 import { PixelAvatar } from "../avatar";
 import { Icon } from "../ui/icons";
@@ -18,8 +19,6 @@ import { avatarOptionLabel } from "../avatar/option-labels";
 
 const STEPS = ["Body stats", "Goal", "Nutrition targets", "Avatar", "Group"] as const;
 const USERNAME_RE = /^[a-zA-Z0-9_]{3,20}$/;
-// Badge ids for new groups. Jay's UI maps these to art; the database stores the id as text.
-const GROUP_BADGES = ["dumbbell", "flame", "trophy", "apple", "bolt", "star"] as const;
 type GroupMode = "choose" | "join" | "create" | "created";
 
 const num = (s: string) => (s.trim() === "" ? null : Number(s));
@@ -35,10 +34,10 @@ export default function OnboardingFlow() {
   const [saveError, setSaveError] = useState<string | null>(null);
   // group step: the profile is saved once, then Join / Create / Solo all build on it
   const [profileSaved, setProfileSaved] = useState(false);
-  const [groupMode, setGroupMode] = useState<GroupMode>("choose");
-  const [joinCode, setJoinCode] = useState("");
+  const [groupMode, setGroupMode] = useState<GroupMode>(() => (peekPendingCode() ? "join" : "choose")); // an invite link opens straight on Join
+  const [joinCode, setJoinCode] = useState(() => peekPendingCode() ?? "");
   const [groupName, setGroupName] = useState("");
-  const [groupBadge, setGroupBadge] = useState<string>(GROUP_BADGES[0]);
+  const [groupBadge, setGroupBadge] = useState<string>(DEFAULT_BADGE);
   const [groupError, setGroupError] = useState<string | null>(null);
   const [createdCode, setCreatedCode] = useState<string | null>(null);
 
@@ -168,6 +167,7 @@ export default function OnboardingFlow() {
       if (!(await saveProfile())) return;
       if (mode === "join") {
         await joinGroup(joinCode);
+        clearPendingCode();
         goHome();
       } else {
         const g = await createGroup(groupName, groupBadge);
