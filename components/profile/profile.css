@@ -425,17 +425,23 @@
   outline-offset: 3px;
 }
 .compact-app .shop-grid {
-  align-items: stretch;
+  align-items: start;
 }
 .compact-app .wardrobe-panel {
   display: flex;
   flex-direction: column;
   position: static;
-  min-height: 440px;
+  min-height: 0;
+  height: var(--shop-preview-height, 400px);
 }
 .compact-app .wardrobe-stage {
   flex: 1;
-  min-height: 270px;
+  min-height: 0;
+}
+@media (max-width: 760px) {
+  .compact-app .wardrobe-panel {
+    height: 300px;
+  }
 }
 .shop-card .button-soft {
   text-align: center;
