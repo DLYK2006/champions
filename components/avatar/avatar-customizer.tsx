@@ -1,12 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { AvatarConfig } from "@/types";
-import {
-  AVATAR_OPTIONS,
-  AVATAR_LABELS,
-} from "@/components/onboarding/avatarOptions";
-import { avatarOptionLabel } from "./option-labels";
+import { AppearancePicker } from "./appearance-picker";
 import { PixelAvatar } from "./pixel-avatar";
 import { FacingControl, WardrobePicker } from "./wardrobe-picker";
 import type { WardrobeAvatar } from "./wardrobe";
@@ -57,44 +52,7 @@ export function AvatarCustomizer({
         {tab === "outfit" ? (
           <WardrobePicker avatar={value} onChange={onChange} />
         ) : (
-          (
-            [
-              "skinColor",
-              "hairColor",
-              "top",
-              "eyes",
-              "mouth",
-            ] as (keyof AvatarConfig)[]
-          ).map((key) => (
-            <fieldset
-              className={`appearance-options ${key === "skinColor" || key === "hairColor" ? "is-color" : ""}`}
-              key={key}
-            >
-              <legend>{AVATAR_LABELS[key]}</legend>
-              <div>
-                {AVATAR_OPTIONS[key].map((option) => (
-                  <button
-                    type="button"
-                    key={option}
-                    aria-label={`${AVATAR_LABELS[key]}: ${avatarOptionLabel(key, option)}`}
-                    aria-pressed={value[key] === option}
-                    style={
-                      key === "skinColor" || key === "hairColor"
-                        ? { backgroundColor: `#${option}` }
-                        : undefined
-                    }
-                    onClick={() => onChange({ ...value, [key]: option })}
-                  >
-                    {key === "skinColor" || key === "hairColor"
-                      ? value[key] === option
-                        ? "\u2713"
-                        : ""
-                      : avatarOptionLabel(key, option)}
-                  </button>
-                ))}
-              </div>
-            </fieldset>
-          ))
+          <AppearancePicker value={value} onChange={onChange} />
         )}
       </div>
     </div>

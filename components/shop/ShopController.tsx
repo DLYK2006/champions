@@ -4,8 +4,9 @@
 // coins locally. Owner: @joshuatsou123 (pending board confirmation).
 import { useCallback, useEffect, useState } from "react";
 import { ShopScreen, demoShopItems } from "../ui/shop-screen";
-import { buyItem, equipItem, loadShop, nextEquipState, saveAvatar, type ShopState } from "../../lib/shop";
+import { buyItem, loadShop, type ShopState } from "../../lib/shop";
 import { RequireProfile } from "../auth";
+import { onProfileUpdated } from "../../lib/settings";
 
 // Signed-out or not-yet-onboarded visitors are sent to /onboarding before any shop data is requested.
 export default function ShopController() {
@@ -28,6 +29,7 @@ function ShopView() {
     [],
   );
   useEffect(() => { void load(); }, [load]);
+  useEffect(() => onProfileUpdated(() => { void load(); }), [load]);
 
   if (!state) {
     return (
@@ -56,14 +58,7 @@ function ShopView() {
         const balance = await buyItem(id);
         setState((s) => (s ? { ...s, balance, owned: s.owned.includes(id) ? s.owned : [...s.owned, id] } : s));
       }}
-      onEquip={async (id) => {
-        const equipped = await equipItem(id, nextEquipState(state.equipped, id));
-        setState((s) => (s ? { ...s, equipped } : s));
-      }}
-      onSaveAvatar={async (avatar) => {
-        const saved = await saveAvatar(avatar);
-        setState((s) => (s ? { ...s, avatar: saved } : s));
-      }}
+
     />
   );
 }

@@ -7,7 +7,6 @@ import type { DailyProgress } from "@/types";
 import { localDate } from "@/lib/groups/api";
 import { currentStreak, dayStatus, monthCells, ymd, type DayStatus } from "@/lib/history/calendar";
 import { loadDay, loadMonth, loadProfile, type HistoryProfile, type MealRow } from "@/lib/history/api";
-import { ShareButton } from "@/components/share/ShareButton";
 
 const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const STATUS_LABEL: Record<DayStatus, string> = { goal: "goal met", logged: "meals logged", none: "nothing logged" };
@@ -33,8 +32,10 @@ export function HistoryController() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    let active = true;
     loadProfile()
       .then((p) => {
+        if (!active) return;
         if (!p) return router.replace("/onboarding");
         const now = new Date();
         setToday(localDate(now));
@@ -42,19 +43,24 @@ export function HistoryController() {
         setMonth({ year: now.getFullYear(), month: now.getMonth() });
         setProfile(p);
       })
-      .catch(fail(setError));
+      .catch((e) => { if (active) fail(setError)(e); });
+    return () => { active = false; };
   }, [router]);
 
   useEffect(() => {
     if (!month) return;
+    let active = true;
     const last = new Date(month.year, month.month + 1, 0).getDate();
     loadMonth(ymd(month.year, month.month, 1), ymd(month.year, month.month, last))
-      .then((rows) => setDays(Object.fromEntries(rows.map((r) => [r.date, r]))))
-      .catch(fail(setError));
+      .then((rows) => { if (active) setDays(Object.fromEntries(rows.map((r) => [r.date, r]))); })
+      .catch((e) => { if (active) fail(setError)(e); });
+    return () => { active = false; };
   }, [month]);
 
   useEffect(() => {
-    if (selected) loadDay(selected).then(setMeals).catch(fail(setError));
+    let active = true;
+    if (selected) loadDay(selected).then(rows => { if (active) setMeals(rows); }).catch((e) => { if (active) fail(setError)(e); });
+    return () => { active = false; };
   }, [selected]);
 
   const select = (date: string) => {
@@ -64,13 +70,13 @@ export function HistoryController() {
 
   if (error) {
     return (
-      <main className="p-4">
+      <div className="history-panel">
         <p role="alert">{error}</p>
         <button type="button" onClick={() => location.reload()}>Try again</button>
-      </main>
+      </div>
     );
   }
-  if (!profile || !today || !month || !selected) return <main className="p-4"><p role="status">Opening your history…</p></main>;
+  if (!profile || !today || !month || !selected) return <div className="history-panel"><p role="status">Opening your history…</p></div>;
 
   const streak = currentStreak(profile.streak, profile.last_meal_date, today);
   const isThisMonth = today.startsWith(ymd(month.year, month.month, 1).slice(0, 7));
@@ -80,9 +86,9 @@ export function HistoryController() {
   const day = days[selected];
 
   return (
-    <main className="mx-auto max-w-md p-4 space-y-5">
+    <div className="history-panel space-y-5">
       <header>
-        <h1 className="text-xl font-semibold">Your history</h1>
+        <h3 className="text-xl font-semibold">Your history</h3>
         <p>
           {!streak
             ? "Log a meal today to start a streak."
@@ -90,13 +96,12 @@ export function HistoryController() {
               ? `${streak}-day streak. Today counts.`
               : `${streak}-day streak. Log a meal today to keep it going.`}
         </p>
-        <ShareButton />
       </header>
 
       <section aria-label="Calendar">
         <div className="mb-2 flex items-center justify-between">
           <button type="button" onClick={() => shift(-1)} aria-label="Previous month">‹</button>
-          <h2 className="font-medium">{title}</h2>
+          <h4 className="font-medium">{title}</h4>
           <button type="button" onClick={() => shift(1)} disabled={isThisMonth} aria-label="Next month">›</button>
         </div>
         <div className="grid grid-cols-7 gap-1 text-center text-xs">
@@ -124,9 +129,9 @@ export function HistoryController() {
       </section>
 
       <section aria-live="polite">
-        <h2 className="font-medium">
+        <h4 className="font-medium">
           {new Date(`${selected}T00:00:00`).toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" })}
-        </h2>
+        </h4>
         {day && (
           <p>
             {round(day.total_calories)} / {profile.calorie_target} kcal · {round(day.total_protein_g)} / {profile.protein_target_g} g protein
@@ -149,6 +154,6 @@ export function HistoryController() {
           </ul>
         )}
       </section>
-    </main>
+    </div>
   );
 }

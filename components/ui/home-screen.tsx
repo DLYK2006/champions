@@ -6,6 +6,7 @@ import { Icon } from "./icons";
 import { NutritionBar, SectionHeading } from "./primitives";
 import { RoomCharacter } from "@/components/avatar/pixel-avatar";
 import { demoGroup, demoProfile, demoProgress, useDemo } from "./demo-context";
+import { HomeShare } from "./home-share";
 
 export function HomeScreen({
   profile,
@@ -16,6 +17,9 @@ export function HomeScreen({
   progress: DailyProgress;
   group: GroupDailyProgress | null;
 }) {
+  const amount = (n: number) => n.toLocaleString("en-US");
+  const calorieMinimum = amount(Math.ceil(profile.calorie_target * 0.9));
+  const calorieMaximum = amount(Math.floor(profile.calorie_target * 1.1));
   return (
     <>
       <header className="app-header">
@@ -27,6 +31,7 @@ export function HomeScreen({
             DIG IN<span className="brand-period">.</span>
           </Link>
           <div className="header-actions">
+            <HomeShare />
             <Link
               href="/shop"
               className="coin-wallet"
@@ -52,12 +57,13 @@ export function HomeScreen({
           <div className="room-topline">
             <span className="room-name">Hi, {profile.username}</span>
             <Link
-              href="/history"
+              href="/profile?section=calendar"
               className="room-weather"
               aria-label={`${profile.streak}-day streak. View meal history.`}
             >
               <Icon name="flame" size={17} />
-              {profile.streak}-day streak
+              <strong>{profile.streak}-day streak</strong>
+              <Icon name="arrow" size={13} />
             </Link>
           </div>
           {progress.personal_goal_completed && (
@@ -81,7 +87,7 @@ export function HomeScreen({
                       : "ready"
             }
           />
-          <Link href="/shop" className="room-customize">
+          <Link href="/profile?section=wardrobe" className="room-customize">
             <Icon name="shirt" size={17} />
             Customize
           </Link>
@@ -100,6 +106,12 @@ export function HomeScreen({
             unit="kcal"
             kind="calories"
             icon="bowl"
+            hint={`Aim for ${calorieMinimum}${profile.goal_type === "bulk" ? "+" : `\u2013${calorieMaximum}`} kcal`}
+            completed={progress.calorie_goal_completed}
+            overTarget={
+              profile.goal_type !== "bulk" &&
+              progress.total_calories > profile.calorie_target * 1.1
+            }
           />
           <NutritionBar
             label="Protein"
@@ -108,6 +120,8 @@ export function HomeScreen({
             unit="g"
             kind="protein"
             icon="leaf"
+            hint={`Aim for ${amount(Math.ceil(profile.protein_target_g * 0.9))}+ g`}
+            completed={progress.protein_goal_completed}
           />
           <div className="macro-pair">
             <div>

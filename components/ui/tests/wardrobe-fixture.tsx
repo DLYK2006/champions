@@ -13,9 +13,6 @@ import { ShopScreen, demoShopItems } from "../shop-screen";
 
 export default function WardrobeFixture() {
   const [report, setReport] = useState("");
-  const [avatar, setAvatar] = useState<WardrobeAvatar>({ ...DEFAULT_AVATAR });
-  const [reject, setReject] = useState(false);
-  const [saved, setSaved] = useState("");
   async function inspect() {
     const result: Record<string, number[]> = {};
     for (const top of ["shortFlat", "curly"]) {
@@ -125,14 +122,10 @@ export default function WardrobeFixture() {
       <button onClick={() => void sheet()}>Render wardrobe sheet</button>
       <output id="sheet-report" aria-label="Wardrobe pixel report" />
       <canvas id="contact-sheet" aria-label="Wardrobe contact sheet" />
-      <button onClick={() => setReject((value) => !value)}>
-        Toggle save rejection
-      </button>
-      <output aria-label="Saved wardrobe">{saved}</output>
       <div className="dig-app compact-app route-shop">
         <div className="app-main">
           <ShopScreen
-            avatar={avatar}
+            avatar={DEFAULT_AVATAR}
             balance={0}
             owned={[]}
             equipped={[]}
@@ -140,13 +133,7 @@ export default function WardrobeFixture() {
             onBuy={async () => {
               throw Error("Not part of wardrobe check");
             }}
-            onEquip={async () => {}}
-            onSaveAvatar={async (next) => {
-              await new Promise((resolve) => setTimeout(resolve, 400));
-              if (reject) throw Error("Wardrobe save failed");
-              setAvatar(next);
-              setSaved(JSON.stringify(next));
-            }}
+
           />
         </div>
       </div>
