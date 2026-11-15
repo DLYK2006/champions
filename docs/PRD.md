@@ -448,10 +448,11 @@ Expressions	Special animations	300
 Backgrounds	Gym, kitchen, beach	150–500
 
 13.3 Hackathon MVP
-Implement three purchasable items:
-- Sunglasses — 20 coins
-- Hoodie — 40 coins
-- Crown — 60 coins
+Six purchasable items (updated Nov 15; replaces Sunglasses, Hoodie and Crown in the storefront, which stay owned and wearable for anyone who bought them):
+- Shirts: Sage Sweater — 40 coins, Rust Flannel — 50 coins
+- Pants: Meadow Trousers — 30 coins, Slate Cargos — 45 coins
+- Hats: Acorn Cap — 25 coins, Fisher Bucket — 35 coins
+Eight starter wardrobe pieces are free and never sold.
 Users can:
 1. Preview items.
 2. Purchase with coins.
