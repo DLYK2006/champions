@@ -276,7 +276,6 @@ Groups create additional opportunities to earn bonus rewards and celebrate progr
 Users can:
 - Create a group.
 - Choose a group name.
-- Select a group badge.
 - Invite friends using a code or link.
 - Join an existing group.
 - View members and contributions.

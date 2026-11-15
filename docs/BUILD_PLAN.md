@@ -13,7 +13,7 @@ Decided by Daren (lead), Nov 14. The PRD is the product. This file pins the deci
 
 ## Rules the PRD leaves open (decided)
 
-- **Calorie goal met:** daily calories between 90% and 110% of target. Eating less never earns more.
+- **Calorie goal met (by goal type, updated Nov 15 in 0007):** Bulk = daily calories at least 90% of target, no upper limit; Maintain and Cut = between 90% and 110% of target. Eating less never earns more.
 - **Protein goal met:** daily protein at least 90% of target.
 - **Personal goal completed:** both of the above.
 - **Qualifying meal:** a confirmed meal with at least 1 item and at least 50 kcal. Meal rewards (+10 each) apply to the first 3 qualifying meals of the day.
