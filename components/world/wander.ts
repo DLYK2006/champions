@@ -83,8 +83,9 @@ export function sceneView(
   width: number,
   height: number,
   alignY = 0.5,
+  fit: "cover" | "contain" = "cover",
 ): SceneView {
-  const scale = Math.max(width / 1536, height / 1024);
+  const scale = (fit === "contain" ? Math.min : Math.max)(width / 1536, height / 1024);
   const offsetX = (width - 1536 * scale) / 2,
     offsetY = (height - 1024 * scale) * alignY;
   return {
