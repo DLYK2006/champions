@@ -412,6 +412,7 @@ Future Features
 - Custom group challenges.
 - Group achievements and badges.
 Body weight and personal nutrition numbers remain private by default.
+Analytics (added Nov 15): each logged meal's date, meal type and macros are copied to Databricks under an anonymous id (never the username, weight or photos) to power the Profile macros chart.
 
 12. Coin Economy
 12.1 Currency

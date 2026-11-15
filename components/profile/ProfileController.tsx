@@ -19,6 +19,7 @@ import type { Avatar } from "@/types";
 import type { Facing } from "@/components/world/wander";
 import { SettingsForm } from "./settings-form";
 import { OwnedWardrobe } from "./owned-wardrobe";
+import { MacroChart } from "@/components/analytics/MacroChart";
 
 const sections = ["settings", "wardrobe", "calendar"] as const;
 type Section = (typeof sections)[number];
@@ -65,6 +66,7 @@ function ProfileView() {
     equipped: string[];
   } | null>(null);
   const [facing, setFacing] = useState<Facing>("down");
+  const [panel, setPanel] = useState<"character" | "chart">("character");
   const [pending, setPending] = useState<Section | null>(null),
     [error, setError] = useState(""),
     [message, setMessage] = useState("");
@@ -293,18 +295,36 @@ function ProfileView() {
             <h2>{section === "settings" ? draft.username : saved.username}</h2>
             <span>{saved.goal_type}</span>
           </div>
-          <div className="profile-stage">
-            <RoomCharacter
-              config={preview}
-              equipped={
-                section === "wardrobe" ? outfit.equipped : shop.equipped
-              }
-              facing={facing}
-              animate={false}
-              name={`${saved.username}'s character, ${facing === "down" ? "front" : facing === "up" ? "back" : facing} view`}
+          {section === "calendar" && (
+            <div className="profile-panel-toggle flex justify-center gap-4" role="group" aria-label="Show">
+              <button type="button" className="text-button" aria-pressed={panel === "character"} onClick={() => setPanel("character")}>Character</button>
+              <button type="button" className="text-button" aria-pressed={panel === "chart"} onClick={() => setPanel("chart")}>Macros chart</button>
+            </div>
+          )}
+          {section === "calendar" && panel === "chart" ? (
+            <MacroChart
+              date={params.get("date")}
+              from={params.get("from")}
+              to={params.get("to")}
+              calorieTarget={saved.calorie_target}
+              goalType={saved.goal_type}
             />
-          </div>
-          <FacingControl value={facing} onChange={setFacing} />
+          ) : (
+            <>
+              <div className="profile-stage">
+                <RoomCharacter
+                  config={preview}
+                  equipped={
+                    section === "wardrobe" ? outfit.equipped : shop.equipped
+                  }
+                  facing={facing}
+                  animate={false}
+                  name={`${saved.username}'s character, ${facing === "down" ? "front" : facing === "up" ? "back" : facing} view`}
+                />
+              </div>
+              <FacingControl value={facing} onChange={setFacing} />
+            </>
+          )}
         </section>
       </div>
     </main>

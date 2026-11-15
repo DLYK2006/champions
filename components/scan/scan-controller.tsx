@@ -75,6 +75,15 @@ export function ScanController() {
     });
     if (error) throw new Error(`Your meal wasn't saved: ${error.message}`);
     const r = data as LogMealResponse;
+    // Copy the saved meal to Databricks for the Profile chart, without making the user wait for it.
+    void createClient().auth.getSession().then(({ data: s }) =>
+      fetch("/api/analytics/meal", {
+        method: "POST",
+        keepalive: true,
+        headers: { authorization: `Bearer ${s.session?.access_token}`, "content-type": "application/json" },
+        body: JSON.stringify({ event_id: eventId }),
+      }).then((res) => { if (!res.ok) console.warn("analytics copy failed", res.status); }),
+    ).catch((e) => console.warn("analytics copy failed", e));
     const coins = r.coins_awarded.reduce((s, c) => s + c.amount, 0);
     const groupCoins = r.coins_awarded.find((c) => c.reason === "group_bonus")?.amount ?? 0;
     // Who to show in the dialog: the whole group when it paid out, else yourself. The meal is already saved
