@@ -61,3 +61,10 @@ export async function setLeaderboardVisible(visible: boolean): Promise<void> {
   const { error } = await createClient().rpc("set_group_leaderboard_visible", { p_visible: visible });
   if (error) fail(error.message);
 }
+
+/** Whether your group shows on the leaderboard (members can read their own group row), or null when you have no group. */
+export async function getLeaderboardVisible(): Promise<boolean | null> {
+  const { data, error } = await createClient().from("groups").select("leaderboard_visible").maybeSingle();
+  if (error) fail(error.message);
+  return (data?.leaderboard_visible as boolean | undefined) ?? null;
+}
