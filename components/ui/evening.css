@@ -1,0 +1,196 @@
+/* Forest charcoal surrounds; warm parchment keeps forms and nutrition readable. */
+:root {
+  --evening: #131d18;
+  --evening-surface: #1c2a21;
+  --evening-line: #3e5040;
+  --evening-text: #f1ead7;
+  --evening-muted: #bdcbb1;
+}
+body {
+  background: var(--evening);
+}
+.dig-app,
+.onboarding-world {
+  background:
+    radial-gradient(ellipse at 15% 0%, #30453770, transparent 60%),
+    radial-gradient(ellipse at 95% 100%, #80713b14, transparent 50%),
+    var(--evening);
+  color: var(--evening-text);
+}
+.app-header,
+.onboarding-header {
+  background: transparent;
+  border-color: var(--evening-line);
+}
+.brand {
+  color: var(--evening-text);
+}
+.brand-period {
+  color: #dfbc6c;
+}
+.brand-sprout {
+  color: #d4e2bb;
+  background: #344831;
+}
+.compact-app .screen-title,
+.welcome-copy h1 {
+  color: var(--evening-text);
+}
+.onboarding-header-note,
+.onboarding-footer,
+.welcome-copy > p:not(.eyebrow):not(.fine-print),
+.welcome-copy .fine-print,
+.welcome-promises > span,
+.welcome-copy .eyebrow {
+  color: var(--evening-muted);
+}
+.welcome-copy > .text-button {
+  color: #d3dfbd;
+}
+[data-onboarding] legend {
+  color: #52643e;
+}
+.panel,
+.onboarding-form-wrap {
+  color: #493b2b;
+  background: #f5efdf;
+  border-color: #c6c7a7;
+  box-shadow: 0 4px 16px #050d0730, 0 1px 0 #fff8e533 inset;
+}
+.compact-app .room-panel,
+.garden-scene,
+.welcome-art,
+.onboarding-scene {
+  border-color: #79885a;
+  box-shadow: 0 4px 0 #0b140d, 0 12px 36px #03090640;
+}
+.compact-app .bottom-nav {
+  background: #18251e;
+  border-top: 1px solid var(--evening-line);
+  box-shadow: 0 -8px 24px #07100a26;
+}
+.compact-app .nav-tab {
+  color: #bdcbb1;
+}
+.compact-app .nav-tab.is-active,
+.compact-app .nav-tab:hover,
+.compact-app .nav-tab.is-pressed {
+  color: #f6e5b9;
+}
+.compact-app .nav-tab.is-active .nav-icon {
+  color: #122117;
+  background: #b1c48e;
+  border-color: #d3deb5;
+  box-shadow: 0 2px 0 #697d4e;
+}
+.compact-app .nav-tab:hover .nav-icon,
+.compact-app .nav-tab.is-pressed .nav-icon {
+  box-shadow: 0 4px 0 #697d4e;
+}
+.header-actions .account-section .button,
+.home-share-trigger {
+  background: #2c3e2e;
+  border-color: #526647;
+  color: #e6edcf;
+  box-shadow: 0 2px 0 #0d170f;
+}
+.coin-wallet {
+  background: #3e3420;
+  color: #ffe0a1;
+  border-color: #8e7540;
+}
+.compact-app .shop-tabs {
+  background: #223328;
+  border-color: var(--evening-line);
+}
+.compact-app .shop-tabs button {
+  color: #d2ddc4;
+}
+.compact-app .shop-tabs button[aria-pressed="true"] {
+  color: #293d2c;
+  background: #e6e9d2;
+  border-color: #bac798;
+  box-shadow: 0 2px 4px #07100940;
+}
+.compact-app .wardrobe-panel,
+.profile-avatar {
+  background: radial-gradient(ellipse at 50% 78%, #3d5235, #203027 58%, #1b2921);
+  border-color: var(--evening-line);
+  color: var(--evening-text);
+}
+.profile-identity h2 {
+  color: var(--evening-text);
+}
+.profile-identity > span {
+  color: #30442e;
+}
+.profile-avatar .profile-panel-toggle .text-button {
+  color: #d8e2bd;
+}
+.profile-avatar .profile-panel-toggle .text-button[aria-pressed="true"] {
+  color: #f5d895;
+}
+.profile-avatar:has(.macro-chart) {
+  color: #493b2b;
+  background: #f5efdf;
+}
+.profile-avatar:has(.macro-chart) .profile-identity h2,
+.profile-avatar:has(.macro-chart) .profile-panel-toggle .text-button {
+  color: #34522f;
+}
+@media (max-width: 700px) {
+  .profile-avatar .profile-stage {
+    min-height: 0;
+  }
+}
+.compact-app .wardrobe-stage {
+  background: radial-gradient(ellipse at 50% 85%, #aec17a24, transparent 65%);
+}
+.profile-stage:before {
+  background: #b5c18a26;
+}
+.shop-preview-selection {
+  color: #e3eacb;
+}
+.shop-preview-selection .text-button {
+  color: #e2c889;
+}
+.shop-status,
+.route-community .text-button,
+.results-page > .fine-print,
+.scan-page > .fine-print,
+.results-page > .back-link,
+.food-list-heading {
+  color: #cbd9b9;
+}
+.panel .text-button {
+  color: #4e653e;
+}
+.panel .nutrition-label > span,
+.panel .nutrition-label small {
+  color: #6a5941;
+}
+.panel :is(.result-macros small, .result-macros > div > span, .food-card-name > p, .food-card-bottom > span, .confidence) {
+  color: #6a5941;
+}
+.compact-app .compact-group-summary {
+  color: #54633f;
+}
+.compact-app .bonus-mini {
+  color: #78591e;
+}
+.compact-app .compact-bonus-tiers > span {
+  color: #6d624e;
+}
+.results-page > .field-error,
+.shop-catalog > .field-error {
+  color: #ffc6ad;
+}
+.dig-app :focus-visible,
+.onboarding-world :focus-visible {
+  outline-color: #d6ad5d;
+}
+.dig-app .panel :focus-visible,
+.onboarding-form-wrap :focus-visible {
+  outline-color: #47643c;
+}

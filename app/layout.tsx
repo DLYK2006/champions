@@ -6,6 +6,7 @@ import "@/components/ui/dig-in.css";
 import "@/components/ui/compact.css";
 import "@/components/world/scenes.css";
 import "@/components/profile/profile.css";
+import "@/components/ui/evening.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
