@@ -150,6 +150,13 @@ await t("get_group_names returns only visible groups", async () => {
   assert.deepEqual(names, { [a.id]: "Visible" });
 });
 
+await t("get_group_names omits groups with fewer than 2 members now (the Databricks path ranks by id only)", async () => {
+  const a = await seedGroup("Pair", [[0, 2, 2, 100, 30]]);
+  const dropped = await seedGroup("Dropped", [[1, 2, 2, 100, 30]], 2);
+  await db.query(`delete from public.group_members where user_id = $1`, [dropped.users[1]]);
+  assert.deepEqual(await rpc(a.user, "get_group_names", [a.id, dropped.id]), { [a.id]: "Pair" });
+});
+
 await t("set_group_leaderboard_visible needs a group and flips the flag", async () => {
   const a = await seedGroup("Flip", [[0, 2, 2, 100, 30]]);
   await rpc(a.user, "set_group_leaderboard_visible", false);

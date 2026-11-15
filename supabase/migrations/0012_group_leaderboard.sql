@@ -68,14 +68,16 @@ begin
     where r.rank <= 10 or r.group_id = v_me), '[]'::jsonb);
 end $$;
 
--- Names for the Databricks path, which ranks by group id only. Hidden groups are never named.
+-- Names for the Databricks path, which ranks by group id only. Hidden groups and groups under 2 members are never
+-- named, so the route drops them (Databricks cannot see who left or who opted out).
 create function public.get_group_names(p_ids uuid[])
 returns jsonb language plpgsql stable security definer set search_path = public
 as $$
 begin
   if auth.uid() is null then raise exception 'not signed in'; end if;
   return coalesce((select jsonb_object_agg(g.id::text, g.name) from public.groups g
-                   where g.id = any(p_ids) and g.leaderboard_visible), '{}'::jsonb);
+                   where g.id = any(p_ids) and g.leaderboard_visible
+                     and (select count(*) from public.group_members m where m.group_id = g.id) >= 2), '{}'::jsonb);
 end $$;
 
 -- Any member can show or hide their group (default: shown).
