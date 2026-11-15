@@ -79,7 +79,13 @@ function FriendsView() {
   const { friends = [], incoming = [], outgoing = [] } = overview ?? {};
 
   if (openFriend) {
-    return <FriendCalendarView friend={openFriend} onBack={() => setOpenFriend(null)} />;
+    return (
+      <FriendCalendarView
+        friend={openFriend}
+        onBack={() => setOpenFriend(null)}
+        onRemoved={() => { setOpenFriend(null); void refresh(); }}
+      />
+    );
   }
 
   return (
@@ -161,7 +167,7 @@ function FriendsView() {
   );
 }
 
-function FriendCalendarView({ friend, onBack }: { friend: FriendSummary; onBack: () => void }) {
+function FriendCalendarView({ friend, onBack, onRemoved }: { friend: FriendSummary; onBack: () => void; onRemoved: () => void }) {
   const now = new Date();
   const [ym, setYm] = useState({ year: now.getFullYear(), month: now.getMonth() });
   const [cal, setCal] = useState<FriendCalendar | null>(null);
@@ -190,7 +196,7 @@ function FriendCalendarView({ friend, onBack }: { friend: FriendSummary; onBack:
     setRemoving(true);
     try {
       await removeFriend(friend.user_id);
-      onBack();
+      onRemoved(); // back to the list, refreshed so they are gone straight away
     } catch (e) {
       setError(e instanceof Error ? e.message : "Couldn't remove them. Try again.");
       setRemoving(false);
