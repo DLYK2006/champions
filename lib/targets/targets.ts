@@ -126,7 +126,7 @@ export interface TargetPreset {
   fat_target_g: number | null;
 }
 export const PRESETS_DISCLAIMER =
-  "Illustrative examples to get you started, not medical advice. Adjust them to fit you.";
+  "A starting estimate from your stats, goal and exercise, not medical advice. Adjust it to fit you.";
 
 export const PRESETS: readonly TargetPreset[] = [
   { id: "cut-moderate", label: "Gentle cut", goal: "cut", description: "A modest step down from maintenance.",

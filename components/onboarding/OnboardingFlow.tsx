@@ -2,12 +2,13 @@
 // Onboarding: body stats -> goal -> nutrition targets -> avatar -> optional group step.
 // Logic only, plain markup. Jay restyles this folder after (see board). Rules: lib/targets.
 import { useEffect, useMemo, useRef, useState } from "react";
+import { ACTIVITY_LEVELS, recommendTargets, type ActivityLevel } from "../../lib/targets/recommend";
 import { useRouter } from "next/navigation";
 import { createClient } from "../../lib/supabase/client";
 import type { Avatar, GoalType } from "../../types/index";
 import {
   ADULTS_ONLY_MESSAGE, PRESETS_DISCLAIMER, RANGES, cmFromFeetInches, kgFromLb, lbFromKg, feetInchesFromCm,
-  presetsForGoal, resolveTargetWeight, round1, validateAge, validateBodyStats, validateCalories, validateGoal,
+  resolveTargetWeight, round1, validateAge, validateBodyStats, validateCalories, validateGoal,
   validateOnboarding, validateOptionalMacro, validateProtein, type FieldResult, type Units,
 } from "../../lib/targets";
 import { createGroup, joinGroup } from "../../lib/groups/api";
@@ -56,6 +57,8 @@ export default function OnboardingFlow() {
   const [carbs, setCarbs] = useState("");
   const [fat, setFat] = useState("");
   const [presetId, setPresetId] = useState<string | null>(null);
+  const [activity, setActivity] = useState<ActivityLevel | "">("");
+  const [explained, setExplained] = useState<{ key: string; text: string } | null>(null);
   // screen 4
   const [avatar, setAvatar] = useState<Avatar>(DEFAULT_AVATAR);
 
@@ -81,7 +84,35 @@ export default function OnboardingFlow() {
   const fatCheck = validateOptionalMacro("Fat", num(fat));
   const targetsOk = cal.ok && pro.ok && carbCheck.ok && fatCheck.ok;
 
-  const canNext = [body.valid && usernameOk, goalCheck.ok, targetsOk, true, true][step];
+  const canNext = [body.valid && usernameOk && activity !== "", goalCheck.ok, targetsOk, true, true][step];
+
+  // Personal starting targets (Mifflin-St Jeor x exercise frequency); the AI only explains them.
+  const rec = goal && activity && body.valid && metric.weight_kg !== null && metric.height_cm !== null && metric.age !== null
+    ? recommendTargets({ weight_kg: metric.weight_kg, height_cm: metric.height_cm, age: metric.age, goal, activity })
+    : null;
+  const recKey = rec ? `${goal}|${activity}|${metric.weight_kg}|${metric.height_cm}|${metric.age}` : "";
+  useEffect(() => {
+    if (step !== 2 || !rec || explained?.key === recKey) return;
+    let active = true;
+    fetch("/api/targets/explain", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ weight_kg: metric.weight_kg, height_cm: metric.height_cm, age: metric.age, goal, activity }),
+    })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((b) => { if (active && b?.explanation) setExplained({ key: recKey, text: b.explanation }); })
+      .catch(() => undefined); // the explanation is optional; the numbers never depend on it
+    return () => { active = false; };
+  }, [step, recKey]); // eslint-disable-line react-hooks/exhaustive-deps -- recKey captures every input
+
+  function applyRecommendation() {
+    if (!rec) return;
+    setPresetId("recommended");
+    setCalories(String(rec.calorie_target));
+    setProtein(String(rec.protein_target_g));
+    setCarbs(String(rec.carbs_target_g));
+    setFat(String(rec.fat_target_g));
+  }
 
   // Switching units converts what's typed so the numbers stay the same physical value.
   function switchUnits(next: Units) {
@@ -101,15 +132,6 @@ export default function OnboardingFlow() {
     setPresetId(null);
   }
 
-  function applyPreset(id: string) {
-    const p = presetsForGoal(goal ?? "maintain").find((x) => x.id === id);
-    if (!p) return;
-    setPresetId(id);
-    setCalories(String(p.calorie_target));
-    setProtein(String(p.protein_target_g));
-    setCarbs(p.carbs_target_g === null ? "" : String(p.carbs_target_g));
-    setFat(p.fat_target_g === null ? "" : String(p.fat_target_g));
-  }
 
   async function saveProfile(): Promise<boolean> {
     setSaveError(null);
@@ -129,7 +151,7 @@ export default function OnboardingFlow() {
       if (error || !data.user) { setSaveError("Couldn't start your session. Try again."); return false; }
       user = data.user;
     }
-    const { error } = await supabase.from("profiles").insert({ id: user.id, username, avatar, ...values });
+    const { error } = await supabase.from("profiles").insert({ id: user.id, username, avatar, ...values, activity_level: activity || null });
     if (error) {
       if (error.code === "23505" && /username/i.test(error.message)) {
         setSaveError("That username is taken. Go back and pick another.");
@@ -218,6 +240,12 @@ export default function OnboardingFlow() {
             <input inputMode="numeric" value={age} onChange={(e) => setAge(e.target.value)} />
           </label>
           {metric.age !== null && <Msg r={validateAge(metric.age)} />}
+          <label>How often do you exercise?
+            <select value={activity} onChange={(e) => setActivity(e.target.value as ActivityLevel | "")}>
+              <option value="">Choose one</option>
+              {ACTIVITY_LEVELS.map((a) => <option key={a.id} value={a.id}>{a.label}</option>)}
+            </select>
+          </label>
           <p>Adults only: {RANGES.age.min}+. {ADULTS_ONLY_MESSAGE}.</p>
         </section>
       )}
@@ -246,13 +274,16 @@ export default function OnboardingFlow() {
         <section>
           <h1 ref={headingRef} tabIndex={-1}>Fuel your adventure.</h1>
           <p>{PRESETS_DISCLAIMER}</p>
-          <div role="group" aria-label="Preset targets">
-            {presetsForGoal(goal ?? "maintain").map((p) => (
-              <button key={p.id} type="button" aria-pressed={presetId === p.id} onClick={() => applyPreset(p.id)}>
-                {p.label} · {p.calorie_target} kcal · {p.protein_target_g} g protein <small>(illustrative)</small>
+          <div role="group" aria-label="Recommended targets">
+            {rec ? (
+              <button type="button" aria-pressed={presetId === "recommended"} onClick={applyRecommendation}>
+                Recommended for you · {rec.calorie_target} kcal · {rec.protein_target_g} g protein <small>(estimate)</small>
               </button>
-            ))}
+            ) : (
+              <p>Fill in your stats, goal and exercise to see a recommendation.</p>
+            )}
           </div>
+          {rec && explained?.key === recKey && <p className="onboarding-explain">{explained.text}</p>}
           <p>Or enter your own:</p>
           <label>Calories (kcal)
             <input inputMode="numeric" value={calories} onChange={(e) => { setCalories(e.target.value); setPresetId(null); }} />
