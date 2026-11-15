@@ -1,4 +1,4 @@
-// Friends SQL tests (0004): applies every migration in an in-memory Postgres (PGlite) and checks mutual
+// Friends SQL tests (0006): applies every migration in an in-memory Postgres (PGlite) and checks mutual
 // requests, search, privacy (a friend sees only username, streak and goal/logged days) and RLS.
 // Run:  npm i --no-save @electric-sql/pglite  &&  node supabase/tests/friends.test.mjs
 import { PGlite } from "@electric-sql/pglite";
@@ -138,6 +138,13 @@ await t("calendar is refused for non-friends, pending requests and strangers", a
   await rpc("d", "send_friend_request", U.c);
   await fails(rpc("d", "get_friend_calendar", U.c, daysAgo(6), today), /not friends/);   // pending only
   await fails(rpc("c", "get_friend_calendar", U.d, daysAgo(6), today), /not friends/);
+});
+await t("p_today is clamped to UTC today +/- 1 (null means UTC today)", async () => {
+  await fails(rpc("a", "list_friends", daysAgo(5)), /bad date/);
+  await fails(rpc("a", "get_friend_calendar", U.c, daysAgo(6), today, "2099-01-01"), /bad date/);
+  await rpc("a", "list_friends", daysAgo(1));
+  await rpc("a", "list_friends", ymd(new Date(Date.now() + 86400000)));
+  assert.ok((await rpc("a", "get_friend_calendar", U.c, daysAgo(6), today)).days.length >= 1); // null p_today
 });
 await t("calendar range is validated", async () => {
   await fails(rpc("a", "get_friend_calendar", U.c, today, daysAgo(3)), /bad date range/);

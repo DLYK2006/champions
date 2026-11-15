@@ -35,6 +35,17 @@ create function public.live_streak(p_streak int, p_last date, p_today date)
 returns int language sql immutable
 as $$ select case when p_last is not null and p_last >= p_today - 1 then p_streak else 0 end $$;
 
+-- The client sends its local date; any real timezone is within a day of UTC (same rule as log_meal).
+create function public.clamp_today(p_today date)
+returns date language plpgsql stable
+as $$
+declare v_utc date := (now() at time zone 'utc')::date;
+begin
+  if p_today is null then return v_utc; end if;
+  if p_today not between v_utc - 1 and v_utc + 1 then raise exception 'bad date'; end if;
+  return p_today;
+end $$;
+
 create function public.friendship_between(p_a uuid, p_b uuid)
 returns public.friendships language sql stable security definer set search_path = public
 as $$ select * from public.friendships
@@ -136,7 +147,7 @@ returns jsonb language plpgsql stable security definer set search_path = public
 as $$
 declare
   v_uid uuid := auth.uid();
-  v_today date := coalesce(p_today, current_date);
+  v_today date := public.clamp_today(p_today);
 begin
   if v_uid is null then raise exception 'not signed in'; end if;
   return jsonb_build_object(
@@ -164,7 +175,7 @@ returns jsonb language plpgsql stable security definer set search_path = public
 as $$
 declare
   v_uid uuid := auth.uid();
-  v_today date := coalesce(p_today, current_date);
+  v_today date := public.clamp_today(p_today);
   v_p public.profiles;
 begin
   if v_uid is null then raise exception 'not signed in'; end if;
@@ -192,6 +203,7 @@ end $$;
 -- ---------- grants: signed-in users only; helpers stay internal ----------
 
 revoke execute on function public.live_streak(int, date, date) from public, anon, authenticated;
+revoke execute on function public.clamp_today(date) from public, anon, authenticated;
 revoke execute on function public.friendship_between(uuid, uuid) from public, anon, authenticated;
 revoke execute on function public.search_users(text) from public, anon;
 revoke execute on function public.send_friend_request(uuid) from public, anon;
