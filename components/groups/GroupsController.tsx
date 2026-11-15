@@ -1,13 +1,13 @@
 "use client";
 // Connects Jay's CommunityScreen to real group data. Reads come from lib/groups (get_group_status via
 // useGroupLive: realtime + polling); every membership change goes through the server RPCs and is followed by
-// a refetch. Also owns two PRD 8.2 pieces CommunityScreen has no slot for yet: the badge picker (shown while
-// the user is not in a group) and the shareable invite link (shown while they are).
+// a refetch. Also owns the shareable invite link (PRD 8.2), shown while the user is in a group. New groups get
+// the default badge (a badge picker here was removed: it broke the Groups page layout).
 // Owner: @joshuatsou123.
 import { useEffect, useRef, useState } from "react";
 import { CommunityScreen } from "../ui/community-screen";
 import {
-  GROUP_BADGES, DEFAULT_BADGE, codeFromSearch, inviteLink, savePendingCode,
+  DEFAULT_BADGE, codeFromSearch, inviteLink, savePendingCode,
   createGroup, joinGroup, leaveGroup, useGroupLive,
 } from "../../lib/groups";
 import { RequireProfile } from "../auth";
@@ -32,7 +32,6 @@ export default function GroupsController() {
 function GroupsView() {
   const { status, loading, error, refresh } = useGroupLive();
   const [notice, setNotice] = useState<string | null>(null);
-  const [badge, setBadge] = useState<string>(DEFAULT_BADGE);
   const [linkCopied, setLinkCopied] = useState(false);
   const inviteHandled = useRef(false);
 
@@ -89,17 +88,6 @@ function GroupsView() {
   return (
     <>
       {notice && <p role="alert">{notice}</p>}
-      {!group && (
-        <fieldset>
-          <legend>Badge for a new group</legend>
-          {GROUP_BADGES.map((b) => (
-            <label key={b}>
-              <input type="radio" name="group-badge" value={b} checked={badge === b} onChange={() => setBadge(b)} />
-              {b}
-            </label>
-          ))}
-        </fieldset>
-      )}
       <CommunityScreen
         group={group}
         progress={status?.progress ?? null}
@@ -108,7 +96,7 @@ function GroupsView() {
           setNotice(null);
           const trimmed = name.trim();
           if (trimmed.length > MAX_NAME) throw new Error(`Group names can be up to ${MAX_NAME} characters.`);
-          await createGroup(trimmed, badge);
+          await createGroup(trimmed, DEFAULT_BADGE);
           await refresh();
         }}
         onJoin={async (code) => {
