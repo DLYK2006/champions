@@ -129,12 +129,13 @@ export function ShopScreen({
     const catalog = catalogRef.current;
     const panel = panelRef.current;
     const card = catalog?.querySelector<HTMLElement>(".shop-card");
+    const itemGrid = catalog?.querySelector<HTMLElement>(".shop-item-grid");
     if (!catalog || !panel || !card) return;
     const resize = () => {
       // Match the tabs and first item row, regardless of catalog length.
       panel.style.setProperty(
         "--shop-preview-height",
-        `${card.getBoundingClientRect().bottom - catalog.getBoundingClientRect().top + catalog.scrollTop}px`,
+        `${card.getBoundingClientRect().bottom - catalog.getBoundingClientRect().top + (itemGrid?.scrollTop ?? 0)}px`,
       );
     };
     const observer = new ResizeObserver(resize);
