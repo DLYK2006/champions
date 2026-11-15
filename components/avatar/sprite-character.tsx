@@ -4,17 +4,24 @@ import { useEffect, useRef, useState } from "react";
 import type { AvatarConfig, Mood } from "@/types";
 import { prepareSprite, drawSprite } from "./sprite-art";
 import { sceneView, toScreen } from "../world/wander";
+import type { Facing } from "../world/wander";
 
 export function SpriteCharacter({
   config,
   equipped = [],
   mood = "ready",
   room = false,
+  facing = "down",
+  name = "Your pixel adventurer",
+  variant = 0,
 }: {
   config?: AvatarConfig;
   equipped?: string[];
   mood?: Mood;
   room?: boolean;
+  facing?: Facing;
+  name?: string;
+  variant?: number;
 }) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const [error, setError] = useState(false);
@@ -57,7 +64,7 @@ export function SpriteCharacter({
       if (frame === paintedFrame) return;
       paintedFrame = frame;
       ctx!.clearRect(0, 0, 112, 160);
-      if (atlas) drawSprite(ctx!, atlas, 56, 148, "down", frame, 132);
+      if (atlas) drawSprite(ctx!, atlas, 56, 148, facing, frame, 132);
     }
     function tick(time: number) {
       if (disposed || reduced || document.hidden) {
@@ -84,7 +91,7 @@ export function SpriteCharacter({
       AvatarConfig | undefined,
       string[],
     ];
-    prepareSprite(avatar, items)
+    prepareSprite(avatar, items, variant)
       .then((sprite) => {
         if (disposed) return;
         setError(false);
@@ -104,12 +111,12 @@ export function SpriteCharacter({
       motion.removeEventListener("change", sync);
       document.removeEventListener("visibilitychange", sync);
     };
-  }, [appearance]);
+  }, [appearance, facing, variant]);
   return (
     <div
       className={`room-character mood-${mood}`}
       role="img"
-      aria-label="Your pixel adventurer"
+      aria-label={name}
     >
       <canvas ref={canvas} className="character-canvas" aria-hidden="true" />
       {error && (

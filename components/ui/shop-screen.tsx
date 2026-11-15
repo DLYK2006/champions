@@ -6,6 +6,10 @@ import { RoomCharacter } from "@/components/avatar/pixel-avatar";
 import { Icon, type IconName } from "./icons";
 import { CosmeticArt } from "@/components/avatar/cosmetic-art";
 import { demoProfile, useDemo } from "./demo-context";
+import { FacingControl, WardrobePicker } from "@/components/avatar/wardrobe-picker";
+import type { WardrobeAvatar } from "@/components/avatar/wardrobe";
+import type { Facing } from "@/components/world/wander";
+import { DEFAULT_AVATAR } from "@/components/onboarding/avatarOptions";
 
 export interface ShopItem {
   id: string;
@@ -49,6 +53,7 @@ export interface ShopScreenProps {
   items: ShopItem[];
   onBuy: (id: string, price: number) => Promise<void>;
   onEquip: (id: string) => Promise<void>;
+  onSaveAvatar?: (avatar: WardrobeAvatar) => Promise<void>;
 }
 export function ShopScreen({
   avatar,
@@ -58,13 +63,19 @@ export function ShopScreen({
   items,
   onBuy,
   onEquip,
+  onSaveAvatar,
 }: ShopScreenProps) {
   const [category, setCategory] = useState("All treasures");
+  const [mode, setMode] = useState<"coin" | "starter">("coin");
+  const [draft, setDraft] = useState<WardrobeAvatar | null>(null);
+  const [facing, setFacing] = useState<Facing>("down");
   const [preview, setPreview] = useState<string | null>(null);
   const [pending, setPending] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const inFlight = useRef(false);
+  const appearance = draft ?? avatar ?? DEFAULT_AVATAR;
+  const dirty = draft !== null && JSON.stringify(draft) !== JSON.stringify(avatar ?? DEFAULT_AVATAR);
   const previewEquipment =
     preview && !equipped.includes(preview) ? [...equipped, preview] : equipped;
   const visible = items.filter(
@@ -97,6 +108,20 @@ export function ShopScreen({
       setPending(null);
     }
   }
+  async function saveOutfit() {
+    if (inFlight.current || !onSaveAvatar || !dirty) return;
+    inFlight.current = true;
+    setPending("avatar"); setMessage(""); setError("");
+    try {
+      await onSaveAvatar(appearance);
+      setDraft(null);
+      setMessage("Outfit saved.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Couldn't save your outfit. Try again.");
+    } finally {
+      inFlight.current = false; setPending(null);
+    }
+  }
   return (
     <main className="shop-page">
       <div className="screen-title-row">
@@ -109,8 +134,9 @@ export function ShopScreen({
       <div className="shop-grid">
         <aside className="panel wardrobe-panel" aria-label="Character preview">
           <div className="wardrobe-stage">
-            <RoomCharacter config={avatar} equipped={previewEquipment} />
+            <RoomCharacter config={appearance} equipped={previewEquipment} facing={facing} />
           </div>
+          <FacingControl value={facing} onChange={setFacing} />
           {preview && (
             <div className="shop-preview-selection">
               <span>{items.find((item) => item.id === preview)?.name}</span>
@@ -120,7 +146,20 @@ export function ShopScreen({
             </div>
           )}
         </aside>
-        <section>
+        <section className="shop-catalog">
+          <div className="wardrobe-mode" role="group" aria-label="Shop collection">
+            <button type="button" disabled={pending !== null} aria-pressed={mode === "coin"} onClick={() => { setMode("coin"); setPreview(null); }}>Coin shop</button>
+            <button type="button" disabled={pending !== null} aria-pressed={mode === "starter"} onClick={() => { setMode("starter"); setPreview(null); }}>Starter wardrobe</button>
+          </div>
+          {mode === "starter" ? <div className="panel starter-panel">
+            <WardrobePicker avatar={appearance} disabled={pending !== null} onChange={next => { setDraft(next); setMessage(""); setError(""); }} />
+            {equipped.some(id => id === "hoodie" || id === "crown") && <p className="fine-print">Your equipped shop items layer over this outfit.</p>}
+            <div className="wardrobe-actions">
+              <button type="button" className="button button-soft" disabled={pending !== null || !dirty} onClick={() => { setDraft(null); setError(""); setMessage(""); }}>Reset outfit</button>
+              <button type="button" className="button button-primary" disabled={pending !== null || !dirty || !onSaveAvatar} onClick={() => void saveOutfit()}>{pending === "avatar" ? "Saving outfit…" : "Save outfit"}</button>
+            </div>
+            {!onSaveAvatar && <p className="fine-print">Preview only</p>}
+          </div> : <>
           <div className="shop-tabs" role="group" aria-label="Filter treasures">
             {["All treasures", "Outfits", "Hats", "Accessories"].map((tab) => (
               <button
@@ -190,6 +229,7 @@ export function ShopScreen({
               </article>
             ))}
           </div>
+          </>}
           <div className="shop-status" role="status" aria-live="polite">
             {message}
           </div>
