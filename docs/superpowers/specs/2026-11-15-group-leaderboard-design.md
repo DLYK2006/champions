@@ -53,7 +53,8 @@ Show groups how they are doing next to other groups, as a cooperative "we're doi
 1. **Copy.** When a group's daily progress is evaluated (`evaluate_group`, after `log_meal`), a best-effort `POST /api/analytics/group` copies that day's row to `workspace.digin.group_daily` (`group_id`, `date`, counts, percentage, tier). Idempotent by `group_id` + `date` (`MERGE`), like the meal copy. Failure only means Databricks is behind.
 2. **Serve.** `GET /api/leaderboard` (signed-in only):
    - Databricks path: SQL computes the scores and ranks over the last 7 days (3 s timeout), returning `group_id`, `consistency_7d`, `full_bloom_streak`, `rank`. The route then maps ids to names through `get_group_names(uuid[])`, which returns only visible groups.
-   - Fallback path (timeout, error or empty): `get_group_leaderboard()` computes the same scores from `group_daily_progress` inside Supabase.
+   - A Databricks answer that leaves out the caller's own group (while they have one) counts as incomplete, because a copy may have failed, and takes the fallback path too.
+   - Fallback path (timeout, error, empty or incomplete): `get_group_leaderboard()` computes the same scores from `group_daily_progress` inside Supabase.
    - Response: `{ source: "databricks" | "supabase", rows: [{ rank, group_name, consistency_7d, full_bloom_streak, is_mine }] }`, top 10 plus the caller's own group if outside it. No ids are returned.
 3. **Show.** A Leaderboard panel on the Community tab. If there are no rows, it is hidden.
 

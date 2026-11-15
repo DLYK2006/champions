@@ -34,3 +34,11 @@ export function buildLeaderboard(
     }))
     .filter((row) => row.rank <= limit || row.is_mine);
 }
+
+/**
+ * True when the caller is in a group but it is not in `rows`. A Databricks answer like that may be incomplete (the
+ * group's daily copies failed or lagged), so the route uses the Supabase score instead. An opted-out group also lands
+ * here and just takes the (equally correct) fallback.
+ */
+export const missingOwnGroup = (rows: LeaderboardRow[], myGroupId: string | null): boolean =>
+  myGroupId !== null && !rows.some((row) => row.is_mine);

@@ -6,7 +6,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { runSql } from "@/lib/analytics/databricks";
 import { groupScoresStatement, toScoreRows } from "@/lib/analytics/groups";
-import { buildLeaderboard, type LeaderboardRow } from "@/lib/groups/leaderboard";
+import { buildLeaderboard, missingOwnGroup, type LeaderboardRow } from "@/lib/groups/leaderboard";
 
 const DAY = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -32,8 +32,10 @@ export async function GET(request: Request) {
         supabase.rpc("my_group_id"),
       ]);
       if (namesError || mineError) throw new Error(namesError?.message ?? mineError?.message);
-      const rows = buildLeaderboard(scores, (names ?? {}) as Record<string, string>, (mine as string | null) ?? null);
-      if (rows.length) return Response.json({ source: "databricks", rows });
+      const myGroupId = (mine as string | null) ?? null;
+      const rows = buildLeaderboard(scores, (names ?? {}) as Record<string, string>, myGroupId);
+      // A Databricks answer that leaves out your own group may just be behind (a copy failed): use Supabase then.
+      if (rows.length && !missingOwnGroup(rows, myGroupId)) return Response.json({ source: "databricks", rows });
     }
   } catch (e) {
     console.warn("leaderboard: databricks read failed, using supabase", e instanceof Error ? e.message : e);
