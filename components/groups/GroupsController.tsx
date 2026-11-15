@@ -32,18 +32,24 @@ export default function GroupsController() {
 
 // PRD 11.1: the Communities tab switches between the Group view and the Friends view.
 // Uses the app's existing segmented-control style (.shop-tabs) so it matches the Shop filters.
+// Layout: on phones this route is a fixed-height, non-scrolling screen (compact.css). The toggle takes its own
+// small row and the view below gets the rest, so the garden shrinks instead of the progress panel being pushed
+// off the bottom. The Friends view scrolls inside that space.
 function CommunitiesView() {
   const [view, setView] = useState<"group" | "friends">("group");
   return (
-    <>
-      <div className="shop-tabs" role="group" aria-label="Communities view" style={{ marginBottom: 12 }}>
-        <button type="button" aria-pressed={view === "group"} onClick={() => setView("group")}>Group</button>
-        <button type="button" aria-pressed={view === "friends"} onClick={() => setView("friends")}>Friends</button>
+    <div style={{ height: "100%", minHeight: 0, display: "flex", flexDirection: "column", gap: 8 }}>
+      <div className="shop-tabs" role="group" aria-label="Communities view" style={{ margin: 0, padding: 3, flexShrink: 0 }}>
+        <button type="button" style={TOGGLE_BUTTON} aria-pressed={view === "group"} onClick={() => setView("group")}>Group</button>
+        <button type="button" style={TOGGLE_BUTTON} aria-pressed={view === "friends"} onClick={() => setView("friends")}>Friends</button>
       </div>
-      {view === "group" ? <GroupsView /> : <FriendsView />}
-    </>
+      <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column", overflowY: view === "friends" ? "auto" : "hidden" }}>
+        {view === "group" ? <GroupsView /> : <FriendsView />}
+      </div>
+    </div>
   );
 }
+const TOGGLE_BUTTON = { minHeight: 36 } as const;
 
 function GroupsView() {
   const { status, loading, error, refresh } = useGroupLive();
@@ -103,7 +109,7 @@ function GroupsView() {
 
   return (
     <>
-      {notice && <p role="alert">{notice}</p>}
+      {notice && <p role="alert" style={{ margin: 0, flexShrink: 0 }}>{notice}</p>}
       <CommunityScreen
         group={group}
         progress={status?.progress ?? null}
@@ -132,8 +138,9 @@ function GroupsView() {
         }}
       />
       {group && (
-        <p style={{ padding: "0 16px 112px", textAlign: "center" }}>
-          <button type="button" onClick={() => void copyLink()}>
+        // Kept to one short row: this screen does not scroll, so anything tall here would hide the progress panel.
+        <p style={{ margin: "6px 0 0", textAlign: "center", flexShrink: 0 }}>
+          <button type="button" className="text-button" onClick={() => void copyLink()}>
             {linkCopied ? "Invite link copied" : "Copy invite link"}
           </button>
         </p>
