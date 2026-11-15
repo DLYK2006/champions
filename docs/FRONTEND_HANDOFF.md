@@ -102,3 +102,16 @@ Calendar no longer displays the color legend. The default view is analysis selec
 Daren owns the future Databricks connection; Jay explicitly deferred it. `HistoryController` accepts optional `renderAnalysis(range)` with typed `AnalysisRange = {kind:'all'} | {kind:'range',from,to}` from `components/history/analysis-selection.ts`. The slot is currently empty: only the chosen scope is displayed, with no fabricated analytics or new API/backend calls.
 
 Regression: `node --test components/history/analysis-selection.test.mjs`; `node components/ui/tests/calendar-filters.browser-check.cjs` with the existing external Playwright setup. Browser checks cover all accordion toggles, retained drafts, default/range/day/reset modes, validation and responsive axe checks.
+
+
+## Home account controls and six-item Shop (#79)
+
+Home header order is Sign out / Share / coin balance. The unchanged owner AccountSection is mounted in Home instead of Profile; header-only styles hide its Account heading and position errors beneath the controls. Existing signOut pending/error/redirect behavior is reused. HomeShare now uses the pixel share/export icon. Header geometry and axe checks cover phone through desktop; dummy-backend tests cover logout failure/retry, not a live account logout.
+
+The storefront is All / Shirts / Pants / Hats and displays only six supported IDs: sage-sweater, rust-flannel, meadow-trousers, slate-cargos, acorn-cap, fisher-bucket. Each has original pixel card art and a shared-renderer wearable in all four directions and walk frames. Server rows and server prices remain authoritative. No presentation-only row is offered for purchase. Legacy hoodie/sunglasses/crown catalog metadata and saved ownership/rendering stay supported in Wardrobe, but those items are retired from the storefront. Starter8 remain universally free.
+
+**Deployment dependency: owner issue #80.** Add the six real shop_items rows before merging this frontend. Proposed prices are 40/50 shirts, 30/45 pants, 25/35 hats; backend owner confirms/applies them. Categories outfit (or shirt/clothing), pants, hat (or headwear) map to the existing Outfits (display Shirts), new Pants and Hats slots. Existing buy_item/save_outfit RPCs are reused; no frontend schema or reward changes. Do not delete old rows or purchases.
+
+Renderer corrections preserve side-facing face pixels during short-hair trimming, put a bun behind the head in each direction and fit cap/brim, beanie, sunhat, bucket, glasses and legacy crown profiles. The source atlas PNG is unchanged. Contact-sheet tests verify each new item in all 24 cells, no altered body/face silhouettes, and no lost face pixels.
+
+Checks: home-account.browser-check.cjs, shop-catalog.browser-check.cjs and side-views.browser-check.cjs under components/ui/tests; paid-catalog.test.mjs under components/profile plus existing Shop/outfit tests. Existing production Profile, pending/nav and wardrobe/art/frame regressions are updated. Fixture tests remove temporary routes; finish them before typegen/build.

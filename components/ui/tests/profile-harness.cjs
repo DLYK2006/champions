@@ -112,6 +112,20 @@ module.exports = async function profileHarness(
       },
     ],
     items: [
+      ...[
+        ["sage-sweater", "Sage Sweater", "shirt", 40],
+        ["rust-flannel", "Rust Flannel", "shirt", 50],
+        ["meadow-trousers", "Meadow Trousers", "pants", 30],
+        ["slate-cargos", "Slate Cargos", "pants", 45],
+        ["acorn-cap", "Acorn Cap", "hat", 25],
+        ["fisher-bucket", "Fisher Bucket", "hat", 35],
+      ].map(([id, name, category, cost]) => ({
+        id,
+        name,
+        category,
+        cost,
+        asset_ref: id,
+      })),
       {
         id: "hoodie",
         name: "Woodland Hoodie",

@@ -8,7 +8,11 @@ export interface ShopItemRow { id: string; name: string; category: string; cost:
 
 const UI_CATEGORY: Record<string, ShopItem["category"]> = {
   clothing: "Outfits",
+  outfit: "Outfits",
+  shirt: "Outfits",
+  pants: "Pants",
   headwear: "Hats",
+  hat: "Hats",
   accessory: "Accessories",
 };
 

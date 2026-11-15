@@ -38,11 +38,11 @@ const { chromium } = require("playwright"),
     assert.equal(await page.locator(".profile-avatar canvas").count(), 1);
     await page.getByRole("link", { name: "Shop", exact: true }).click();
     await page
-      .getByRole("button", { name: "Preview Crown", exact: true })
+      .getByRole("button", { name: "Preview Acorn Cap", exact: true })
       .click();
     assert.deepEqual(model.owned, ["hoodie"], "Try-on grants nothing");
     const buy = page.getByRole("button", {
-      name: "Buy Crown for 60 coins",
+      name: "Buy Acorn Cap for 25 coins",
       exact: true,
     });
     await buy.evaluate((b) => {
@@ -51,20 +51,18 @@ const { chromium } = require("playwright"),
     });
     await page
       .getByRole("status")
-      .filter({ hasText: /Crown.*Wardrobe/ })
+      .filter({ hasText: /Acorn Cap.*Wardrobe/ })
       .waitFor();
     assert.equal(model.buyCount, 1);
-    assert.equal(model.profile.coin_balance, 60);
-    const crown = page
-      .locator(".shop-card")
-      .filter({
-        has: page.getByRole("heading", { name: "Crown", exact: true }),
-      });
-    assert.equal(await crown.locator(".item-tag").innerText(), "OWNED");
-    await crown
+    assert.equal(model.profile.coin_balance, 95);
+    const cap = page.locator(".shop-card").filter({
+      has: page.getByRole("heading", { name: "Acorn Cap", exact: true }),
+    });
+    assert.equal(await cap.locator(".item-tag").innerText(), "OWNED");
+    await cap
       .getByRole("link", { name: "View in Wardrobe", exact: true })
       .click();
-    await page.getByRole("button", { name: "Crown", exact: true }).click();
+    await page.getByRole("button", { name: "Acorn Cap", exact: true }).click();
     await page
       .getByRole("button", { name: "Linen shirt", exact: true })
       .click();
@@ -94,8 +92,8 @@ const { chromium } = require("playwright"),
       .filter({ hasText: "Outfit saved." })
       .waitFor();
     assert.equal(model.profile.avatar.pants, "indigo-trousers");
-    assert.deepEqual(model.profile.equipped, ["crown"]);
-    assert.equal(model.profile.coin_balance, 60);
+    assert.deepEqual(model.profile.equipped, ["acorn-cap"]);
+    assert.equal(model.profile.coin_balance, 95);
     await page.getByRole("button", { name: "Settings", exact: true }).click();
     await page.getByLabel("Height (cm)", { exact: true }).fill("180");
     await page.getByLabel("Weight (kg)", { exact: true }).fill("75");
@@ -138,7 +136,7 @@ const { chromium } = require("playwright"),
     assert.equal(model.profile.height_cm, 180);
     assert.equal(model.profile.weight_kg, 75);
     assert.equal(model.profile.avatar.skinColor, "614335");
-    assert.equal(model.profile.coin_balance, 60);
+    assert.equal(model.profile.coin_balance, 95);
     await page.reload();
     await page.getByLabel("Height (cm)", { exact: true }).waitFor();
     assert.equal(
