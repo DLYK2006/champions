@@ -4,17 +4,26 @@ import { useEffect, useRef, useState } from "react";
 import type { AvatarConfig, Mood } from "@/types";
 import { prepareSprite, drawSprite } from "./sprite-art";
 import { sceneView, toScreen } from "../world/wander";
+import type { Facing } from "../world/wander";
 
 export function SpriteCharacter({
   config,
   equipped = [],
   mood = "ready",
   room = false,
+  facing = "down",
+  name = "Your pixel adventurer",
+  variant = 0,
+  animate = true,
 }: {
   config?: AvatarConfig;
   equipped?: string[];
   mood?: Mood;
   room?: boolean;
+  facing?: Facing;
+  name?: string;
+  variant?: number;
+  animate?: boolean;
 }) {
   const canvas = useRef<HTMLCanvasElement>(null);
   const [error, setError] = useState(false);
@@ -53,11 +62,12 @@ export function SpriteCharacter({
     let paintedFrame = -1;
     function paint(time = 0) {
       if (!atlas) return;
-      const frame = !reduced && !document.hidden && time % 5100 > 4900 ? 1 : 0;
+      const frame =
+        animate && !reduced && !document.hidden && time % 5100 > 4900 ? 1 : 0;
       if (frame === paintedFrame) return;
       paintedFrame = frame;
       ctx!.clearRect(0, 0, 112, 160);
-      if (atlas) drawSprite(ctx!, atlas, 56, 148, "down", frame, 132);
+      if (atlas) drawSprite(ctx!, atlas, 56, 148, facing, frame, 132);
     }
     function tick(time: number) {
       if (disposed || reduced || document.hidden) {
@@ -72,7 +82,7 @@ export function SpriteCharacter({
       cancelAnimationFrame(raf);
       element!.dataset.running = "false";
       paint();
-      if (atlas && !reduced && !document.hidden && !disposed) {
+      if (animate && atlas && !reduced && !document.hidden && !disposed) {
         element!.dataset.running = "true";
         raf = requestAnimationFrame(tick);
       }
@@ -84,7 +94,7 @@ export function SpriteCharacter({
       AvatarConfig | undefined,
       string[],
     ];
-    prepareSprite(avatar, items)
+    prepareSprite(avatar, items, variant)
       .then((sprite) => {
         if (disposed) return;
         setError(false);
@@ -104,13 +114,9 @@ export function SpriteCharacter({
       motion.removeEventListener("change", sync);
       document.removeEventListener("visibilitychange", sync);
     };
-  }, [appearance]);
+  }, [appearance, facing, variant, animate]);
   return (
-    <div
-      className={`room-character mood-${mood}`}
-      role="img"
-      aria-label="Your pixel adventurer"
-    >
+    <div className={`room-character mood-${mood}`} role="img" aria-label={name}>
       <canvas ref={canvas} className="character-canvas" aria-hidden="true" />
       {error && (
         <span className="sprite-load-error" role="status">

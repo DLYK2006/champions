@@ -130,11 +130,11 @@ const fs = require("node:fs");
       .getByRole("button", { name: "Skin tone: Deep brown", exact: true })
       .click();
     assert.equal(
-      (await page
+      await page
         .getByRole("img", { name: "Your customized pixel avatar" })
-        .locator('path[fill="#614335"]')
-        .count()) > 0,
-      true,
+        .locator('canvas[data-sprite-ready="true"]')
+        .count(),
+      1,
     );
     if (output)
       await page.screenshot({

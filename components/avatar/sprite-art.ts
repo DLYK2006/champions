@@ -1,10 +1,65 @@
 import type { AvatarConfig } from "@/types";
 import type { Facing } from "../world/wander";
+import type { WardrobeAvatar } from "./wardrobe";
 
 export const SPRITE_ATLAS = "/dig-in/adventurer-atlas.png";
 const ROW: Record<Facing, number> = { down: 0, left: 1, right: 2, up: 3 };
 let imagePromise: Promise<HTMLImageElement> | null = null;
 const variants = new Map<string, HTMLCanvasElement>();
+// Footwear bounds in source cells: idle, extended stride, passing stride.
+// Follow the raised foot as well as the planted foot; never repaint knee highlights.
+const FEET = [
+  [
+    [
+      [48, 107, 65, 124],
+      [71, 107, 89, 124],
+    ],
+    [
+      [48, 108, 65, 124],
+      [71, 98, 89, 115],
+    ],
+    [
+      [48, 102, 65, 121],
+      [71, 106, 89, 124],
+    ],
+  ],
+  [
+    [[49, 108, 79, 124]],
+    [
+      [33, 107, 57, 124],
+      [69, 108, 94, 124],
+    ],
+    [
+      [62, 96, 82, 112],
+      [57, 110, 79, 124],
+    ],
+  ],
+  [
+    [[50, 108, 80, 124]],
+    [
+      [37, 108, 62, 124],
+      [79, 107, 104, 124],
+    ],
+    [
+      [61, 110, 80, 124],
+      [76, 96, 96, 112],
+    ],
+  ],
+  [
+    [
+      [49, 108, 65, 124],
+      [73, 108, 89, 124],
+    ],
+    [
+      [53, 100, 69, 116],
+      [71, 110, 87, 124],
+    ],
+    [
+      [50, 110, 67, 124],
+      [71, 98, 87, 115],
+    ],
+  ],
+] as const;
 
 function rgb(value: string | undefined, fallback: string) {
   const hex =
@@ -40,6 +95,25 @@ export async function prepareSprite(
   const ctx = canvas.getContext("2d")!;
   ctx.imageSmoothingEnabled = false;
   ctx.drawImage(image, 0, 0, 768, 512);
+  // The painted walk cells vary their hair silhouette. Register a complete head,
+  // rather than cutting holes in moving hair or letting it pop between frames.
+  for (let row = 0; row < 4; row++)
+    for (let col = 1; col < 6; col++) {
+      if (col === 1 && row !== 3) continue; // Preserve the original blink drawing.
+      ctx.clearRect(col * 128, row * 128, 128, 64);
+      ctx.drawImage(
+        canvas,
+        0,
+        row * 128,
+        128,
+        64,
+        col * 128,
+        row * 128,
+        128,
+        64,
+      );
+    }
+  const appearance = config as WardrobeAvatar | undefined;
   const pixels = ctx.getImageData(0, 0, 768, 512),
     data = pixels.data;
   const skin = rgb(
@@ -51,7 +125,9 @@ export async function prepareSprite(
     ["643d29", "352f2b", "92512d", "573c32"][variant % 4],
   );
   const clothing =
-    equipped.includes("hoodie") || config?.clothing === "hoodie"
+    equipped.includes("hoodie") ||
+    config?.clothing === "hoodie" ||
+    config?.clothing === "forest-jacket"
       ? "527548"
       : config?.clothing === "overall"
         ? "688a94"
@@ -59,6 +135,14 @@ export async function prepareSprite(
           ? "d4ab55"
           : "e5cf9f";
   const shirt = rgb(clothing, "e5cf9f");
+  const pants = rgb(
+    appearance?.pants === "indigo-trousers" ? "637c96" : "79563e",
+    "79563e",
+  );
+  const shoes = rgb(
+    appearance?.shoes === "canvas-sneakers" ? "e7debf" : "bd8c53",
+    "bd8c53",
+  );
   for (let y = 0; y < 512; y++)
     for (let x = 0; x < 768; x++) {
       const i = (y * 768 + x) * 4,
@@ -67,7 +151,15 @@ export async function prepareSprite(
         b = data[i + 2],
         localY = y % 128,
         localX = x % 128,
-        row = Math.floor(y / 128);
+        row = Math.floor(y / 128),
+        col = Math.floor(x / 128),
+        foot = FEET[row][col < 2 ? 0 : col % 2 === 0 ? 1 : 2].find(
+          ([left, top, right, bottom]) =>
+            localX >= left &&
+            localX <= right &&
+            localY >= top &&
+            localY <= bottom,
+        );
       // The generated alpha has very faint matte noise; do not carry it into the scene.
       if (data[i + 3] < 64) {
         data[i + 3] = 0;
@@ -79,17 +171,11 @@ export async function prepareSprite(
       const warm = r > g * 1.12 && g > b * 1.12;
       if (
         config?.top === "shortFlat" &&
-        localY > 38 &&
-        localY < 57 &&
+        localY < 60 &&
         warm &&
-        r < 190 &&
-        (row === 0
-          ? localX < 53 || localX > 86
-          : row === 3
-            ? localX < 55 || localX > 84
-            : row === 1
-              ? localX > 81
-              : localX < 52)
+        // Trim only the outside edge of a continuous crop, never a band through its middle.
+        (localX < 43 + Math.max(0, localY - 30) * 0.5 ||
+          localX > 95 - Math.max(0, localY - 30) * 0.45)
       ) {
         data[i + 3] = 0;
         continue;
@@ -119,6 +205,15 @@ export async function prepareSprite(
       ) {
         target = shirt;
         base = 191;
+      } else if (foot && warm && r > 70 && g > 40) {
+        target =
+          appearance?.shoes === "canvas-sneakers" && localY < foot[3] - 8
+            ? pants
+            : shoes;
+        base = 134;
+      } else if (localY > 85 && warm && r > 43 && r < 165) {
+        target = pants;
+        base = 75;
       }
       if (target) {
         const light = (r * 0.2126 + g * 0.7152 + b * 0.0722) / base;
@@ -134,6 +229,7 @@ export async function prepareSprite(
       ctx.translate(col * 128, row * 128);
       const hairHex = `rgb(${hair.join(",")})`,
         skinHex = `rgb(${skin.join(",")})`;
+      const hat = equipped.includes("crown") ? "none" : appearance?.hat;
       if (config?.top === "longHairStraight") {
         ctx.fillStyle = hairHex;
         const strands =
@@ -152,7 +248,7 @@ export async function prepareSprite(
         ctx.fillStyle = hairHex;
         ctx.fillRect(78, 4, 12, 8);
       }
-      if (config?.top === "hat") {
+      if (config?.top === "hat" && hat === undefined) {
         ctx.fillStyle = "#39432b";
         ctx.fillRect(49, 10, 39, 13);
         ctx.fillRect(43, 21, 51, 4);
@@ -160,6 +256,60 @@ export async function prepareSprite(
         ctx.fillRect(51, 11, 35, 10);
         ctx.fillStyle = "#e0bf6c";
         ctx.fillRect(65, 13, 6, 5);
+      }
+      if (hat === "moss-beanie" || hat === "straw-sunhat") {
+        const cx = [68, 64, 68, 67][row];
+        ctx.clearRect(0, 0, 128, 23);
+        if (hat === "moss-beanie") {
+          ctx.fillStyle = "#344735";
+          ctx.beginPath();
+          ctx.moveTo(cx - 23, 25);
+          ctx.lineTo(cx - 23, 14);
+          ctx.lineTo(cx - 19, 7);
+          ctx.lineTo(cx - 11, 2);
+          ctx.lineTo(cx + 10, 2);
+          ctx.lineTo(cx + 19, 7);
+          ctx.lineTo(cx + 23, 15);
+          ctx.lineTo(cx + 23, 25);
+          ctx.closePath();
+          ctx.fill();
+          ctx.fillStyle = "#78936b";
+          ctx.fillRect(cx - 19, 12, 38, 12);
+          ctx.fillRect(cx - 14, 7, 28, 9);
+          ctx.fillStyle = "#91a47d";
+          ctx.fillRect(cx - 12, 7, 5, 10);
+          ctx.fillStyle = "#526e4d";
+          ctx.fillRect(cx - 21, 20, 42, 7);
+          ctx.fillStyle = "#adba8f";
+          for (let x = cx - 18; x < cx + 20; x += 5) ctx.fillRect(x, 21, 1, 4);
+          ctx.fillStyle = "#e7cf94";
+          ctx.fillRect(cx + 10, 21, 6, 5);
+        } else {
+          ctx.fillStyle = "#674a2d";
+          ctx.beginPath();
+          ctx.moveTo(cx - 31, 24);
+          ctx.lineTo(cx - 31, 19);
+          ctx.lineTo(cx - 22, 15);
+          ctx.lineTo(cx - 19, 5);
+          ctx.lineTo(cx - 10, 1);
+          ctx.lineTo(cx + 11, 1);
+          ctx.lineTo(cx + 20, 5);
+          ctx.lineTo(cx + 22, 15);
+          ctx.lineTo(cx + 31, 19);
+          ctx.lineTo(cx + 31, 24);
+          ctx.closePath();
+          ctx.fill();
+          ctx.fillStyle = "#d5af64";
+          ctx.fillRect(cx - 20, 7, 40, 13);
+          ctx.fillRect(cx - 27, 19, 54, 4);
+          ctx.fillStyle = "#f0d18b";
+          ctx.fillRect(cx - 14, 4, 28, 9);
+          ctx.fillRect(cx - 25, 19, 50, 2);
+          ctx.fillStyle = "#6b7950";
+          ctx.fillRect(cx - 20, 13, 40, 4);
+          ctx.fillStyle = "#fff0b6";
+          ctx.fillRect(cx + 10, 13, 3, 3);
+        }
       }
       if (equipped.includes("crown")) {
         ctx.fillStyle = "#634625";
