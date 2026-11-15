@@ -11,7 +11,7 @@ import {
   validateOnboarding, validateOptionalMacro, validateProtein, type FieldResult, type Units,
 } from "../../lib/targets";
 import { createGroup, joinGroup } from "../../lib/groups/api";
-import { GROUP_BADGES, DEFAULT_BADGE, peekPendingCode, clearPendingCode } from "../../lib/groups/invite";
+import { DEFAULT_BADGE, peekPendingCode, clearPendingCode } from "../../lib/groups/invite";
 import { DEFAULT_AVATAR } from "./avatarOptions";
 import { AvatarCustomizer } from "../avatar/avatar-customizer";
 import { Icon } from "../ui/icons";
@@ -36,7 +36,6 @@ export default function OnboardingFlow() {
   const [groupMode, setGroupMode] = useState<GroupMode>(() => (peekPendingCode() ? "join" : "choose")); // an invite link opens straight on Join
   const [joinCode, setJoinCode] = useState(() => peekPendingCode() ?? "");
   const [groupName, setGroupName] = useState("");
-  const [groupBadge, setGroupBadge] = useState<string>(DEFAULT_BADGE);
   const [groupError, setGroupError] = useState<string | null>(null);
   const [createdCode, setCreatedCode] = useState<string | null>(null);
 
@@ -169,7 +168,7 @@ export default function OnboardingFlow() {
         clearPendingCode();
         goHome();
       } else {
-        const g = await createGroup(groupName, groupBadge);
+        const g = await createGroup(groupName, DEFAULT_BADGE);
         setCreatedCode(g.invite_code);
         setGroupMode("created");
       }
@@ -318,11 +317,6 @@ export default function OnboardingFlow() {
             <>
               <label>Group name
                 <input value={groupName} onChange={(e) => setGroupName(e.target.value)} maxLength={30} />
-              </label>
-              <label>Badge
-                <select value={groupBadge} onChange={(e) => setGroupBadge(e.target.value)}>
-                  {GROUP_BADGES.map((b) => <option key={b} value={b}>{b}</option>)}
-                </select>
               </label>
               <div>
                 <button type="button" disabled={saving || !createOk} onClick={() => submitGroup("create")}>Create group</button>

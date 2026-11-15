@@ -3,11 +3,12 @@
 import { createClient } from "../supabase/client";
 import { getGroupStatus, localDate } from "../groups/api";
 import type { DailyProgress, GroupDailyProgress, Profile } from "../../types/index";
+import type { GroupStatus } from "../groups/types";
 import { toProfile, toProgress } from "./home";
 
 export type HomeData =
   | { kind: "onboarding" }
-  | { kind: "ready"; profile: Profile; progress: DailyProgress; group: GroupDailyProgress | null };
+  | { kind: "ready"; profile: Profile; progress: DailyProgress; group: GroupDailyProgress | null; groupStatus: GroupStatus | null };
 
 const PROFILE_COLUMNS =
   "id, username, goal_type, height_cm, weight_kg, age, target_weight_kg, calorie_target, protein_target_g, " +
@@ -33,5 +34,6 @@ export async function loadHome(date: string = localDate()): Promise<HomeData> {
     profile: toProfile(profile.data as unknown as Record<string, unknown>, date),
     progress: toProgress(progress.data as Record<string, unknown> | null, date),
     group: group?.progress ?? null,
+    groupStatus: group ?? null, // group name + members, for the group celebration dialog
   };
 }
