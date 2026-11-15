@@ -142,7 +142,8 @@ export function GardenCharacters({
       if (!w || !h || (w === width && h === height)) return;
       width = w;
       height = h;
-      view = sceneView(w, h, 0.5, "contain");
+      const fit = getComputedStyle(parent!).getPropertyValue("--garden-fit").trim() === "cover" ? "cover" : "contain";
+      view = sceneView(w, h, 0.5, fit);
       nav = createNavigation(view);
       const dpr = Math.min(devicePixelRatio || 1, 2);
       element!.width = Math.round(w * dpr);
