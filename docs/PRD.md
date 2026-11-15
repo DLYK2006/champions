@@ -491,7 +491,6 @@ Sections:
 - Notifications never blame or shame members (see 9.5).
 5. Account.
 - Sign out: ends the session and returns to the welcome screen.
-- Delete my account and data: permanently removes the profile, meals, daily progress, coin transactions, inventory and group memberships. Requires a clear confirmation step (type the username). Cannot be undone. Deletion runs on the server.
 
 Rules:
 - A user can only read and change their own profile; all saves are validated server-side.
