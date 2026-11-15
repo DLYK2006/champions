@@ -790,3 +790,20 @@
     transition: none;
   }
 }
+
+@media (min-width: 761px) and (min-height: 600px) {
+  .compact-app .nutrition-panel {
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+  }
+  .compact-app .nutrition-panel .nutrition-row {
+    flex: 1;
+  }
+  .compact-app .nutrition-panel .progress-percent {
+    align-self: center;
+  }
+  .compact-app .nutrition-panel .macro-pair {
+    flex-shrink: 0;
+  }
+}
