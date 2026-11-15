@@ -7,6 +7,7 @@ import type { DailyProgress } from "@/types";
 import { localDate } from "@/lib/groups/api";
 import { currentStreak, dayStatus, monthCells, ymd, type DayStatus } from "@/lib/history/calendar";
 import { loadDay, loadMonth, loadProfile, type HistoryProfile, type MealRow } from "@/lib/history/api";
+import { ShareButton } from "@/components/share/ShareButton";
 
 const WEEKDAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 const STATUS_LABEL: Record<DayStatus, string> = { goal: "goal met", logged: "meals logged", none: "nothing logged" };
@@ -89,6 +90,7 @@ export function HistoryController() {
               ? `${streak}-day streak. Today counts.`
               : `${streak}-day streak. Log a meal today to keep it going.`}
         </p>
+        <ShareButton />
       </header>
 
       <section aria-label="Calendar">
