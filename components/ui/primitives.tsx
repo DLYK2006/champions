@@ -59,7 +59,7 @@ export function NutritionBar({
 }: {
   label: string;
   value: number;
-  target: number;
+  target: number | null;
   unit: string;
   kind: string;
   icon: IconName;
@@ -68,7 +68,8 @@ export function NutritionBar({
   overTarget?: boolean;
 }) {
   const percent =
-    target > 0 ? Math.max(0, Math.round((value / target) * 100)) : 0;
+    target !== null && target > 0 ? Math.max(0, Math.round((value / target) * 100)) : 0;
+  const hasTarget = target !== null && target > 0;
   return (
     <div className={`nutrition-row ${kind}`}>
       <span className="nutrient-icon">
@@ -78,8 +79,7 @@ export function NutritionBar({
         <div className="nutrition-label">
           <strong>{label}</strong>
           <span>
-            <b>{value.toLocaleString("en-US")}</b> /{" "}
-            {target.toLocaleString("en-US")} <small>{unit}</small>
+            <b>{value.toLocaleString("en-US")}</b>{hasTarget && <> / {target.toLocaleString("en-US")}</>} <small>{unit}</small>
           </span>
         </div>
         <div
@@ -88,8 +88,8 @@ export function NutritionBar({
           aria-label={label}
           aria-valuemin={0}
           aria-valuemax={100}
-          aria-valuenow={Math.min(percent, 100)}
-          aria-valuetext={`${value} of ${target} ${unit}`}
+          aria-valuenow={hasTarget ? Math.min(percent, 100) : undefined}
+          aria-valuetext={hasTarget ? `${value} of ${target} ${unit}` : `${value} ${unit} logged; no target set`}
         >
           <span style={{ width: `${Math.min(percent, 100)}%` }} />
         </div>
@@ -108,7 +108,7 @@ export function NutritionBar({
         )}
       </div>
       <span className="progress-percent">
-        {target > 0 ? `${percent}%` : "—"}
+        {hasTarget ? `${percent}%` : "—"}
       </span>
     </div>
   );

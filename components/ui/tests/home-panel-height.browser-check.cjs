@@ -5,9 +5,11 @@ const harness = require('./profile-harness.cjs');
 (async () => {
   const browser = await chromium.launch();
   try {
-    const { context, page, base } = await harness(browser);
+    const { context, page, base, model } = await harness(browser);
     await page.goto(base + '/');
     await page.locator('.nutrition-panel').waitFor();
+    assert.equal(await page.getByRole('progressbar').count(), 4);
+    for (const label of ['Carbs', 'Fat']) assert.ok(await page.getByRole('progressbar', { name: label, exact: true }).getAttribute('aria-valuetext')); 
     for (const [width, height] of [[900, 700], [1440, 900], [1820, 913]]) {
       await page.setViewportSize({ width, height });
       await page.waitForTimeout(100);
@@ -26,6 +28,16 @@ const harness = require('./profile-harness.cjs');
     const room = await page.locator('.room-panel').boundingBox();
     const quest = await page.locator('.nutrition-panel').boundingBox();
     assert.ok(quest.y >= room.y + room.height, 'Mobile keeps its stacked layout');
+    assert.ok(await page.evaluate(() => document.documentElement.scrollHeight <= innerHeight), 'Four rows fit on mobile');
+    model.profile.carbs_target_g = null;
+    model.profile.fat_target_g = null;
+    await page.reload();
+    await page.getByRole('progressbar', { name: 'Fat', exact: true }).waitFor();
+    for (const label of ['Carbs', 'Fat']) {
+      const bar = page.getByRole('progressbar', { name: label, exact: true });
+      assert.match(await bar.getAttribute('aria-valuetext'), /no target set/);
+      assert.equal(await bar.getAttribute('aria-valuenow'), null);
+    }
     await context.close();
     console.log('PASS: desktop Home room/quest frame heights match; mobile remains stacked.');
   } finally { await browser.close(); }

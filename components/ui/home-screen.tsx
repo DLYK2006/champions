@@ -125,22 +125,22 @@ export function HomeScreen({
             hint={`Aim for ${amount(Math.ceil(profile.protein_target_g * 0.9))}+ g`}
             completed={progress.protein_goal_completed}
           />
-          <div className="macro-pair">
-            <div>
-              <Icon name="wheat" size={21} />
-              <span>Carbs</span>
-              <strong>
-                {progress.total_carbs_g} <small>g</small>
-              </strong>
-            </div>
-            <div>
-              <Icon name="drop" size={20} />
-              <span>Fat</span>
-              <strong>
-                {progress.total_fat_g} <small>g</small>
-              </strong>
-            </div>
-          </div>
+          <NutritionBar
+            label="Carbs"
+            value={progress.total_carbs_g}
+            target={profile.carbs_target_g}
+            unit="g"
+            kind="carbs"
+            icon="wheat"
+          />
+          <NutritionBar
+            label="Fat"
+            value={progress.total_fat_g}
+            target={profile.fat_target_g}
+            unit="g"
+            kind="fat"
+            icon="drop"
+          />
         </section>
       </main>
     </>
