@@ -3,7 +3,10 @@ export type MealType = 'breakfast' | 'lunch' | 'dinner' | 'snack';
 export type Confidence = 'high' | 'medium' | 'low';
 export type Mood = 'ready' | 'progressing' | 'active' | 'goal_complete' | 'group_success';
 
-export interface AvatarConfig { skinColor: string; top: string; hairColor: string; eyes: string; mouth: string; clothing: string }
+export interface AvatarConfig {
+  skinColor: string; top: string; hairColor: string; eyes: string; mouth: string; clothing: string;
+  hat?: string; pants?: string; shoes?: string; // free starter wardrobe (Jay); clothing is the top piece
+}
 
 export interface Profile {
   id: string; username: string; goal_type: GoalType;
