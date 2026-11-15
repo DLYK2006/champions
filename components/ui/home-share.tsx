@@ -13,7 +13,7 @@ export function HomeShare() {
         aria-label="Open sharing"
         onClick={() => dialog.current?.showModal()}
       >
-        <Icon name="spark" size={17} />
+        <Icon name="share" size={17} />
         <span>Share</span>
       </button>
       <dialog

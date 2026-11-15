@@ -7,6 +7,7 @@ import { NutritionBar, SectionHeading } from "./primitives";
 import { RoomCharacter } from "@/components/avatar/pixel-avatar";
 import { demoGroup, demoProfile, demoProgress, useDemo } from "./demo-context";
 import { HomeShare } from "./home-share";
+import { AccountSection } from "@/components/account/AccountSection";
 
 export function HomeScreen({
   profile,
@@ -31,6 +32,7 @@ export function HomeScreen({
             DIG IN<span className="brand-period">.</span>
           </Link>
           <div className="header-actions">
+            <AccountSection />
             <HomeShare />
             <Link
               href="/shop"
