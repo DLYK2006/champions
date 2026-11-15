@@ -69,6 +69,8 @@ Shop offers Coin shop / Starter wardrobe views, immediate previews and facing co
 
 Checks: `node --test components/avatar/wardrobe.test.mjs`; `node components/ui/tests/wardrobe.browser-check.cjs`; `node components/ui/tests/onboarding-wardrobe.browser-check.cjs`. The wardrobe check uses a temporary route with cleanup. It checks all four directions/six frames, all 16 full outfit combinations, unchanged body silhouettes, legacy cap/crown behavior, save/reject states and frame geometry. The onboarding check intercepts only the dummy UI Supabase host; it exercises real owner controllers for age 17 rejection, solo/create/join, identical saved avatar pixels on Home and reload, and Shop save/reload without paid RPCs. It never creates live accounts or modifies production data. Customizer axe A/AA and 320/390/1440 width checks pass. Real Supabase wardrobe persistence was separately checked by the owner in PR #48; no new live-transaction claim is made here.
 
+Daren's share-card adapter (PR #58) now uses the shared sprite preparation/drawing functions directly, rather than serializing the removed SVG portrait. The intercepted browser check also verifies the actual /history share preview (1080x1350), Download filename and Close flow after saving an outfit. No native share message is sent by the test.
+
 ## Review decisions
 
 A fresh reviewer found a pending create/join transition bug; a browser regression reproduced it, then passed after header transitions and openForm were locked during submission. The review's member-order assumption and zero-meal mood were corrected. Avatar configuration was added to the room/shop preview contract so custom appearances carry through to the room. No backend/domain/shared-type changes were needed.
