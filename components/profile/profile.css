@@ -443,6 +443,31 @@
     height: 300px;
   }
 }
+@media (min-width: 761px) and (min-height: 600px) {
+  .compact-app.route-shop .app-main {
+    overflow-y: hidden;
+  }
+  .compact-app .shop-page {
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .compact-app .shop-page > .screen-title-row {
+    flex-shrink: 0;
+  }
+  .compact-app .shop-grid {
+    flex: 1;
+    min-height: 0;
+    grid-template-rows: minmax(0, 1fr);
+  }
+  .compact-app .shop-catalog {
+    height: 100%;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
 .shop-card .button-soft {
   text-align: center;
 }

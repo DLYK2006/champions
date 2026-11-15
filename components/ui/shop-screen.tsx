@@ -134,7 +134,7 @@ export function ShopScreen({
       // Match the tabs and first item row, regardless of catalog length.
       panel.style.setProperty(
         "--shop-preview-height",
-        `${card.getBoundingClientRect().bottom - catalog.getBoundingClientRect().top}px`,
+        `${card.getBoundingClientRect().bottom - catalog.getBoundingClientRect().top + catalog.scrollTop}px`,
       );
     };
     const observer = new ResizeObserver(resize);
