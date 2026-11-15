@@ -15,7 +15,7 @@ const harness = require('./profile-harness.cjs');
     }));
     await page.goto(base + '/groups');
     await page.locator('.garden-canvas').waitFor();
-    for (const [width, height] of [[320, 568], [390, 844], [844, 390], [1440, 900], [1920, 1080]]) {
+    for (const [width, height] of [[320, 568], [390, 844], [844, 390], [1000, 501], [1024, 600], [1000, 700], [1280, 720], [1366, 768], [1440, 900], [1787, 907], [1920, 1080]]) {
       await page.setViewportSize({ width, height });
       await page.waitForTimeout(200);
       const result = await page.evaluate(() => {
@@ -24,13 +24,26 @@ const harness = require('./profile-harness.cjs');
         const main = document.querySelector('.app-main');
         const rect = scene.getBoundingClientRect();
         return { fit: getComputedStyle(image).objectFit, pageFits: document.documentElement.scrollWidth <= innerWidth && document.documentElement.scrollHeight <= innerHeight,
-          contentFits: main.scrollHeight <= main.clientHeight + 1, height: rect.height,
+          contentFits: main.scrollHeight <= main.clientHeight + 1, height: rect.height, width: rect.width, right: rect.right,
+          progressLeft: document.querySelector('.group-progress-panel').getBoundingClientRect().left,
+          progressTop: document.querySelector('.group-progress-panel').getBoundingClientRect().top,
+          titleBottom: document.querySelector('.screen-title-row').getBoundingClientRect().bottom,
           bottom: document.querySelector('.group-progress-panel').getBoundingClientRect().bottom,
           navTop: document.querySelector('.bottom-nav').getBoundingClientRect().top };
       });
       assert.equal(result.fit, 'contain');
       assert.ok(result.pageFits && result.contentFits, JSON.stringify({ width, height, ...result }));
       assert.ok(result.height > 30 && result.bottom <= result.navTop + 1, JSON.stringify(result));
+      assert.ok(result.progressTop >= result.titleBottom, 'Progress must not overlap the heading on short desktops');
+      if (width >= 1400) {
+        assert.ok(result.width >= (width >= 1900 ? 1100 : 880), `Desktop garden must fill available space: ${JSON.stringify(result)}`);
+        assert.ok(result.progressLeft >= result.right, 'Desktop progress sits beside the garden');
+      }
+      if (width === 1440) {
+        const { default: AxeBuilder } = require('@axe-core/playwright');
+        const report = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
+        assert.deepEqual(report.violations.map(v => ({ id: v.id, nodes: v.nodes.map(n => n.target) })), []);
+      }
       if (process.env.UI_CHECK_OUTPUT) await page.screenshot({ path: `${process.env.UI_CHECK_OUTPUT}/garden-${width}.png` });
     }
     assert.deepEqual(errors, []);
