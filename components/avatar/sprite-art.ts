@@ -124,7 +124,11 @@ export async function prepareSprite(
     config?.hairColor,
     ["643d29", "352f2b", "92512d", "573c32"][variant % 4],
   );
-  const clothing =
+  const paidShirt = equipped.find((id) => id === "sage-sweater" || id === "rust-flannel");
+  const paidPants = equipped.find((id) => id === "meadow-trousers" || id === "slate-cargos");
+  const paidHat = equipped.find((id) => id === "acorn-cap" || id === "fisher-bucket");
+  const clothing = paidShirt === "sage-sweater" ? "88a18a"
+    : paidShirt === "rust-flannel" ? "b87855" :
     equipped.includes("hoodie") ||
     config?.clothing === "hoodie" ||
     config?.clothing === "forest-jacket"
@@ -136,7 +140,9 @@ export async function prepareSprite(
           : "e5cf9f";
   const shirt = rgb(clothing, "e5cf9f");
   const pants = rgb(
-    appearance?.pants === "indigo-trousers" ? "637c96" : "79563e",
+    paidPants === "meadow-trousers" ? "727c52"
+      : paidPants === "slate-cargos" ? "687d88"
+      : appearance?.pants === "indigo-trousers" ? "637c96" : "79563e",
     "79563e",
   );
   const shoes = rgb(
@@ -169,19 +175,20 @@ export async function prepareSprite(
       let target: number[] | null = null,
         base = 1;
       const warm = r > g * 1.12 && g > b * 1.12;
+      const face =
+        row !== 3 && localY > 25 && localY < 54 && r > 175 && g > 105 && warm;
       if (
         config?.top === "shortFlat" &&
         localY < 60 &&
         warm &&
-        // Trim only the outside edge of a continuous crop, never a band through its middle.
-        (localX < 43 + Math.max(0, localY - 30) * 0.5 ||
-          localX > 95 - Math.max(0, localY - 30) * 0.45)
+        // A profile crop trims the back of the hair, never the nose or face outline.
+        ((row !== 1 && localX < 43 + Math.max(0, localY - 30) * 0.5) ||
+          (row !== 2 && localX > 95 - Math.max(0, localY - 30) * 0.45)) &&
+        (!(row === 1 || row === 2) || !face)
       ) {
         data[i + 3] = 0;
         continue;
       }
-      const face =
-        row !== 3 && localY > 25 && localY < 54 && r > 175 && g > 105 && warm;
       const hand =
         localY > 70 &&
         localY < 99 &&
@@ -204,6 +211,15 @@ export async function prepareSprite(
         b / g > 0.58
       ) {
         target = shirt;
+        if (paidShirt === "sage-sweater" && localY % 6 === 0)
+          target = shirt.map((channel) => channel * 0.85);
+        if (paidShirt === "rust-flannel") {
+          const stripeX = row === 1 || row === 2 ? 8 : 12;
+          if (localX % stripeX < 2 || localY % 12 < 2)
+            target = [115, 69, 48];
+          else if (localX % stripeX === 4 || localY % 12 === 4)
+            target = [219, 169, 113];
+        }
         base = 191;
       } else if (foot && warm && r > 70 && g > 40) {
         target =
@@ -213,6 +229,13 @@ export async function prepareSprite(
         base = 134;
       } else if (localY > 85 && warm && r > 43 && r < 165) {
         target = pants;
+        if (paidPants === "slate-cargos" && localY >= 95 && localY <= 101) {
+          const pocket = row === 0 || row === 3
+            ? (localX >= 51 && localX <= 58) || (localX >= 77 && localX <= 84)
+            : localX >= 62 && localX <= 73;
+          if (pocket && (localY === 95 || localY === 101 || localX % 11 === 7))
+            target = [71, 91, 100];
+        }
         base = 75;
       }
       if (target) {
@@ -229,7 +252,7 @@ export async function prepareSprite(
       ctx.translate(col * 128, row * 128);
       const hairHex = `rgb(${hair.join(",")})`,
         skinHex = `rgb(${skin.join(",")})`;
-      const hat = equipped.includes("crown") ? "none" : appearance?.hat;
+      const hat = equipped.includes("crown") ? "none" : paidHat ?? appearance?.hat;
       if (config?.top === "longHairStraight") {
         ctx.fillStyle = hairHex;
         const strands =
@@ -241,25 +264,36 @@ export async function prepareSprite(
         for (const x of strands) ctx.fillRect(x, 31, 2, 29);
       }
       if (config?.top === "bun") {
+        const bunX = row === 2 ? 50 : 84;
         ctx.fillStyle = "#38291d";
         ctx.beginPath();
-        ctx.ellipse(84, 8, 9, 7, 0, 0, Math.PI * 2);
+        ctx.ellipse(bunX, 8, 9, 7, 0, 0, Math.PI * 2);
         ctx.fill();
         ctx.fillStyle = hairHex;
-        ctx.fillRect(78, 4, 12, 8);
+        ctx.fillRect(bunX - 6, 4, 12, 8);
       }
       if (config?.top === "hat" && hat === undefined) {
+        const side = row === 1 || row === 2;
+        const cx = row === 1 ? 64 : 68;
         ctx.fillStyle = "#39432b";
-        ctx.fillRect(49, 10, 39, 13);
-        ctx.fillRect(43, 21, 51, 4);
+        ctx.fillRect(side ? cx - 18 : 49, 10, side ? 36 : 39, 13);
+        ctx.fillRect(side ? row === 1 ? cx - 28 : cx - 8 : 43, 21, side ? 36 : 51, 4);
         ctx.fillStyle = "#91a569";
-        ctx.fillRect(51, 11, 35, 10);
-        ctx.fillStyle = "#e0bf6c";
-        ctx.fillRect(65, 13, 6, 5);
+        ctx.fillRect(side ? cx - 16 : 51, 11, side ? 32 : 35, 10);
+        if (!side) {
+          ctx.fillStyle = "#e0bf6c";
+          ctx.fillRect(65, 13, 6, 5);
+        }
       }
       if (hat === "moss-beanie" || hat === "straw-sunhat") {
         const cx = [68, 64, 68, 67][row];
         ctx.clearRect(0, 0, 128, 23);
+        ctx.save();
+        if (row === 1 || row === 2) {
+          ctx.translate(cx, 0);
+          ctx.scale(hat === "moss-beanie" ? 0.88 : 0.9, 1);
+          ctx.translate(-cx, 0);
+        }
         if (hat === "moss-beanie") {
           ctx.fillStyle = "#344735";
           ctx.beginPath();
@@ -310,8 +344,62 @@ export async function prepareSprite(
           ctx.fillStyle = "#fff0b6";
           ctx.fillRect(cx + 10, 13, 3, 3);
         }
+        ctx.restore();
+      }
+      if (hat === "acorn-cap" || hat === "fisher-bucket") {
+        const cx = [68, 64, 68, 67][row];
+        const side = row === 1 || row === 2;
+        ctx.clearRect(0, 0, 128, 25);
+        ctx.save();
+        if (side) {
+          ctx.translate(cx, 0);
+          ctx.scale(0.88, 1);
+          ctx.translate(-cx, 0);
+        }
+        ctx.fillStyle = hat === "acorn-cap" ? "#49392b" : "#354e5a";
+        ctx.beginPath();
+        ctx.moveTo(cx - 22, 25);
+        ctx.lineTo(cx - 21, 14);
+        ctx.lineTo(cx - 15, 6);
+        ctx.lineTo(cx + 12, 6);
+        ctx.lineTo(cx + 20, 13);
+        ctx.lineTo(cx + 22, 25);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = hat === "acorn-cap" ? "#9c7953" : "#83a4b1";
+        ctx.fillRect(cx - 17, 13, 34, 11);
+        ctx.fillRect(cx - 12, 9, 24, 8);
+        ctx.fillStyle = hat === "acorn-cap" ? "#b99163" : "#a5c0c6";
+        ctx.fillRect(cx - 10, 10, side ? 5 : 9, 10);
+        if (hat === "acorn-cap") {
+          ctx.fillStyle = "#49392b";
+          const brimX = row === 1 ? cx - 32 : row === 2 ? cx + 8 : cx - 24;
+          ctx.fillRect(brimX, 23, side ? 25 : 48, 5);
+          ctx.fillStyle = "#b99163";
+          ctx.fillRect(brimX + 2, 23, side ? 21 : 44, 2);
+          if (!side && row === 0) {
+            ctx.fillStyle = "#e7cf94";
+            ctx.fillRect(cx - 3, 15, 6, 6);
+          }
+        } else {
+          ctx.fillStyle = "#354e5a";
+          ctx.fillRect(cx - 25, 23, 50, 6);
+          ctx.fillRect(cx - 28, 27, 56, 4);
+          ctx.fillStyle = "#698b99";
+          ctx.fillRect(cx - 23, 24, 46, 4);
+          ctx.fillRect(cx - 26, 28, 52, 1);
+          ctx.fillStyle = "#e6d5ae";
+          ctx.fillRect(cx + (row === 1 ? -16 : 12), 20, 4, 4);
+        }
+        ctx.restore();
       }
       if (equipped.includes("crown")) {
+        ctx.save();
+        if (row === 1 || row === 2) {
+          ctx.translate(row === 1 ? 64 : 68, 0);
+          ctx.scale(0.8, 1);
+          ctx.translate(-70, 0);
+        }
         ctx.fillStyle = "#634625";
         ctx.beginPath();
         ctx.moveTo(48, 8);
@@ -331,6 +419,7 @@ export async function prepareSprite(
         ctx.fillRect(54, 17, 30, 2);
         ctx.fillStyle = "#67834c";
         ctx.fillRect(67, 17, 5, 5);
+        ctx.restore();
       }
       if (row === 0 && config?.eyes === "wink" && col !== 1) {
         ctx.fillStyle = skinHex;
@@ -383,20 +472,21 @@ export async function prepareSprite(
         ctx.fillRect(69, 49, 4, 2);
       }
       if (equipped.includes("sunglasses") && row !== 3) {
-        const lenses = row === 0 ? [56, 73] : row === 1 ? [46] : [78];
+        const lenses = row === 0 ? [56, 73] : row === 1 ? [47] : [80];
+        const lensWidth = row === 0 ? 11 : 9;
         for (const left of lenses) {
           ctx.fillStyle = "#ad8d4b";
-          ctx.fillRect(left - 1, 34, 13, 9);
+          ctx.fillRect(left - 1, 34, lensWidth + 2, 9);
           ctx.fillStyle = "#293d37";
-          ctx.fillRect(left, 35, 11, 7);
+          ctx.fillRect(left, 35, lensWidth, 7);
           ctx.fillStyle = "#86ac99";
           ctx.fillRect(left + 2, 36, 5, 1);
         }
         ctx.fillStyle = "#61472e";
         ctx.fillRect(
-          row === 0 ? 68 : row === 1 ? 57 : 68,
+          row === 0 ? 68 : row === 1 ? 56 : 69,
           36,
-          row === 0 ? 5 : 10,
+          row === 0 ? 5 : 11,
           2,
         );
       }
