@@ -19,6 +19,15 @@ export function codeFromSearch(search: string): string | null {
   return CODE_RE.test(code) ? code : null;
 }
 
+/** What someone typed or pasted into a Join field: a plain code, or a full invite link ("https://host/groups?code=ABC123"). Returns the upper-cased code, or null. */
+export function inviteCodeFromInput(input: string): string | null {
+  const text = input.trim();
+  const plain = text.toUpperCase();
+  if (CODE_RE.test(plain)) return plain;
+  const query = text.indexOf("?");
+  return query === -1 ? null : codeFromSearch(text.slice(query));
+}
+
 // A signed-out person who opens an invite link is sent to onboarding first, so the code is kept for the
 // group step. sessionStorage can be unavailable (private mode), so every call is guarded.
 const PENDING_KEY = "dig-in:pending-invite";

@@ -3,6 +3,7 @@
 import { useRef, useState, type FormEvent } from "react";
 import type { Group, GroupDailyProgress, GroupMemberStatus } from "@/types";
 import { Garden } from "@/components/world/garden";
+import { inviteCodeFromInput } from "@/lib/groups/invite";
 import { Icon } from "./icons";
 import { demoGroup, demoMembers } from "./demo-context";
 
@@ -33,8 +34,10 @@ export function CommunityScreen({
   async function submit(event: FormEvent) {
     event.preventDefault();
     if (submitting.current) return;
-    if (form === "join" && !/^[a-z0-9]{6}$/i.test(value.trim())) {
-      setError("Enter a 6-character invite code.");
+    // A pasted invite link works as well as the bare code.
+    const inviteCode = form === "join" ? inviteCodeFromInput(value) : null;
+    if (form === "join" && !inviteCode) {
+      setError("Enter a 6-character invite code or paste an invite link.");
       return;
     }
     if (
@@ -48,7 +51,7 @@ export function CommunityScreen({
     setPending(true);
     setError("");
     try {
-      if (form === "join") await onJoin(value.trim().toUpperCase());
+      if (inviteCode) await onJoin(inviteCode);
       else await onCreate(value.trim());
       setForm(null);
       setValue("");
@@ -102,7 +105,7 @@ export function CommunityScreen({
                 value={value}
                 onChange={(event) => setValue(event.target.value)}
                 autoFocus
-                maxLength={form === "join" ? 6 : 30}
+                maxLength={form === "join" ? 200 : 30}
                 placeholder={form === "join" ? "SPROUT" : "Group name"}
                 aria-invalid={!!error}
                 aria-describedby={error ? "group-error" : undefined}
