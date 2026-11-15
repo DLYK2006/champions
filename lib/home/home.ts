@@ -21,7 +21,20 @@ const nOrNull = (v: unknown) => (v === null || v === undefined ? null : n(v, 0))
 /** The signed-in user's profile row (columns Home needs). */
 export type ProfileRow = Record<string, unknown>;
 
-export function toProfile(row: ProfileRow): Profile {
+/** YYYY-MM-DD for the day before `date` (calendar arithmetic only, so no timezone surprises). */
+export function previousDate(date: string): string {
+  const [y, m, d] = date.split("-").map(Number);
+  return new Date(Date.UTC(y, m - 1, d - 1)).toISOString().slice(0, 10);
+}
+
+/** profiles.streak only updates when the next qualifying meal is logged, so a missed day leaves it stale.
+ *  It still counts only if the last qualifying meal was today or yesterday (PRD 7.3). */
+export function effectiveStreak(streak: number, lastMealDate: unknown, today: string): number {
+  if (typeof lastMealDate !== "string" || !lastMealDate) return 0;
+  return lastMealDate.slice(0, 10) >= previousDate(today) ? streak : 0;
+}
+
+export function toProfile(row: ProfileRow, today?: string): Profile {
   const avatar = (row.avatar && typeof row.avatar === "object" ? row.avatar : {}) as Partial<AvatarConfig>;
   const merged = { ...FALLBACK_AVATAR };
   for (const key of Object.keys(FALLBACK_AVATAR) as (keyof AvatarConfig)[]) {
@@ -42,7 +55,7 @@ export function toProfile(row: ProfileRow): Profile {
     avatar: merged,
     equipped: Array.isArray(row.equipped) ? row.equipped.filter((x): x is string => typeof x === "string") : [],
     coin_balance: n(row.coin_balance),
-    streak: n(row.streak),
+    streak: today ? effectiveStreak(n(row.streak), row.last_meal_date, today) : n(row.streak),
   };
 }
 

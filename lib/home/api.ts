@@ -11,7 +11,7 @@ export type HomeData =
 
 const PROFILE_COLUMNS =
   "id, username, goal_type, height_cm, weight_kg, age, target_weight_kg, calorie_target, protein_target_g, " +
-  "carbs_target_g, fat_target_g, avatar, equipped, coin_balance, streak";
+  "carbs_target_g, fat_target_g, avatar, equipped, coin_balance, streak, last_meal_date";
 
 /** Loads everything Home shows for the user's local date. Throws an Error with a user-safe message. */
 export async function loadHome(date: string = localDate()): Promise<HomeData> {
@@ -30,7 +30,7 @@ export async function loadHome(date: string = localDate()): Promise<HomeData> {
 
   return {
     kind: "ready",
-    profile: toProfile(profile.data as unknown as Record<string, unknown>),
+    profile: toProfile(profile.data as unknown as Record<string, unknown>, date),
     progress: toProgress(progress.data as Record<string, unknown> | null, date),
     group: group?.progress ?? null,
   };
