@@ -52,24 +52,24 @@ export function MacroChart({ date, from, to, calorieTarget, goalType }: Props) {
   const shown = data.days.slice(-MAX_BARS);
 
   return (
-    <div className="macro-chart space-y-4" style={{ overflowY: "auto", maxHeight: "min(70vh, 34rem)", width: "100%" }}>
-      <h3>Your macros · {title}</h3>
+    <div className="macro-chart space-y-3 text-sm" style={{ overflowY: "auto", maxHeight: "min(52vh, 24rem)", width: "100%", maxWidth: "22rem", margin: "0 auto" }}>
+      <h3 className="text-base font-semibold">Your macros · {title}</h3>
 
-      <section aria-label="Macro split">
-        <h4>{n > 1 ? `Macro split (average of ${n} days)` : "Macro split"}</h4>
-        <svg viewBox="0 0 300 22" width="100%" role="img" aria-label={macros.map((m) => `${m.label} ${round(m.grams)} g`).join(", ")}>
+      <section aria-label="Macro split" className="space-y-1">
+        <h4 className="text-xs font-semibold uppercase tracking-wide" style={{ color: MUTED }}>{n > 1 ? `Macro split · avg of ${n} days` : "Macro split"}</h4>
+        <svg viewBox="0 0 300 14" width="100%" role="img" aria-label={macros.map((m) => `${m.label} ${round(m.grams)} g`).join(", ")}>
           {macros.map((m, i) => {
             const w = (m.grams / totalG) * 300;
             const x = macros.slice(0, i).reduce((s, p) => s + (p.grams / totalG) * 300, 0);
             const gap = i < macros.length - 1 && w > 2 ? 2 : 0;
             return (
-              <rect key={m.key} x={x} y={0} width={Math.max(0, w - gap)} height={22} rx={4} fill={m.color}>
+              <rect key={m.key} x={x} y={0} width={Math.max(0, w - gap)} height={14} rx={4} fill={m.color}>
                 <title>{`${m.label}: ${round(m.grams)} g (${round((m.grams / totalG) * 100)}%)`}</title>
               </rect>
             );
           })}
         </svg>
-        <ul className="flex flex-wrap gap-x-4 gap-y-1 text-sm" style={{ color: INK }}>
+        <ul className="flex flex-wrap gap-x-3 gap-y-0.5 text-xs" style={{ color: INK }}>
           {macros.map((m) => (
             <li key={m.key} className="flex items-center gap-1">
               <span aria-hidden style={{ background: m.color, width: 10, height: 10, borderRadius: 2, display: "inline-block" }} />
@@ -79,15 +79,15 @@ export function MacroChart({ date, from, to, calorieTarget, goalType }: Props) {
         </ul>
       </section>
 
-      <section aria-label="Calories versus target">
-        <h4>Calories vs target</h4>
+      <section aria-label="Calories versus target" className="space-y-1">
+        <h4 className="text-xs font-semibold uppercase tracking-wide" style={{ color: MUTED }}>Calories vs target</h4>
         <CaloriesBars days={shown} lo={lo} hi={hi} target={calorieTarget} />
-        <p className="text-sm" style={{ color: MUTED }}>
+        <p className="text-xs" style={{ color: MUTED }}>
           Goal range: {round(lo)}{hi ? `–${round(hi)}` : "+"} kcal{n > MAX_BARS ? ` · showing the last ${MAX_BARS} days` : ""}
         </p>
       </section>
 
-      <details className="text-sm">
+      <details className="text-xs">
         <summary>Show numbers</summary>
         <table className="w-full text-left">
           <thead><tr><th>Date</th><th>kcal</th><th>Protein</th><th>Carbs</th><th>Fat</th></tr></thead>
@@ -108,7 +108,7 @@ export function MacroChart({ date, from, to, calorieTarget, goalType }: Props) {
 
 // One bar per day on a shared calorie axis, with the goal band behind (no second axis).
 function CaloriesBars({ days, lo, hi, target }: { days: Day[]; lo: number; hi: number | null; target: number }) {
-  const W = 300, H = 120, top = 8, bottom = 18;
+  const W = 300, H = 92, top = 12, bottom = 16;
   const max = Math.max(target * 1.3, ...days.map((d) => d.calories));
   const y = (v: number) => top + (1 - v / max) * (H - top - bottom);
   const slot = W / days.length, bw = Math.min(28, slot - 4);

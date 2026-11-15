@@ -133,6 +133,7 @@ export function HistoryController({
   const updateSelection = (date: string | null, nextRange = range) => {
     const query = new URLSearchParams(params.toString());
     query.set("section", "calendar");
+    query.set("panel", "chart"); // a date or analysis selection shows the macros chart right away
     if (date) query.set("date", date);
     else query.delete("date");
     if (nextRange.kind === "range") {

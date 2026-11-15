@@ -66,7 +66,14 @@ function ProfileView() {
     equipped: string[];
   } | null>(null);
   const [facing, setFacing] = useState<Facing>("down");
-  const [panel, setPanel] = useState<"character" | "chart">("character");
+  // Character vs macros chart lives in the URL (?panel=chart), so calendar selections can open the chart.
+  const panel = params.get("panel") === "chart" ? "chart" : "character";
+  const setPanel = (next: "character" | "chart") => {
+    const query = new URLSearchParams(params.toString());
+    if (next === "chart") query.set("panel", "chart");
+    else query.delete("panel");
+    router.replace(`/profile?${query}`, { scroll: false });
+  };
   const [pending, setPending] = useState<Section | null>(null),
     [error, setError] = useState(""),
     [message, setMessage] = useState("");
@@ -297,8 +304,8 @@ function ProfileView() {
           </div>
           {section === "calendar" && (
             <div className="profile-panel-toggle flex justify-center gap-4" role="group" aria-label="Show">
-              <button type="button" className="text-button" aria-pressed={panel === "character"} onClick={() => setPanel("character")}>Character</button>
-              <button type="button" className="text-button" aria-pressed={panel === "chart"} onClick={() => setPanel("chart")}>Macros chart</button>
+              <button type="button" className={`text-button ${panel === "character" ? "font-semibold underline underline-offset-4" : "opacity-70"}`} aria-pressed={panel === "character"} onClick={() => setPanel("character")}>Character</button>
+              <button type="button" className={`text-button ${panel === "chart" ? "font-semibold underline underline-offset-4" : "opacity-70"}`} aria-pressed={panel === "chart"} onClick={() => setPanel("chart")}>Macros chart</button>
             </div>
           )}
           {section === "calendar" && panel === "chart" ? (
