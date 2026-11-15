@@ -1,19 +1,27 @@
 "use client";
-// Connects Jay's CommunityScreen to real group data. Replaces <DemoCommunity /> on the Groups route once
-// Jay agrees. Reads come from lib/groups (get_group_status via useGroupLive: realtime + polling); every
-// membership change goes through the server RPCs and is followed by a refetch.
-// Owner: @joshuatsou123 (pending board confirmation).
-import { useState } from "react";
+// Connects Jay's CommunityScreen to real group data. Reads come from lib/groups (get_group_status via
+// useGroupLive: realtime + polling); every membership change goes through the server RPCs and is followed by
+// a refetch. Also owns two PRD 8.2 pieces CommunityScreen has no slot for yet: the badge picker (shown while
+// the user is not in a group) and the shareable invite link (shown while they are).
+// Owner: @joshuatsou123.
+import { useEffect, useRef, useState } from "react";
 import { CommunityScreen } from "../ui/community-screen";
-import { createGroup, joinGroup, leaveGroup, useGroupLive } from "../../lib/groups";
+import {
+  GROUP_BADGES, DEFAULT_BADGE, codeFromSearch, inviteLink, savePendingCode,
+  createGroup, joinGroup, leaveGroup, useGroupLive,
+} from "../../lib/groups";
 import { RequireProfile } from "../auth";
 
 const MAX_NAME = 30; // groups.name check in 0002_groups.sql
-const DEFAULT_BADGE = "leaf"; // matches the badge on Jay's demo garden
 
 // Signed-out or not-yet-onboarded visitors are sent to /onboarding before any group data is requested
-// (the group functions are not callable without a session).
+// (the group functions are not callable without a session). An invite link's code is remembered first so the
+// onboarding group step can use it.
 export default function GroupsController() {
+  useEffect(() => {
+    const code = codeFromSearch(window.location.search);
+    if (code) savePendingCode(code);
+  }, []);
   return (
     <RequireProfile>
       <GroupsView />
@@ -24,6 +32,31 @@ export default function GroupsController() {
 function GroupsView() {
   const { status, loading, error, refresh } = useGroupLive();
   const [notice, setNotice] = useState<string | null>(null);
+  const [badge, setBadge] = useState<string>(DEFAULT_BADGE);
+  const [linkCopied, setLinkCopied] = useState(false);
+  const inviteHandled = useRef(false);
+
+  // /groups?code=ABC123 -> offer to join once the page knows whether the user already has a group.
+  useEffect(() => {
+    if (inviteHandled.current || loading || (!status && error)) return;
+    const code = codeFromSearch(window.location.search);
+    if (!code) return;
+    inviteHandled.current = true;
+    window.history.replaceState(null, "", window.location.pathname);
+    void (async () => {
+      if (status?.group) {
+        setNotice("You're already in a group. Leave it first to join another.");
+        return;
+      }
+      if (!window.confirm(`Join the group with invite code ${code}?`)) return;
+      try {
+        await joinGroup(code);
+        await refresh();
+      } catch (e) {
+        setNotice(e instanceof Error ? e.message : "Couldn't join that group. Try again.");
+      }
+    })();
+  }, [loading, status, error, refresh]);
 
   if (!status && loading) {
     return (
@@ -41,18 +74,41 @@ function GroupsView() {
     );
   }
 
+  const group = status?.group ?? null;
+  async function copyLink() {
+    if (!group) return;
+    const link = inviteLink(window.location.origin, group.invite_code);
+    try {
+      await navigator.clipboard.writeText(link);
+      setLinkCopied(true);
+    } catch {
+      setNotice(`Share this link: ${link}`);
+    }
+  }
+
   return (
     <>
       {notice && <p role="alert">{notice}</p>}
+      {!group && (
+        <fieldset>
+          <legend>Badge for a new group</legend>
+          {GROUP_BADGES.map((b) => (
+            <label key={b}>
+              <input type="radio" name="group-badge" value={b} checked={badge === b} onChange={() => setBadge(b)} />
+              {b}
+            </label>
+          ))}
+        </fieldset>
+      )}
       <CommunityScreen
-        group={status?.group ?? null}
+        group={group}
         progress={status?.progress ?? null}
         members={status?.members ?? []}
         onCreate={async (name) => {
           setNotice(null);
           const trimmed = name.trim();
           if (trimmed.length > MAX_NAME) throw new Error(`Group names can be up to ${MAX_NAME} characters.`);
-          await createGroup(trimmed, DEFAULT_BADGE);
+          await createGroup(trimmed, badge);
           await refresh();
         }}
         onJoin={async (code) => {
@@ -65,11 +121,19 @@ function GroupsView() {
         onExploreSolo={() => {
           if (!window.confirm("Leave your group? You can rejoin later with its invite code.")) return;
           setNotice(null);
+          setLinkCopied(false);
           leaveGroup()
             .then(() => refresh())
             .catch((e: unknown) => setNotice(e instanceof Error ? e.message : "Couldn't leave the group. Try again."));
         }}
       />
+      {group && (
+        <p style={{ padding: "0 16px 112px", textAlign: "center" }}>
+          <button type="button" onClick={() => void copyLink()}>
+            {linkCopied ? "Invite link copied" : "Copy invite link"}
+          </button>
+        </p>
+      )}
     </>
   );
 }
