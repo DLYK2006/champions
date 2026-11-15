@@ -74,7 +74,7 @@ const { default: AxeBuilder } = require("@axe-core/playwright");
         } else if (
           url.pathname === "/rest/v1/shop_items" ||
           url.pathname === "/rest/v1/inventory" ||
-          url.pathname === "/rest/v1/daily_progress"
+          url.pathname === "/rest/v1/daily_progress" || url.pathname === "/rest/v1/meals"
         )
           body = [];
         else if (url.pathname.startsWith("/rest/v1/rpc/")) {
@@ -283,6 +283,16 @@ const { default: AxeBuilder } = require("@axe-core/playwright");
           !calls.some((c) => c.rpc === "buy_item" || c.rpc === "equip_item"),
           "Starter choices never invoke paid inventory RPCs",
         );
+        await page.goto(url + "/history");
+        await page.getByRole("button", {name:"Share my progress",exact:true}).click();
+        const card = page.getByRole("img", {name:/Your progress card:/});
+        await card.waitFor({timeout:5000});
+        assert.deepEqual(await card.evaluate(img => [img.naturalWidth,img.naturalHeight]),[1080,1350],"Share card supports the unified sprite renderer");
+        const download = page.waitForEvent("download");
+        await page.getByRole("button", {name:"Download",exact:true}).click();
+        assert.equal((await download).suggestedFilename(),"dig-in-progress.png");
+        await page.getByRole("button", {name:"Close",exact:true}).click();
+        assert.equal(await card.count(),0);
       }
       assert.deepEqual(errors, [], `${mode} browser errors`);
       console.log(
