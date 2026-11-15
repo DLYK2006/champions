@@ -2,6 +2,18 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import * as w from "./wander.ts";
 
+test("contained garden shows every corner at phone and desktop sizes", () => {
+  for (const [width, height] of [[350, 420], [1490, 410], [700, 220]]) {
+    const view = w.sceneView(width, height, 0.5, "contain");
+    for (const point of [{ x: 0, y: 0 }, { x: 1536, y: 1024 }]) {
+      const p = w.toScreen(point, view);
+      assert.ok(p.x >= -0.01 && p.x <= width + 0.01);
+      assert.ok(p.y >= -0.01 && p.y <= height + 0.01);
+    }
+    assert.ok(w.createNavigation(view).route({ x: 260, y: 468 }, { x: 420, y: 800 }));
+  }
+});
+
 test("bottom-aligned bedroom framing keeps the rug inside wide, short panels", () => {
   for (const [width, height] of [
     [619, 180],

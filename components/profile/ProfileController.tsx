@@ -57,7 +57,7 @@ function ProfileView() {
       ? null
       : sections.includes(requested as Section)
         ? (requested as Section)
-        : "settings";
+        : null;
   const [saved, setSaved] = useState<SettingsProfile | null>(null),
     [shop, setShop] = useState<ShopState | null>(null);
   const [draft, setDraft] = useState<SettingsProfile | null>(null);

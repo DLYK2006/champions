@@ -177,6 +177,16 @@ export async function prepareSprite(
       const warm = r > g * 1.12 && g > b * 1.12;
       const face =
         row !== 3 && localY > 25 && localY < 54 && r > 175 && g > 105 && warm;
+      // Round the rear head into the nape; the atlas has long triangular side locks.
+      if ((row === 1 || row === 2) && localY >= 20 && localY < 59) {
+        const short = config?.top !== "longHairStraight" && config?.top !== "curly";
+        const rearX = (short ? 83 : 89) - Math.max(0, localY - 28) * (short ? 0.42 : 0.4);
+        const profileX = row === 1 ? localX : 132 - localX;
+        if (profileX > rearX && !face) {
+          data[i + 3] = 0;
+          continue;
+        }
+      }
       if (
         config?.top === "shortFlat" &&
         localY < 60 &&
