@@ -40,6 +40,12 @@ export function toProfile(row: ProfileRow, today?: string): Profile {
   for (const key of Object.keys(FALLBACK_AVATAR) as (keyof AvatarConfig)[]) {
     if (typeof avatar[key] === "string" && avatar[key]) merged[key] = avatar[key] as string;
   }
+  // Starter wardrobe (hat/pants/shoes) is optional and not part of FALLBACK_AVATAR: keep it when present.
+  const wardrobe: Record<string, string> = {};
+  for (const key of ["hat", "pants", "shoes"] as const) {
+    const v = (avatar as Record<string, unknown>)[key];
+    if (typeof v === "string" && v) wardrobe[key] = v;
+  }
   return {
     id: String(row.id),
     username: String(row.username ?? ""),
@@ -52,7 +58,7 @@ export function toProfile(row: ProfileRow, today?: string): Profile {
     protein_target_g: n(row.protein_target_g),
     carbs_target_g: nOrNull(row.carbs_target_g),
     fat_target_g: nOrNull(row.fat_target_g),
-    avatar: merged,
+    avatar: { ...merged, ...wardrobe },
     equipped: Array.isArray(row.equipped) ? row.equipped.filter((x): x is string => typeof x === "string") : [],
     coin_balance: n(row.coin_balance),
     streak: today ? effectiveStreak(n(row.streak), row.last_meal_date, today) : n(row.streak),
