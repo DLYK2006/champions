@@ -143,7 +143,7 @@ Top:
 - Username
 - Coin balance
 - Daily streak
-- Profile/settings icon
+- Profile/settings icon (opens the Profile tab, see 14.1)
 Upper middle:
 - Large personalized avatar
 - Avatar expression
@@ -450,17 +450,46 @@ Users can:
 All purchases must be validated server-side.
 
 14. Navigation
-The application uses five bottom navigation tabs.
+The application uses six bottom navigation tabs.
 Tab	Function
 Home	Personal avatar and nutrition dashboard
 Log Food	AI camera scanner
 Friends	Friends and social activity
 Groups	Optional community challenges and shared world
 Shop	Avatar cosmetics
+Profile	Personal settings, avatar and account
 
 The camera button is centered and visually emphasized.
 
 For the 24-hour MVP, Friends may be reduced to an invite screen integrated with Groups.
+
+14.1 Profile and Settings
+The Profile tab is a settings page. It does not show progress or statistics (streaks and past logs stay on Home and History).
+
+Sections:
+1. Personal settings. The user can edit everything they entered at first sign-up:
+- Username, height, weight, age, unit preference.
+- Goal (Bulk, Cut, Maintain) and optional target weight.
+- Daily calorie and protein targets, and optional carbohydrate and fat targets.
+- The same validation and safety rules as onboarding apply: goal and target weight must agree, unusually restrictive calorie targets are warned against or blocked, and users must be adults.
+- Changing a target applies from the day it is saved. Previous days keep the targets they were completed against.
+2. Avatar. The user edits their avatar through their inventory: equip and unequip owned items, and change the base look chosen in onboarding (character, skin tone, hair, face, outfit). Items that are not owned stay in the Shop. Changes show on Home immediately.
+3. Privacy controls.
+- A plain-language summary of what is private by default: food images, body stats, and exact calories and macros are never shown to other users.
+- A toggle to hide the user's daily goal status from group members. The user still counts toward group completion; their row simply shows no status to teammates.
+- A link to leave the current group (see 8.2).
+4. Notification preferences.
+- Toggles for meal reminders and group achievement alerts, saved per user.
+- For the MVP these are stored settings only. Delivering push notifications is post-hackathon (P2).
+- Notifications never blame or shame members (see 9.5).
+5. Account.
+- Sign out: ends the session and returns to the welcome screen.
+- Delete my account and data: permanently removes the profile, meals, daily progress, coin transactions, inventory and group memberships. Requires a clear confirmation step (type the username). Cannot be undone. Deletion runs on the server.
+
+Rules:
+- A user can only read and change their own profile; all saves are validated server-side.
+- Coins are never changed by editing settings. Existing coins and purchases are kept.
+- Settings work the same for solo users and group members.
 
 15. Technical Architecture
 Recommended Stack
@@ -485,6 +514,10 @@ Users
 - protein_target
 - avatar_configuration
 - coin_balance
+- unit_preference
+- hide_status_from_group
+- notify_meal_reminders
+- notify_group_alerts
 Meals
 - meal_id
 - user_id
@@ -551,7 +584,7 @@ Real-time	Group progress synchronizes across devices
 Accuracy	Nutritional estimates are editable and labeled approximate
 Accessibility	Readable text and touch-friendly interfaces
 Reliability	Prevent duplicate reward claims
-Notifications	Optional reminders and group achievement alerts
+Notifications	Optional reminders and group achievement alerts (preferences stored in Profile settings, see 14.1)
 Health safety	No punitive or restrictive eating incentives
 
 The prototype targets adult users. Supporting minors would require additional protections and nutrition-goal review.
@@ -577,6 +610,7 @@ Build after core functionality works:
 - Three-item shop.
 - Group achievement celebration.
 - AI meal suggestions.
+- Profile and Settings tab (14.1).
 P2 — Post-Hackathon
 - Full friends feed.
 - More complex group challenges.
