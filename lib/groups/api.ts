@@ -3,6 +3,7 @@
 import { createClient } from "../supabase/client";
 import type { Group } from "../../types/index";
 import type { GroupStatus } from "./types";
+import type { LeaderboardResponse } from "./leaderboard";
 
 const pad = (n: number) => String(n).padStart(2, "0");
 /** The user's local calendar date as YYYY-MM-DD, the same value log_meal receives as p_date. */
@@ -41,4 +42,22 @@ export async function getGroupStatus(date: string = localDate()): Promise<GroupS
   const { data, error } = await createClient().rpc("get_group_status", { p_date: date });
   if (error) fail(error.message);
   return (data as GroupStatus | null) ?? null;
+}
+
+/** Group-vs-group ranking for the Leaderboard view: top groups plus your own, from Databricks or the Supabase fallback. */
+export async function fetchLeaderboard(date: string = localDate()): Promise<LeaderboardResponse> {
+  const { data: { session } } = await createClient().auth.getSession();
+  if (!session) fail("not signed in");
+  const res = await fetch(`/api/leaderboard?date=${encodeURIComponent(date)}`, {
+    headers: { authorization: `Bearer ${session.access_token}` },
+  });
+  const body = await res.json().catch(() => null);
+  if (!res.ok || !body?.rows) throw new Error(body?.error ?? "Couldn't load the leaderboard. Try again.");
+  return body as LeaderboardResponse;
+}
+
+/** Show or hide your group on the leaderboard (any member can; groups are shown by default). */
+export async function setLeaderboardVisible(visible: boolean): Promise<void> {
+  const { error } = await createClient().rpc("set_group_leaderboard_visible", { p_visible: visible });
+  if (error) fail(error.message);
 }
