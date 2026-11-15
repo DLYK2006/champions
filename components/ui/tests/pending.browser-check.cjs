@@ -22,6 +22,26 @@ const path = require("node:path");
     await page.goto(
       `${process.env.UI_CHECK_URL || "http://localhost:3000"}/digin-ui-check-fixture`,
     );
+    await page
+      .getByRole("button", { name: "Check sprite options", exact: true })
+      .click();
+    await page
+      .getByLabel("Sprite option results")
+      .filter({ hasText: "equipment" })
+      .waitFor();
+    assert.deepEqual(
+      JSON.parse(await page.getByLabel("Sprite option results").innerText()),
+      {
+        skinColor: 5,
+        top: 5,
+        hairColor: 5,
+        eyes: 4,
+        mouth: 4,
+        clothing: 4,
+        equipment: 4,
+      },
+      "Every existing avatar option and cosmetic must visibly change the actual sprite pixels",
+    );
     const celebration = page.getByRole("button", {
       name: "Celebration fixture",
       exact: true,
@@ -77,6 +97,11 @@ const path = require("node:path");
     await page
       .getByRole("button", { name: "Results fixture", exact: true })
       .click();
+    await page
+      .getByText("Add a protein source to round out this meal.", {
+        exact: true,
+      })
+      .waitFor();
     await page.getByRole("button", { name: "Edit Test meal" }).click();
     await page
       .getByLabel("Portion", { exact: true })

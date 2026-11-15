@@ -10,6 +10,7 @@ import { demoGroup, demoProfile, demoProgress, useDemo } from "./demo-context";
 export function HomeScreen({
   profile,
   progress,
+  group,
 }: {
   profile: Profile;
   progress: DailyProgress;
@@ -50,10 +51,14 @@ export function HomeScreen({
           />
           <div className="room-topline">
             <span className="room-name">Hi, {profile.username}</span>
-            <span className="room-weather">
+            <Link
+              href="/history"
+              className="room-weather"
+              aria-label={`${profile.streak}-day streak. View meal history.`}
+            >
               <Icon name="flame" size={17} />
               {profile.streak}-day streak
-            </span>
+            </Link>
           </div>
           {progress.personal_goal_completed && (
             <div className="room-bubble">
@@ -61,16 +66,19 @@ export function HomeScreen({
             </div>
           )}
           <RoomCharacter
+            room
             config={profile.avatar}
             equipped={profile.equipped}
             mood={
-              progress.personal_goal_completed
-                ? "goal_complete"
-                : progress.meals_logged > 1
-                  ? "active"
-                  : progress.meals_logged === 1
-                    ? "progressing"
-                    : "ready"
+              group?.bonus_tier === 30
+                ? "group_success"
+                : progress.personal_goal_completed
+                  ? "goal_complete"
+                  : progress.meals_logged > 1
+                    ? "active"
+                    : progress.meals_logged === 1
+                      ? "progressing"
+                      : "ready"
             }
           />
           <Link href="/shop" className="room-customize">

@@ -128,6 +128,9 @@ export function ResultsView({
                 </div>
               ))}
             </div>
+            {result.coach_tip && (
+              <p className="compact-coach-tip">{result.coach_tip}</p>
+            )}
           </div>
           <div
             className="meal-type-buttons"
