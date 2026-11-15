@@ -148,11 +148,11 @@ const path = require("node:path");
       .getByRole("button", { name: "Shop fixture", exact: true })
       .click();
     await page
-      .getByRole("button", { name: "Buy Crown for 60 coins", exact: true })
+      .getByRole("button", { name: "Buy Acorn Cap for 25 coins", exact: true })
       .click();
     assert.equal(
       await page
-        .getByRole("button", { name: "Buy Crown for 60 coins", exact: true })
+        .getByRole("button", { name: "Buy Acorn Cap for 25 coins", exact: true })
         .isDisabled(),
       true,
     );
@@ -168,13 +168,13 @@ const path = require("node:path");
       .waitFor();
     assert.equal(
       await page
-        .getByRole("button", { name: "Buy Crown for 60 coins", exact: true })
+        .getByRole("button", { name: "Buy Acorn Cap for 25 coins", exact: true })
         .isEnabled(),
       true,
     );
     assert.equal(
       await page
-        .getByRole("button", { name: "Equip Crown", exact: true })
+        .getByRole("button", { name: "Equip Acorn Cap", exact: true })
         .count(),
       0,
     );

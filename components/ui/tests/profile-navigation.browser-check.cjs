@@ -56,21 +56,30 @@ const fs = require("node:fs"),
         .count(),
       0,
     );
-    const hoodie = page
+    assert.equal(
+      await page.getByRole("heading", { name: "Crown", exact: true }).count(),
+      0,
+    );
+    await page
+      .getByRole("button", {
+        name: "Buy Sage Sweater for 40 coins",
+        exact: true,
+      })
+      .click();
+    const sweater = page
       .locator(".shop-card")
       .filter({
-        has: page.getByRole("heading", {
-          name: "Woodland Hoodie",
-          exact: true,
-        }),
+        has: page.getByRole("heading", { name: "Sage Sweater", exact: true }),
       });
-    assert.equal(await hoodie.locator(".item-tag").innerText(), "OWNED");
+    assert.equal(await sweater.locator(".item-tag").innerText(), "OWNED");
     assert.equal(
-      await hoodie.getByRole("button", { name: /Buy|Equip|Unequip/ }).count(),
+      await sweater.getByRole("button", { name: /Buy|Equip|Unequip/ }).count(),
       0,
     );
     assert.equal(
-      await hoodie.getByRole("link", { name: /Wardrobe/ }).getAttribute("href"),
+      await sweater
+        .getByRole("link", { name: /Wardrobe/ })
+        .getAttribute("href"),
       "/profile?section=wardrobe",
     );
     console.log(
