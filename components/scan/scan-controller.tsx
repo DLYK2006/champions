@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import type { Confidence, LogMealResponse, MealType, ScanItem } from "@/types";
 import { createClient } from "@/lib/supabase/client";
+import { getGroupStatus } from "@/lib/groups/api";
 import { sumMacros } from "@/lib/scan";
 import { resizeToJpegBase64 } from "@/lib/scan/resize";
 import { ScanView } from "./scan-view";
@@ -76,6 +77,18 @@ export function ScanController() {
     const r = data as LogMealResponse;
     const coins = r.coins_awarded.reduce((s, c) => s + c.amount, 0);
     const groupCoins = r.coins_awarded.find((c) => c.reason === "group_bonus")?.amount ?? 0;
+    // Who to show in the dialog: the whole group when it paid out, else yourself. The meal is already saved
+    // here, so a failed avatar load must not throw (ResultsView would say "not saved"): show the dialog without them.
+    let people: Achievement["people"];
+    try {
+      if (groupCoins) people = (await getGroupStatus(localDate()))?.members;
+      else {
+        const { data: me } = await createClient().from("profiles").select("username, avatar, equipped").maybeSingle();
+        people = me ? [me] : undefined;
+      }
+    } catch {
+      people = undefined;
+    }
     setAchievement({
       id: eventId,
       title: groupCoins
@@ -86,6 +99,7 @@ export function ScanController() {
         : coins ? `You earned ${coins} coins. Balance: ${r.coin_balance}.` : `Balance: ${r.coin_balance} coins.`,
       coins,
       group: groupCoins > 0,
+      people,
     });
   }
 

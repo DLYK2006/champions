@@ -3,6 +3,14 @@
 import { useEffect, useRef } from "react";
 import { Icon } from "./icons";
 import { RoomCharacter } from "@/components/avatar/pixel-avatar";
+import type { Avatar } from "@/types";
+
+// Who is being celebrated: yourself, or up to 4 group members (GroupMemberStatus fits).
+export interface CelebratedPerson {
+  username: string;
+  avatar?: Avatar;
+  equipped?: string[];
+}
 
 export interface Achievement {
   id: string;
@@ -11,6 +19,7 @@ export interface Achievement {
   coins: number;
   group?: boolean;
   preview?: boolean;
+  people?: CelebratedPerson[];
 }
 export function AchievementDialog({
   achievement,
@@ -31,6 +40,8 @@ export function AchievementDialog({
     };
   }, [achievement]);
   if (!achievement) return null;
+  const people = (achievement.people ?? []).slice(0, 4);
+  const mood = achievement.group ? "group_success" : "goal_complete";
   return (
     <dialog
       ref={dialog}
@@ -59,12 +70,30 @@ export function AchievementDialog({
             ? "Better, together"
             : "A moment for you"}
       </p>
-      <div className="achievement-art">
+      <div className={`achievement-art ${people.length > 1 ? "has-people" : ""}`}>
         <div className="celebration-rays" />
-        <RoomCharacter
-          mood={achievement.group ? "group_success" : "goal_complete"}
-          equipped={["hoodie", "crown"]}
-        />
+        {people.length > 1 ? (
+          <ul className="achievement-people" aria-label="Celebrating together">
+            {people.map((person, i) => (
+              <li key={`${person.username}-${i}`} className="achievement-person">
+                <RoomCharacter
+                  mood={mood}
+                  config={person.avatar}
+                  equipped={person.equipped}
+                  name={person.username}
+                  variant={i}
+                />
+                <span className="achievement-person-name">{person.username}</span>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <RoomCharacter
+            mood={mood}
+            config={people[0]?.avatar}
+            equipped={people[0]?.equipped ?? ["hoodie", "crown"]}
+          />
+        )}
         <span className="floating-star star-one">✦</span>
         <span className="floating-star star-two">✧</span>
         <span className="floating-star star-three">✦</span>
