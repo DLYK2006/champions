@@ -72,7 +72,9 @@ export function HistoryController({
   } catch {
     /* Invalid shared URLs fall back to all dates. */
   }
-  const [meals, setMeals] = useState<{ date: string; rows: MealRow[] } | null>(null);
+  const [meals, setMeals] = useState<{ date: string; rows: MealRow[] } | null>(
+    null,
+  );
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -252,7 +254,9 @@ export function HistoryController({
         >
           <h4>Analysis</h4>
           <p>
-            {range.kind === "all" ? "All dates" : `${range.from} � ${range.to}`}
+            {range.kind === "all"
+              ? "All dates"
+              : `${range.from} to ${range.to}`}
           </p>
           {renderAnalysis?.(range)}
         </section>
