@@ -45,21 +45,17 @@ const path = require("node:path");
     await page
       .getByRole("button", { name: "Preview Community", exact: true })
       .click();
-    await page.locator(".garden-walker").first().waitFor();
-    assert.equal(await page.locator(".walker-name").count(), 4);
-    assert.equal(await page.locator(".voxel-rig").count(), 4);
-    const walker = page.locator(".garden-walker").first();
-    const before = await walker.boundingBox();
-    await page.waitForTimeout(1100);
-    const after = await walker.boundingBox();
-    assert.ok(
-      Math.abs(before.x - after.x) + Math.abs(before.y - after.y) > 1,
-      "Garden characters should walk",
-    );
+    await page.locator('.garden-canvas[data-sprite-ready="true"]').waitFor();
+    assert.equal(await page.locator(".garden-name").count(), 4);
+    assert.equal(await page.locator(".voxel-rig").count(), 0);
     await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.waitForFunction(
+      () =>
+        document.querySelector(".garden-canvas")?.dataset.running === "false",
+    );
     assert.equal(
-      await walker.evaluate((el) => getComputedStyle(el).animationName),
-      "none",
+      await page.locator(".garden-canvas").getAttribute("data-running"),
+      "false",
     );
     for (const viewport of [
       { width: 360, height: 844 },
@@ -135,13 +131,15 @@ const path = require("node:path");
         }
         if (route === "/groups") {
           const garden = await page.locator(".garden-scene").boundingBox();
-          for (const character of await page
-            .locator(".voxel-character")
-            .all()) {
-            const box = await character.boundingBox();
+          await page
+            .locator('.garden-canvas[data-sprite-ready="true"]')
+            .waitFor();
+          for (const name of await page.locator(".garden-name").all()) {
+            const box = await name.boundingBox();
             assert.ok(
-              box.y + box.height <= garden.y + garden.height + 1,
-              "Garden characters stay inside the scene",
+              box.y >= garden.y &&
+                box.y + box.height <= garden.y + garden.height + 1,
+              "Garden labels stay inside the scene",
             );
           }
         }
@@ -168,7 +166,7 @@ const path = require("node:path");
       assert.equal(greenTabs, 1, `Exactly one green tab on ${route}`);
     }
     console.log(
-      "PASS: compact phone/desktop screens, Home-only header, active-only green tabs, named walking 3D characters, reduced motion and no viewport overflow.",
+      "PASS: compact phone/desktop screens, Home-only header, active-only green tabs, named 2D sprite characters, reduced motion and no viewport overflow.",
     );
   } finally {
     await browser.close();

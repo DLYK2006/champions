@@ -5,6 +5,7 @@ import { CommunityScreen } from "../community-screen";
 import { ShopScreen, demoShopItems } from "../shop-screen";
 import { ResultsView } from "@/components/scan/results-view";
 import { AchievementDialog } from "../achievement";
+import { SpriteOptionsFixture } from "./sprite-options-fixture";
 import type { ScanItem } from "@/types";
 
 // Test-only fixture: imported solely by a temporary route created by pending.browser-check.cjs.
@@ -31,6 +32,7 @@ export default function InteractionFixture() {
   }
   return (
     <>
+      <SpriteOptionsFixture />
       <button className="button" onClick={() => setCelebrating(true)}>
         Celebration fixture
       </button>
@@ -85,7 +87,7 @@ export default function InteractionFixture() {
               fat_g: item.fat_g,
             },
             overall_confidence: "high",
-            coach_tip: null,
+            coach_tip: "Add a protein source to round out this meal.",
           }}
           mealType="lunch"
           onMealType={() => {}}
