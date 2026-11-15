@@ -22,7 +22,9 @@ export type IconName =
   | "settings"
   | "sun"
   | "calendar"
-  | "back";
+  | "back"
+  | "meat"
+  | "carrot";
 const paths: Record<IconName, string> = {
   home: "M3 11 12 3l9 8M5 10v11h5v-7h4v7h5V10",
   scan: "M4 8h4l2-3h5l2 3h3v12H4ZM9 13h6v4H9Z",
@@ -48,6 +50,8 @@ const paths: Record<IconName, string> = {
   sun: "M8 8h8v8H8ZM12 1v3M12 20v3M1 12h3M20 12h3M4 4l2 2M18 18l2 2M4 20l2-2M18 6l2-2",
   calendar: "M4 5h16v17H4ZM4 10h16M8 2v5M16 2v5M8 14h2M14 14h2M8 18h2",
   back: "M20 12H5M11 6l-6 6 6 6",
+  meat: "M8 13 7 9l2-4 4-2h5l3 3v5l-2 4-4 2h-4ZM9.5 14.5 6 18M6 18l-1-3H3v2ZM6 18l3 1v2H7ZM16 6l2 2",
+  carrot: "M14 6l4 4L5 22l-2-2ZM8 15l2 2M11 12l2 2M15 6l1-4M17 8l5-1M16 7l4-4",
 };
 
 export function Icon({
