@@ -38,14 +38,14 @@ Fill this in at kickoff so every agent knows whose files are whose.
 | App shell, bottom nav, Home dashboard, Shop UI, Groups UI + shared world, avatar | @haojay1126 | `app/layout.tsx`, `app/(app)/layout.tsx`, `app/(app)/page.tsx`, `app/(app)/shop/`, `app/(app)/groups/`, `components/ui/`, `components/avatar/`, `components/world/` |
 | Onboarding (4 screens + optional group step), target presets | @joshuatsou123 | `app/onboarding/`, `components/onboarding/`, `lib/targets/` |
 | Food scan: camera page, results card, OpenAI vision route, meal coach tip | @DLYK2006 | `app/(app)/scan/`, `components/scan/`, `lib/scan/`, `app/api/scan/` |
-| Backend core: schema, log_meal + coins, shop RPCs, seed, shared types, Supabase clients (tentative) | @DLYK2006 | `supabase/migrations/0001_core.sql`, `supabase/seed.sql`, `lib/supabase/`, `lib/api/`, `types/` |
+| Backend core: schema, log_meal + coins, shop RPCs, seed, shared types, Supabase clients (tentative) | @DLYK2006 | `supabase/migrations/0001_core.sql`, `0003`, `0005_profile_settings.sql`, `supabase/seed.sql`, `app/api/account/`, `lib/supabase/`, `lib/api/`, `types/` |
 | Groups logic: invite codes, completion %, group bonus, realtime hook (P0) | @joshuatsou123 | `supabase/migrations/0002_groups.sql`, `lib/groups/` |
 | Shop controller | @joshuatsou123 | `lib/shop/`, `components/shop/` |
 | Groups controller | @joshuatsou123 | `components/groups/` |
 | Home controller (session/profile redirect, real profile + today's progress) | @joshuatsou123 | `components/home/` |
 | History calendar: past logs + streak (`/history`) | @DLYK2006 | `app/(app)/history/`, `components/history/`, `lib/history/` |
 | Share progress card (PRD 11.4) | @DLYK2006 | `components/share/`, `lib/share/` |
-| Friends: requests, friend streak + calendar (PRD 11.2-11.3) (offered, claim on the board) | @joshuatsou123 | `supabase/migrations/0004_friends.sql`, `lib/friends/`, `components/friends/` |
+| Friends: requests, friend streak + calendar (PRD 11.2-11.3) | @joshuatsou123 | `supabase/migrations/0004_friends.sql`, `lib/friends/`, `components/friends/` |
 
 **UI styling (decided Nov 14):** @haojay1126 leads the visual design and also styles the scan/results and onboarding screens (`app/(app)/scan/`, `components/scan/`, `app/onboarding/`, `components/onboarding/`), presentation only. Logic stays with the owners above: `lib/scan/` and `app/api/scan/` (@DLYK2006), `lib/targets/` and form validation (@joshuatsou123). Owners build with plain markup first; check on the board before restyling a file someone else is editing.
 
