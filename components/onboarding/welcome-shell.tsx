@@ -86,9 +86,6 @@ export function WelcomeShell({ children }: { children: ReactNode }) {
                 Optional company
               </span>
             </div>
-            <Link href="/" className="text-button">
-              Explore the UI demo first <Icon name="arrow" size={15} />
-            </Link>
             <p className="fine-print">
               A nutrition companion for adults 18 and over.
             </p>
