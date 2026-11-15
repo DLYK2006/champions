@@ -18,6 +18,15 @@ const { chromium } = require("playwright"),
     for (const category of ["Shirts", "Pants", "Hats"]) {
       await page.getByRole("button", { name: category, exact: true }).click();
       assert.equal(await page.locator(".shop-card").count(), 2);
+      const expected = {
+        Shirts: ["Sage Sweater", "Rust Flannel"],
+        Pants: ["Meadow Trousers", "Slate Cargos"],
+        Hats: ["Acorn Cap", "Fisher Bucket"],
+      };
+      assert.deepEqual(
+        await page.locator(".shop-item-name").allTextContents(),
+        expected[category],
+      );
     }
     await page.getByRole("button", { name: "All", exact: true }).click();
     for (const width of [320, 390, 768, 1440]) {
@@ -28,6 +37,13 @@ const { chromium } = require("playwright"),
         ),
         `Shop fits ${width}`,
       );
+      if (width > 760) {
+        await page.waitForFunction(() => {
+          const panel = document.querySelector('.wardrobe-panel').getBoundingClientRect();
+          const card = document.querySelector('.shop-card').getBoundingClientRect();
+          return Math.abs(panel.bottom - card.bottom) < 2;
+        }, null, { timeout: 3000 });
+      }
       if (width === 320 || width === 1440) {
         const { default: AxeBuilder } = require("@axe-core/playwright");
         const report = await new AxeBuilder({ page })

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import type { AvatarConfig } from "@/types";
 import { RoomCharacter } from "@/components/avatar/pixel-avatar";
@@ -123,6 +123,26 @@ export function ShopScreen({
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const inFlight = useRef(false);
+  const catalogRef = useRef<HTMLElement>(null);
+  const panelRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const catalog = catalogRef.current;
+    const panel = panelRef.current;
+    const card = catalog?.querySelector<HTMLElement>(".shop-card");
+    if (!catalog || !panel || !card) return;
+    const resize = () => {
+      // Match the tabs and first item row, regardless of catalog length.
+      panel.style.setProperty(
+        "--shop-preview-height",
+        `${card.getBoundingClientRect().bottom - catalog.getBoundingClientRect().top}px`,
+      );
+    };
+    const observer = new ResizeObserver(resize);
+    observer.observe(catalog);
+    observer.observe(card);
+    resize();
+    return () => observer.disconnect();
+  }, [category, items]);
   const previewItem = items.find((item) => item.id === preview);
   const previewEquipment = previewItem
     ? [
@@ -170,7 +190,7 @@ export function ShopScreen({
         </span>
       </div>
       <div className="shop-grid">
-        <aside className="panel wardrobe-panel" aria-label="Character preview">
+        <aside ref={panelRef} className="panel wardrobe-panel" aria-label="Character preview">
           <div className="wardrobe-stage">
             <RoomCharacter
               config={avatar}
@@ -194,7 +214,7 @@ export function ShopScreen({
             </div>
           )}
         </aside>
-        <section className="shop-catalog">
+        <section ref={catalogRef} className="shop-catalog">
           <div className="shop-tabs" role="group" aria-label="Filter treasures">
             {["All treasures", "Outfits", "Pants", "Hats"].map((tab) => (
               <button
