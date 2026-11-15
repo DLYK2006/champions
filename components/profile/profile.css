@@ -230,6 +230,121 @@
 .profile-loading {
   padding: 24px;
 }
+.history-filter {
+  display: grid;
+  gap: 10px;
+}
+.history-date-inputs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+.history-date-inputs label {
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 600;
+  display: grid;
+  gap: 6px;
+}
+.history-date-inputs input {
+  min-width: 0;
+  width: 100%;
+  padding: 9px 5px;
+  border: 1px solid #d8ccb1;
+  border-radius: 5px;
+  background: #fffdf6;
+  color: #403722;
+  font: inherit;
+}
+.history-filter-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.history-filter-actions .button {
+  padding: 9px 10px;
+  font-size: 11px;
+  flex: 1;
+}
+.history-filter-error {
+  margin: 0;
+}
+.history-month-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.history-month-nav button {
+  width: 36px;
+  min-height: 36px;
+  border: 1px solid #d8ccb1;
+  border-radius: 5px;
+  font-size: 24px;
+  line-height: 1;
+  background: #fbf6e9;
+}
+.history-month-nav h4 {
+  font:
+    500 20px var(--font-pixel),
+    monospace;
+  text-align: center;
+}
+.history-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+  text-align: center;
+  font-size: 11px;
+}
+.history-calendar-grid > span {
+  padding: 6px 0;
+  color: #75654c;
+}
+.history-calendar-grid button {
+  min-width: 0;
+  min-height: 30px;
+  padding: 4px 0;
+  background: #f0eadb;
+  color: #554c39;
+  border-radius: 4px;
+  border: 1px solid transparent;
+}
+.history-calendar-grid button[aria-label$="goal met"] {
+  background: #496c40;
+  color: #fff9e8;
+}
+.history-calendar-grid button[aria-label$="meals logged"] {
+  background: #e0e9ce;
+  color: #34532c;
+}
+.history-calendar-grid button[aria-pressed="true"] {
+  outline: 2px solid #365831;
+  outline-offset: 1px;
+}
+.history-calendar-grid button:disabled {
+  opacity: 0.4;
+}
+.history-analysis {
+  border-top: 1px solid #e5dbc4;
+  padding-top: 14px;
+}
+.history-analysis h4 {
+  font:
+    500 22px var(--font-pixel),
+    monospace;
+  color: #365831;
+}
+.history-analysis p {
+  font-size: 12px;
+  color: #6b604b;
+  margin-top: 5px;
+}
+.history-back {
+  margin-bottom: 12px;
+  font-size: 12px;
+}
 .profile-preferences {
   display: grid;
   gap: 10px;
