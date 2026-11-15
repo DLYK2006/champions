@@ -1,0 +1,50 @@
+.garden-league.panel{display:flex;flex-direction:column;min-height:0;max-height:100%;overflow:hidden;padding:0;border:1px solid #a1ac7f;box-shadow:0 8px 32px #0003;color:#493b2b;background:#f5efdf}
+.garden-league .league-header{display:flex;align-items:center;gap:16px;padding:24px 28px;background:linear-gradient(110deg,#e7ebd3,#f5efdf);border-bottom:1px solid #cbd0b2;flex-shrink:0}
+.garden-league .league-emblem{display:grid;place-items:center;width:62px;height:62px;color:#35583c;background:#d5dfb9;border:2px solid #91a16e;box-shadow:4px 4px 0 #b6c398;transform:rotate(-4deg)}
+.garden-league .league-eyebrow{font-size:10px;font-weight:700;letter-spacing:2px;color:#54633f}
+.garden-league h2{font-family:var(--font-pixel),monospace;font-size:32px;line-height:1.1;color:#304b35;margin:3px 0 5px}
+.garden-league .league-header p{margin:0;color:#54633f;font-size:13px}
+.garden-league .league-season{margin-left:auto;display:flex;align-items:center;gap:7px;font-size:12px;color:#54633f;border:1px solid #bdc7a1;padding:8px 12px;border-radius:6px;white-space:nowrap}
+.garden-league .league-standings{min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:18px 24px}
+.garden-league .league-list{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+.garden-league .league-row{border:1px solid #d5d5b9;border-radius:8px;background:#fffaf0;overflow:hidden;transition:border-color .18s,box-shadow .18s}
+.garden-league .league-row:hover,.garden-league .league-row:focus-within{border-color:#839765;box-shadow:0 3px 10px #37462a18}
+.garden-league .league-mine{border-color:#819b5e;background:#edf1de;box-shadow:inset 4px 0 #708b4c}
+.garden-league summary{display:flex;align-items:center;gap:16px;padding:16px;cursor:pointer;list-style:none;min-height:90px}
+.garden-league summary::-webkit-details-marker{display:none}
+.garden-league summary:focus-visible{outline:3px solid #496c40;outline-offset:-4px;border-radius:6px}
+.garden-league .league-medal{display:grid;place-items:center;flex-shrink:0;width:44px;height:48px;clip-path:polygon(20% 0,80% 0,100% 20%,100% 75%,50% 100%,0 75%,0 20%);background:#e5e6d5;color:#54633f;font-family:var(--font-pixel),monospace;font-size:25px;font-weight:700}
+.garden-league .league-rank-1{background:linear-gradient(135deg,#f8dc7d,#e5b744);color:#684410}
+.garden-league .league-rank-2{background:linear-gradient(135deg,#e4e7e0,#bbc7bd);color:#3d5148}
+.garden-league .league-rank-3{background:linear-gradient(135deg,#f0d0aa,#c7966e);color:#68432a}
+.garden-league .league-group{flex:1;min-width:0;display:grid;gap:4px}
+.garden-league .league-group strong{font-family:var(--font-pixel),monospace;font-size:24px;overflow-wrap:anywhere;line-height:1.1;color:#304b35}
+.garden-league .league-group>span{font-size:11px;color:#54633f}
+.garden-league .league-fire{display:flex;align-items:center;gap:5px;font-size:13px;font-weight:700;color:#8b470d;background:#fce7bd;border:1px solid #e5c181;padding:6px 9px;border-radius:6px;white-space:nowrap}
+.garden-league .league-fire svg{fill:#efba50;transform-origin:center bottom;animation:league-flicker 2s ease-in-out infinite}
+.garden-league .league-score{width:110px;display:grid;gap:7px;text-align:right;flex-shrink:0}
+.garden-league .league-score strong{font-family:var(--font-pixel),monospace;font-size:28px;line-height:1;color:#35583c}
+.garden-league .league-score small{font-size:17px}
+.garden-league .league-meter{display:block;height:8px;background:#e4e4cf;border:1px solid #c5ccaa;border-radius:2px;overflow:hidden}
+.garden-league .league-meter>span{display:block;height:100%;background:repeating-linear-gradient(90deg,#819b52 0 13px,#92aa63 13px 16px);animation:league-fill .7s ease-out;transform-origin:left}
+.garden-league .league-expand{color:#607349;font-size:22px;width:16px;text-align:center;transition:transform .2s}
+.garden-league details[open] .league-expand{transform:rotate(45deg)}
+.garden-league .league-detail{display:flex;flex-wrap:wrap;gap:12px 24px;margin:0 16px 16px 76px;padding-top:12px;border-top:1px dashed #ccd0b4;font-size:12px;color:#54633f}
+.garden-league .league-detail>span{display:flex;align-items:center;gap:6px}
+.garden-league .league-footer{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding:16px 28px;background:#e9ecd9;border-top:1px solid #cbd0b2}
+.garden-league .league-footer>small{font-size:11px;color:#54633f}
+.garden-league .league-visibility{display:flex;align-items:center;gap:10px;font-size:13px;cursor:pointer;color:#3e5035}
+.garden-league .league-visibility input{appearance:none;position:relative;width:36px;height:21px;flex-shrink:0;border-radius:20px;border:1px solid #7d8c69;background:#cbd0bb;cursor:pointer;transition:background .2s}
+.garden-league .league-visibility input:checked{background:#496c40}
+.garden-league .league-visibility input:after{content:'';position:absolute;top:3px;left:3px;width:13px;height:13px;border-radius:50%;background:#fff8e8;transition:transform .2s}
+.garden-league .league-visibility input:checked:after{transform:translateX(15px)}
+.garden-league .league-visibility input:focus-visible{outline:3px solid #8b641c;outline-offset:3px}
+.garden-league .league-visibility input:disabled{opacity:.6;cursor:wait}
+.garden-league .league-state,.garden-league.league-state{padding:35px 24px;text-align:center;align-items:center;gap:12px;color:#54633f}
+.garden-league .league-state svg{margin:auto;color:#708b4c}
+.garden-league .field-error{margin:10px 24px}
+@keyframes league-flicker{0%,100%{transform:rotate(-5deg) scale(1)}50%{transform:rotate(5deg) scale(1.08)}}
+@keyframes league-fill{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@media(max-width:600px){.garden-league .league-header{padding:17px 16px;gap:12px}.garden-league .league-emblem{width:43px;height:46px}.garden-league h2{font-size:27px}.garden-league .league-season{display:none}.garden-league .league-standings{padding:12px}.garden-league summary{padding:12px 10px;gap:10px;flex-wrap:wrap}.garden-league .league-medal{width:32px;height:39px;font-size:22px}.garden-league .league-group strong{font-size:21px}.garden-league .league-score{width:64px}.garden-league .league-fire{order:5;margin-left:42px;font-size:11px;padding:3px 7px}.garden-league .league-fire svg{width:17px;height:17px}.garden-league .league-detail{margin-left:52px}.garden-league .league-footer{padding:13px 16px}.garden-league .league-visibility{font-size:12px}}
+@media(prefers-reduced-motion:reduce){.garden-league *,.garden-league *:after{animation:none!important;transition:none!important}}
+@media(max-width:600px){.garden-league summary{display:grid;grid-template-columns:32px minmax(0,1fr) 64px 16px}.garden-league .league-fire{grid-column:2 / -1;justify-self:start;margin-left:0}.garden-league .league-group{width:100%}}
