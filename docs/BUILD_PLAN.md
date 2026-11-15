@@ -121,7 +121,7 @@ Daren. Client-side image (canvas) with the garden and completion (or avatar when
 
 ### Seed
 
-- Shop items: `sunglasses` 20, `hoodie` 40, `crown` 60.
+- Shop items (storefront, 0009): `sage-sweater` 40, `rust-flannel` 50 (outfit); `meadow-trousers` 30, `slate-cargos` 45 (pants); `acorn-cap` 25, `fisher-bucket` 35 (hat). The original `sunglasses` 20, `hoodie` 40, `crown` 60 rows stay for existing owners but are no longer shown.
 - Two demo accounts in one group. Each starts the day just short of their goals, so one scan completes a personal goal live on stage.
 
 ## Milestones (H = hours since kickoff)
